@@ -10,9 +10,21 @@ const cf_types = {
 	6 : "number"
 } as any;
 
+const resources_cf_urls:{ [key: string]: string } = {
+	"order" : "https://api.roapp.io/v2/orders/custom-fields",
+	"person": "https://api.roapp.io/v2/contacts/people/custom-fields",
+	"organization": "https://api.roapp.io/v2/contacts/organizations/custom-fields",
+	"lead": "https://api.roapp.io/v2/lead/custom-fields/"
+};
+
 // Кеш для custom fields данных
-let orderCustomFieldsCache: { fields: any[], fieldsInfo: { [key: string]: string } } | null = null;
-let customFieldsCacheTTL: number = 0;
+let cache: { [key: string]: { fields: any[], fieldsInfo: { [key: string]: string } }} = {};
+let cacheTTL: { [key: string]: number } = {};
+
+// Кеш для custom fields данных
+// let orderCustomFieldsCache: { fields: any[], fieldsInfo: { [key: string]: string } } | null = null;
+
+// let customFieldsCacheTTL: number = 0;
 
 const CACHE_DURATION = 5 * 60 * 1000; // 5 минут в миллисекундах
 
@@ -22,19 +34,23 @@ export const showOnlyForOrderCreate = {
 };
 
 // ==================== HELPER FUNCTIONS ====================
-
 async function fetchCustomFieldsData(
 	this: IExecuteFunctions | ILoadOptionsFunctions,
+	resource: string
 ): Promise<{ fields: any[], fieldsInfo: { [key: string]: string } }> {
+	// Получаем ключ для кеша на основе ресурса
+	const cacheKey = `cf_${resource}`;
+
 	// Проверяем, есть ли актуальный кеш
-	if (orderCustomFieldsCache && customFieldsCacheTTL > Date.now()) {
-		return orderCustomFieldsCache;
+	if (cache[cacheKey] && cacheTTL[cacheKey] > Date.now()) {
+		return cache[cacheKey];
 	}
 
 	// Получаем данные с API
+	const url = resources_cf_urls[resource];
 	const data = await this.helpers.httpRequestWithAuthentication.call(this, 'roappRoappApi', {
 		method: 'GET',
-		url: 'https://api.roapp.io/v2/orders/custom-fields',
+		url,
 		json: true,
 	});
 
@@ -57,11 +73,51 @@ async function fetchCustomFieldsData(
 	}
 
 	// Сохраняем в кеш
-	orderCustomFieldsCache = { fields, fieldsInfo };
-	customFieldsCacheTTL = Date.now() + CACHE_DURATION;
+	cache[cacheKey] = { fields, fieldsInfo };
+	cacheTTL[cacheKey] = Date.now() + CACHE_DURATION;
 
 	return { fields, fieldsInfo };
 }
+
+// async function fetchOrderCustomFieldsData(
+// 	this: IExecuteFunctions | ILoadOptionsFunctions,
+// ): Promise<{ fields: any[], fieldsInfo: { [key: string]: string } }> {
+// 	// Проверяем, есть ли актуальный кеш
+// 	if (orderCustomFieldsCache && customFieldsCacheTTL > Date.now()) {
+// 		return orderCustomFieldsCache;
+// 	}
+
+// 	// Получаем данные с API
+// 	const data = await this.helpers.httpRequestWithAuthentication.call(this, 'roappRoappApi', {
+// 		method: 'GET',
+// 		url: 'https://api.roapp.io/v2/orders/custom-fields',
+// 		json: true,
+// 	});
+
+// 	// Формируем fields для resourceMapper
+// 	const fields = data.map((field: any) => ({
+// 		id: `f${field.id}`,
+// 		displayName: field.title || field.name,
+// 		name: `f${field.id}`,
+// 		type: cf_types[parseInt(field.type)] || 'string',
+// 		default: cf_types[parseInt(field.type)] === 'boolean' ? false : '',
+// 		required: false,
+// 		display: true,
+// 	}));
+
+// 	// Формируем fieldsInfo для трансформации значений
+// 	const fieldsInfo: { [key: string]: string } = {};
+// 	for (const field of data) {
+// 		const fieldType = cf_types[parseInt(field.type)] || 'string';
+// 		fieldsInfo[`f${field.id}`] = fieldType;
+// 	}
+
+// 	// Сохраняем в кеш
+// 	orderCustomFieldsCache = { fields, fieldsInfo };
+// 	customFieldsCacheTTL = Date.now() + CACHE_DURATION;
+
+// 	return { fields, fieldsInfo };
+// }
 
 export async function getInvoiceStatuses(
 	this: IAllExecuteFunctions,
@@ -87,7 +143,7 @@ export async function getInvoiceStatuses(
 export async function getOrderCustomFieldsCollection(
 	this: ILoadOptionsFunctions,
 ): Promise<ResourceMapperFields> {
-	const { fields } = await fetchCustomFieldsData.call(this);
+	const { fields } = await fetchCustomFieldsData.call(this, 'order');
 	return { fields };
 }
 
@@ -95,9 +151,10 @@ export async function getOrderCustomFieldsCollection(
 
 async function getCustomFieldsInfo(
 	this: IExecuteFunctions,
+	resource: string
 ): Promise<{ [key: string]: string }> {
 	// Используем кеш вместо повторного запроса
-	const { fieldsInfo } = await fetchCustomFieldsData.call(this);
+	const { fieldsInfo } = await fetchCustomFieldsData.call(this, resource);
 	return fieldsInfo;
 }
 
@@ -149,7 +206,7 @@ export async function executeOrderOperation(
 		const customFields = this.getNodeParameter('customFields', index) as any;
 		if (customFields?.value) {
 			// Получаем информацию о типах полей и преобразуем dateTime
-			const fieldsInfo = await getCustomFieldsInfo.call(this);
+			const fieldsInfo = await getCustomFieldsInfo.call(this, 'order');
 			const transformedCustomFields = transformCustomFieldsValues(customFields.value, fieldsInfo);
 			body.custom_fields = transformedCustomFields;
 		}
