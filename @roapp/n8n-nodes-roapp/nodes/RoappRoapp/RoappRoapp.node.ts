@@ -1,0 +1,118 @@
+import { NodeConnectionTypes, type INodeType, type INodeTypeDescription } from 'n8n-workflow';
+import { personDescription } from './resources/person';
+import { organizationDescription } from './resources/organization';
+import { orderDescription } from './resources/order';
+import { saleDescription } from './resources/sale';
+import { invoiceDescription } from './resources/invoices';
+import { getInvoiceStatuses, getOrderCustomFieldsCollection } from './shared/methods';
+import { type IExecuteFunctions, type INodeExecutionData } from 'n8n-workflow';
+
+export class RoappRoapp implements INodeType {
+	description: INodeTypeDescription = {
+		displayName: 'Roapp Roapp',
+		name: 'roappRoapp',
+		icon: { light: 'file:roapp_logo.png', dark: 'file:roapp_logo.dark.png' },
+		group: ['transform'],
+		version: 1,
+		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
+		description: 'Interact with the Roapp Roapp API',
+		defaults: {
+			name: 'Roapp Roapp',
+		},
+		usableAsTool: true,
+		inputs: [NodeConnectionTypes.Main],
+		outputs: [NodeConnectionTypes.Main],
+		credentials: [{ name: 'roappRoappApi', required: true }],
+		requestDefaults: {
+			baseURL: 'https://api.roapp.io/',
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json',
+			},
+		},
+		properties: [
+			{
+				displayName: 'Resource',
+				name: 'resource',
+				type: 'options',
+				noDataExpression: true,
+				options: [
+					{
+						name: 'Order',
+						value: 'order',
+					},
+					{
+						name: 'Organization',
+						value: 'organization',
+					},
+					{
+						name: 'Person',
+						value: 'person',
+					},
+					{
+						name: 'Sale',
+						value: 'sale',
+					},
+					{
+						name: 'Invoice',
+						value: 'invoice',
+					},
+				],
+				default: 'Order',
+			},
+			...personDescription,
+			...orderDescription,
+			...organizationDescription,
+			...saleDescription,
+			...invoiceDescription
+		],
+	};
+	methods = {
+		loadOptions: {
+			getInvoiceStatuses,
+		},
+		resourceMapping: {
+			getOrderCustomFieldsCollection,
+		},
+	};
+	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
+		const items = this.getInputData();
+		const returnData: INodeExecutionData[] = [];
+
+		const { executeOrderOperation, executePersonOperation, executeInvoiceOperation, executeOrganizationOperation, executeSaleOperation } = await import('./shared/methods');
+
+		for (let i = 0; i < items.length; i++) {
+			const resource = this.getNodeParameter('resource', i) as string;
+			const operation = this.getNodeParameter('operation', i) as string;
+
+			let response: any;
+
+			switch (resource) {
+				case 'order':
+					response = await executeOrderOperation.call(this, operation, i);
+					break;
+				case 'person':
+					response = await executePersonOperation.call(this, operation, i);
+					break;
+				case 'invoice':
+					response = await executeInvoiceOperation.call(this, operation, i);
+					break;
+				case 'organization':
+					response = await executeOrganizationOperation.call(this, operation, i);
+					break;
+				case 'sale':
+					response = await executeSaleOperation.call(this, operation, i);
+					break;
+				default:
+					response = {};
+			}
+
+			returnData.push({
+				json: response || {},
+				pairedItem: { item: i },
+			});
+		}
+
+		return [returnData];
+	}
+}
