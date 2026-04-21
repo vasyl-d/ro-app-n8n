@@ -47,12 +47,6 @@ export const orderCreateDescription: INodeProperties[] = [
         displayOptions: {
             show: showOnlyForOrderCreate,
         },
-        routing: {
-            send: {
-                type: 'body',
-                property: 'client_id',
-            },
-        },
     },
     {
         displayName: 'Custom Fields',
@@ -69,14 +63,6 @@ export const orderCreateDescription: INodeProperties[] = [
         },
         displayOptions: {
             show: showOnlyForOrderCreate,
-        },
-        routing: {
-            send: {
-                type: 'body',
-                property: 'custom_fields',
-                value: '={{$value.value}}',
-                // value: '={{(() => { const obj = $value.value || {}; return Object.entries(obj).reduce((acc, [k, v]) => { if (typeof v === "string" && /^\\d{4}-\\d{2}-\\d{2}/.test(v)) { acc[k] = new Date(v).toISOString().split(".")[0] + "Z"; } else { acc[k] = v; } return acc; }, {}); })()}}',
-            },
-        },
+        }
     },
 ];

@@ -8,6 +8,78 @@ const showOnlyForInvoiceGetMany = {
 
 export const getAllInvoicesDescription: INodeProperties[] = [
 	{
+		displayName: 'Status Name or ID',
+		name: 'statuses',
+		type: 'multiOptions',
+		displayOptions: {
+			show: showOnlyForInvoiceGetMany,
+		},
+		typeOptions: {
+			loadOptionsMethod: 'getInvoiceStatuses',
+		},
+		default: [],
+		description: 'Filter by invoice status. Choose from the list, or specify an ID using an <a href="https://n8n.io">expression</a>.',
+	},
+	{
+		displayName: 'Customer IDs',
+		name: 'client_ids',
+		type: 'string',
+		typeOptions: {
+			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
+		},
+		displayOptions: {
+			show: showOnlyForInvoiceGetMany,
+		},
+		default: [], // Для багатократних значень дефолт має бути масивом
+		description: 'Add one or more Customer IDs',
+	},
+	{
+		displayName: "Created",
+		name: "created",
+		type: "collection",
+		displayOptions: {
+			show: showOnlyForInvoiceGetMany,
+		},
+		default : {},
+		options: [
+			{
+				displayName: 'From',
+				name: 'created_from',
+				type: 'dateTime',
+				default: ''
+			},
+			{
+				displayName: 'To',
+				name: 'created_to',
+				type: 'dateTime',
+				default: ''
+			},
+		]
+	},
+	{
+		displayName: "Payment type",
+		name: "payment_method",
+		type: "options",
+		displayOptions: {
+			show: showOnlyForInvoiceGetMany,
+		},
+		default: "",
+		options: [
+			{
+				name: "Cash",
+				value: "cash"
+			},
+			{
+				name: "Cashless",
+				value: "cashless"
+			},
+			{
+				name: "Credit_card",
+				value: "credit_card"
+			}
+		]
+	},
+	{
 		displayName: 'Limit',
 		name: 'limit',
 		type: 'number',
@@ -56,73 +128,5 @@ export const getAllInvoicesDescription: INodeProperties[] = [
 			},
 		},
 	},
-	{
-		displayName: 'Filters',
-		name: 'filters',
-		type: 'collection',
-		placeholder: 'Add Filter',
-		default: {},
-		displayOptions: {
-			show: {
-				...showOnlyForInvoiceGetMany,
-				returnAll: [false],
-			},
-		},
-		options: [
-			{
-				displayName: 'Status Name or ID',
-				name: 'statusId',
-				type: 'multiOptions',
-				typeOptions: {
-					loadOptionsMethod: 'getInvoiceStatuses',
-				},
-				default: [],
-				description: 'Filter by invoice status. Choose from the list, or specify an ID using an <a href="https://n8n.io">expression</a>.',
-				routing: {
-					send: {
-						type: 'query',
-						property: 'statuses',
-					},
-				},
-			},
-			{
-				displayName: 'Customer ID',
-				name: 'customerId',
-				type: 'string',
-				default: '',
-				description: 'Filter by customer ID. Specify one or more IDs using an <a href="https://n8n.io">expression</a>.',
-				routing: {
-					send: {
-						type: 'query',
-						property: 'client_ids',
-					},
-				},
-			},
-			{
-				displayName: 'Date From',
-				name: 'dateFrom',
-				type: 'dateTime',
-				default: '',
-				routing: {
-					send: {
-						type: 'query',
-						property: 'created_at',
-                        value: '={{new Date($value).toISOString().split(".")[0] + "Z"}}', // Преобразуем дату в ISO 8601 без миллисекунд
-					},
-				},
-			},
-			{
-				displayName: 'Date To',
-				name: 'dateTo',
-				type: 'dateTime',
-				default: '',
-				routing: {
-					send: {
-						type: 'query',
-						property: 'created_at',
-					},
-				},
-			},
-		],
-	},
+
 ];

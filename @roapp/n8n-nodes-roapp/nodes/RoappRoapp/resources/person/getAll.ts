@@ -1,18 +1,18 @@
 import type { INodeProperties } from 'n8n-workflow';
 
-const showOnlyForSaleGetMany = {
+const showOnlyForPersonGetAll = {
 	operation: ['getAll'],
-	resource: ['sale'],
+	resource: ['person'],
 };
 
-export const saleGetManyDescription: INodeProperties[] = [
+export const organozationGetManyDescription: INodeProperties[] = [
 	{
 		displayName: 'Limit',
 		name: 'limit',
 		type: 'number',
 		displayOptions: {
 			show: {
-				...showOnlyForSaleGetMany,
+				...showOnlyForPersonGetAll,
 				returnAll: [false],
 			},
 		},
@@ -37,7 +37,7 @@ export const saleGetManyDescription: INodeProperties[] = [
 		name: 'returnAll',
 		type: 'boolean',
 		displayOptions: {
-			show: showOnlyForSaleGetMany,
+			show: showOnlyForPersonGetAll,
 		},
 		default: false,
 		description: 'Whether to return all results or only up to a given limit',

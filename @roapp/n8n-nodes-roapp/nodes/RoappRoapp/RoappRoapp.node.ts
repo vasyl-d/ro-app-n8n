@@ -4,7 +4,7 @@ import { organizationDescription } from './resources/organization';
 import { orderDescription } from './resources/order';
 import { saleDescription } from './resources/sale';
 import { invoiceDescription } from './resources/invoices';
-import { getInvoiceStatuses, getOrderCustomFieldsCollection } from './shared/methods';
+import { getInvoiceStatuses, getOrderStatuses, getOrderCustomFieldsCollection } from './shared/methods';
 import { type IExecuteFunctions, type INodeExecutionData } from 'n8n-workflow';
 
 export class RoappRoapp implements INodeType {
@@ -70,6 +70,7 @@ export class RoappRoapp implements INodeType {
 	methods = {
 		loadOptions: {
 			getInvoiceStatuses,
+			getOrderStatuses
 		},
 		resourceMapping: {
 			getOrderCustomFieldsCollection,
