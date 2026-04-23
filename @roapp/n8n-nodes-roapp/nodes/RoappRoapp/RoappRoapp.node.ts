@@ -1,11 +1,20 @@
-import { NodeConnectionTypes, type INodeType, type INodeTypeDescription } from 'n8n-workflow';
+import { NodeConnectionTypes, 
+	type INodeType, 
+	type INodeTypeDescription, 
+	ResourceMapperFields,
+	INodePropertyOptions,
+	ILoadOptionsFunctions } from 'n8n-workflow';
 import { personDescription } from './resources/person';
 import { organizationDescription } from './resources/organization';
 import { orderDescription } from './resources/order';
 import { saleDescription } from './resources/sale';
 import { invoiceDescription } from './resources/invoices';
-import { getInvoiceStatuses, getOrderStatuses, getOrderCustomFieldsCollection } from './shared/methods';
+import { 
+	fetchCustomFieldsData,
+	getResourceStatuses
+} from './shared/methods';
 import { type IExecuteFunctions, type INodeExecutionData } from 'n8n-workflow';
+import { globalFields } from './shared/sharedFields';
 
 export class RoappRoapp implements INodeType {
 	description: INodeTypeDescription = {
@@ -64,18 +73,27 @@ export class RoappRoapp implements INodeType {
 			...orderDescription,
 			...organizationDescription,
 			...saleDescription,
-			...invoiceDescription
+			...invoiceDescription,
+			...globalFields,
 		],
 	};
 	methods = {
 		loadOptions: {
-			getInvoiceStatuses,
-			getOrderStatuses
+			async getStatuses(
+				this: ILoadOptionsFunctions) : Promise<INodePropertyOptions[]>  {
+					const resource = this.getCurrentNodeParameter('resource') as string;
+					const fields = await getResourceStatuses.call(this, resource);
+					return fields;
+				}
 		},
 		resourceMapping: {
-			getOrderCustomFieldsCollection,
-		},
-	};
+			async getCustomFields(this: ILoadOptionsFunctions): Promise<ResourceMapperFields> {
+				// Отримуємо поточний обраний ресурс з UI
+				const resource = this.getCurrentNodeParameter('resource') as string;
+				return await fetchCustomFieldsData.call(this, resource);
+			}
+		}
+	}
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];

@@ -2,9 +2,10 @@
 import {INodePropertyOptions, 
 	IAllExecuteFunctions, 
 	ILoadOptionsFunctions, 
-	ResourceMapperFields, 
 	IExecuteFunctions,
-	IHttpRequestMethods
+	IHttpRequestMethods,
+	NodeOperationError,
+	NodeApiError
  } from 'n8n-workflow';
 import { DateTime } from 'luxon';
 
@@ -22,8 +23,8 @@ const cf_types = {
 
 const resources_cf_urls:{ [key: string]: string } = {
 	"order" : `${BASE_URL}v2/orders/custom-fields`,
-	"person": `${BASE_URL}2/contacts/people/custom-fields`,
-	"organization": `${BASE_URL}2/contacts/organizations/custom-fields`,
+	"person": `${BASE_URL}v2/contacts/people/custom-fields`,
+	"organization": `${BASE_URL}v2/contacts/organizations/custom-fields`,
 	"lead": `${BASE_URL}v2/lead/custom-fields/`
 };
 
@@ -37,11 +38,6 @@ const resources_stuses_urls: { [key: string]: string } = {
 let cache: { [key: string]: { fields: any[], fieldsInfo: { [key: string]: string } }} = {};
 let cacheTTL: { [key: string]: number } = {};
 
-// Кеш для custom fields данных
-// let orderCustomFieldsCache: { fields: any[], fieldsInfo: { [key: string]: string } } | null = null;
-
-// let customFieldsCacheTTL: number = 0;
-
 const CACHE_DURATION = 5 * 60 * 1000; // 5 минут в миллисекундах
 
 export const showOnlyForOrderCreate = {
@@ -50,7 +46,14 @@ export const showOnlyForOrderCreate = {
 };
 
 // ==================== HELPER FUNCTIONS ====================
-async function fetchCustomFieldsData(
+function phoneValidation(
+	phone:string,
+):boolean {
+	const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+	return phone!="" && phone!=null && phone!="undefined" && phoneRegex.test(phone)
+}
+
+export async function fetchCustomFieldsData(
 	this: IExecuteFunctions | ILoadOptionsFunctions,
 	resource: string
 ): Promise<{ fields: any[], fieldsInfo: { [key: string]: string } }> {
@@ -97,7 +100,7 @@ async function fetchCustomFieldsData(
 
 export async function getResourceStatuses(
 	this: IAllExecuteFunctions, 
-	resource: string) : Promise<{ fields:INodePropertyOptions[]} >  {
+	resource: string) : Promise<INodePropertyOptions[]>  {
 
 	const url:string =  resources_stuses_urls[resource];
 	const response = await this.helpers.httpRequestWithAuthentication.call(this, 'roappRoappApi', {
@@ -105,32 +108,11 @@ export async function getResourceStatuses(
 	url,
 	json: true,
 	});
-	const fields = response.map((row:any) => ({
+	const fields:INodePropertyOptions[] = response.map((row:any) => ({
 		name: row.name,
 		value: row.id
 	}));
-	return { fields };
-}
-
-export async function getInvoiceStatuses(
-	this: IAllExecuteFunctions,
-	): Promise<INodePropertyOptions[]> {
-    const { fields } = await getResourceStatuses.call(this, 'invoice');
 	return fields;
-};
-
-export async function getOrderStatuses(
-	this: IAllExecuteFunctions,
-	): Promise<INodePropertyOptions[]> {
-    const { fields } = await getResourceStatuses.call(this, 'order');
-	return fields;
-};
-
-export async function getOrderCustomFieldsCollection(
-	this: ILoadOptionsFunctions,
-): Promise<ResourceMapperFields> {
-	const { fields } = await fetchCustomFieldsData.call(this, 'order');
-	return { fields };
 }
 
 // ==================== HELPER FUNCTIONS ====================
@@ -204,21 +186,23 @@ function makeQs(
 				// Якщо це колекція "filters" або "additionalFields"
 				else if (typeof value === 'object' && value !== null) {
 					const processedFilters:{[key:string]:any}= { ...value };
-					if (parameterName == "created") {
-					const from = processedFilters?.created_from
-						? `${String(DateTime.fromISO(String(processedFilters?.created_from)).toISO()).split(".")[0]}Z` // або .toISOString()
-						: '';
-					const to = processedFilters?.created_to
-						? `,${String(DateTime.fromISO(String(processedFilters?.created_to)).toISO()).split(".")[0]}Z`
-						: '';
-					qs["created_at"] = `${from}${to}`;
+					if (parameterName == "created" || parameterName == "modified" || parameterName == "closed") {
+						const from_name = `${parameterName}_from`;
+						const to_name = `${parameterName}_to`;
+						const from = processedFilters[from_name]
+							? `${String(DateTime.fromISO(String(processedFilters?.created_from)).toISO()).split(".")[0]}Z` // або .toISOString()
+							: '';
+						const to = processedFilters[to_name]
+							? `,${String(DateTime.fromISO(String(processedFilters?.created_to)).toISO()).split(".")[0]}Z`
+							: '';
+						qs[`${parameterName}_at`] = `${from}${to}`;
 					} else {
 						Object.assign(qs, value);
 					}
 					if (processedFilters?.idValues) {
 						qs[parameterName] = processedFilters.idValues.map((v: any) => v.value).join(',');
 					}
-				} else if (value !== undefined && value !== '') {
+				} else if (value != undefined && String(value).trim() != '' && value !== null) {
 					qs[parameterName] = value;
 				}
 			} catch (e) {
@@ -233,8 +217,7 @@ function makeQs(
 async function handleGetAll(
     this: IExecuteFunctions,
     index: number,
-    url: string,
-    method: IHttpRequestMethods = 'GET',
+    url: string
 ) {
     const returnAll = this.getNodeParameter('returnAll', index, false) as boolean;
     const limit = this.getNodeParameter('limit', index, 0) as number;
@@ -242,45 +225,103 @@ async function handleGetAll(
     // Збираємо всі Query Parameters динамічно
     const qs = makeQs.call(this, index);
     // Додаємо кастомні поля з мапера, якщо вони є
-    try {
-		const customFields = this.getNodeParameter('customFields', index) as any;
-        if (customFields?.value) Object.assign(qs, customFields.value);
-    } catch (e) { /* ignore if not exists */ }
+    // try {
+	// 	const customFields = this.getNodeParameter('customFields', index) as any;
+    //     if (customFields?.value) Object.assign(qs, customFields.value);
+    // } catch (e) { /* ignore if not exists */ }
 	
     const returnData: any[] = [];
     let page = 1;
     let responseData;
 	
     do {
-		qs.page = page;
-		console.log('QS Object before request:', JSON.stringify(qs, null, 2));
-		console.log('--- DEBUG QS END ---');
+		responseData = [];
+		console.log(`before request: ${url}, ${JSON.stringify(qs, null, 2)}`);
         
 		try{
 			responseData = await this.helpers.httpRequestWithAuthentication.call(this, 'roappRoappApi', {
-				method: method,
+				method: 'GET',
 				url: url,
 				json: true,
 				qs: qs,
 			});
-		} catch (e) {
+		} catch (error) {
+			// Якщо API повернуло помилку (наприклад, 400)
+			// if (error.response) {
+			// 	// error.response.body — це те, що повернуло ваше API (наприклад, { message: "Invalid phone" })
+			// 	throw new NodeApiError(this.getNode(), error, error?.response?.body?.message);
+			// }
+			// // Якщо сталася інша помилка (мережа тощо)
+			// throw error;
 			break;
 		} finally {
 			// Адаптуйте під структуру вашого API (наприклад, responseData.items або responseData.data)
 			const items = Array.isArray(responseData) ? responseData : (responseData?.data || []);
 			returnData.push(...items);
-	
+			
 			if (!returnAll && returnData.length >= limit) {
 				return returnData.slice(0, limit);
 			}
 		}
         page++;
+		qs.page = page;
         // Зупиняємось, якщо API повернув порожній список
     } while (responseData?.data?.length > 0 || (Array.isArray(responseData) && responseData.length > 0));
 
     return returnData;
-}
+};
 
+async function handleGetOne(
+	this: IExecuteFunctions,
+    index: number,
+    url: string,
+    method: IHttpRequestMethods = 'GET',
+	) {
+	try {
+		console.log(`Log ${url} before request`);
+		return await this.helpers.httpRequestWithAuthentication.call(this, 'roappRoappApi', {
+			method: method,
+			url: url,
+			json: true,
+		});
+	} catch (error) {
+		// Якщо API повернуло помилку (наприклад, 400)
+		if (error.response) {
+			// error.response.body — це те, що повернуло ваше API (наприклад, { message: "Invalid phone" })
+			console.log(`Error message: ${error.response?.body?.message}`);
+			throw new NodeApiError(this.getNode(), error, { message: error.response?.body?.message });
+		}
+		// Якщо сталася інша помилка (мережа тощо)
+		throw error;
+	}
+};
+
+async function handlePost(
+	this: IExecuteFunctions,
+    index: number,
+    url: string,
+	body: any,
+    method: IHttpRequestMethods = 'POST',
+	) {
+	try {
+		console.log(`Log ${url} body before request: ${JSON.stringify(body)}`);
+		return await this.helpers.httpRequestWithAuthentication.call(this, 'roappRoappApi', {
+			method: method,
+			url: url,
+			json: true,
+			body: body
+		});
+	} catch (error) {
+		// Якщо API повернуло помилку (наприклад, 400)
+		if (error.response) {
+			// error.response.body — це те, що повернуло ваше API (наприклад, { message: "Invalid phone" })
+			throw new NodeApiError(this.getNode(), error, { message: error.response?.body?.message });
+		}
+		// Якщо сталася інша помилка (мережа тощо)
+		throw error;
+		//todo: retry on 429 error
+	}
+};
 
 export async function executeOrderOperation(
 	this: IExecuteFunctions,
@@ -302,22 +343,14 @@ export async function executeOrderOperation(
 			body.custom_fields = transformedCustomFields;
 		}
 
-		return await this.helpers.httpRequestWithAuthentication.call(this, 'roappRoappApi', {
-			method: 'POST',
-			url: 'https://api.roapp.io/v2/orders',
-			json: true,
-			body: body,
-		});
+		return await handlePost.call(this, index, `${BASE_URL}v2/orders`, body );
+
 	} else if (operation === 'getAll') {
-		const url = `${BASE_URL}v2/orders`; 
-		return await handleGetAll.call(this, index, url);
+
+		return await handleGetAll.call(this, index, `${BASE_URL}v2/orders`);
 
 		} else if (operation === 'get') {
-			return await this.helpers.httpRequestWithAuthentication.call(this, 'roappRoappApi', {
-				method: 'GET',
-				url: `https://api.roapp.io/v2/orders/${this.getNodeParameter('orderId', index)}`,
-				json: true,
-			});
+			return await handleGetOne.call(this, index, `${BASE_URL}v2/orders/${this.getNodeParameter('orderId', index)}`);
 		}
 	return null;
 }
@@ -332,21 +365,49 @@ export async function executePersonOperation(
 			first_name: this.getNodeParameter('first_name', index),
 			last_name: this.getNodeParameter('last_name', index),
 		};
-		return await this.helpers.httpRequestWithAuthentication.call(this, 'roappRoappApi', {
-			method: 'POST',
-			url: 'https://api.roapp.io/v2/contacts/people',
-			json: true,
-			body: body,
-		});
+		if (this.getNodeParameter('email', index)) {
+			body.email = this.getNodeParameter('email', index);
+		}
+		const phonesUi = Object.assign(this.getNodeParameter('phonesUi', index, {}) as {
+															phones?: Array<{
+																title: string;
+																phone: string;
+																notify: boolean;
+																has_viber: boolean;
+																has_whatsapp: boolean;
+															}> });
+
+		if (phonesUi?.phones && phonesUi?.phones?.length > 0) {
+				body.phones = phonesUi.phones.map((item:any) => {
+					if (phoneValidation(item.phone)) {
+						return {
+							title: item.title,
+							phone: item.phone,
+							notify: item.notify,
+							has_viber: item.has_viber,
+							has_whatsapp: item.has_whatsapp,
+						}
+					}
+					else {
+						throw new NodeOperationError(this.getNode(), 
+							`The phone number "${item.phone}" is not valid. Please use international format (e.g., +12021234567).`,
+							{ itemIndex: index }
+						);
+					}
+				});
+		}
+		const customFields = this.getNodeParameter('customFields', index) as any;
+		if (customFields?.value) {
+			// Получаем информацию о типах полей и преобразуем dateTime
+			const fieldsInfo = await getCustomFieldsInfo.call(this, 'person');
+			const transformedCustomFields = transformCustomFieldsValues(customFields.value, fieldsInfo);
+			body.custom_fields = transformedCustomFields;
+		}
+		return await handlePost.call(this, index, `${BASE_URL}v2/contacts/people`, body);
 	} else if (operation === 'getAll') {
-		const url = `${BASE_URL}v2/contacts/people`; 
-		return await handleGetAll.call(this, index, url);
+		return await handleGetAll.call(this, index, `${BASE_URL}v2/contacts/people`);
 	} else if (operation === 'get') {
-		return await this.helpers.httpRequestWithAuthentication.call(this, 'roappRoappApi', {
-			method: 'GET',
-			url: `https://api.roapp.io/v2/contacts/people/${this.getNodeParameter('personId', index)}`,
-			json: true,
-		});
+		return await handleGetOne.call(this, index, `${BASE_URL}v2/contacts/people/${this.getNodeParameter('personId', index)}`);
 	}
 	return null;
 }
@@ -357,14 +418,9 @@ export async function executeInvoiceOperation(
 	index: number,
 ): Promise<any> {
 	if (operation === 'getAll') {
-		const url = `${BASE_URL}v2/invoices`; 
-		return await handleGetAll.call(this, index, url);
+		return await handleGetAll.call(this, index, `${BASE_URL}v2/invoices`);
 	} else if (operation === 'get') {
-		return await this.helpers.httpRequestWithAuthentication.call(this, 'roappRoappApi', {
-			method: 'GET',
-			url: `https://api.roapp.io/v2/invoices/${this.getNodeParameter('invoiceId', index)}`,
-			json: true,
-		});
+		return await handleGetOne.call(this, index, `${BASE_URL}v2/invoices/${this.getNodeParameter('invoiceId', index)}`);
 	}
 	return null;
 }
@@ -375,8 +431,52 @@ export async function executeOrganizationOperation(
 	index: number,
 ): Promise<any> {
 	if (operation === 'getAll') {
-		const url = `${BASE_URL}v2/organizations`; 
-		return await handleGetAll.call(this, index, url);
+		return await handleGetAll.call(this, index, `${BASE_URL}v2/contacts/organizations`);
+	} else if (operation === 'get') {
+		return await handleGetOne.call(this, index, `${BASE_URL}v2/contacts/organizations/${this.getNodeParameter('organizationId', index)}`);
+	} else if (operation === 'create') {
+		const body:any = {
+			name : this.getNodeParameter('name', index),
+		};
+		if (this.getNodeParameter('email', index)) {
+			body.email = this.getNodeParameter('email', index);
+		}
+		const phonesUi = Object.assign(this.getNodeParameter('phonesUi', index, {}) as {
+															phones?: Array<{
+																title: string;
+																phone: string;
+																notify: boolean;
+																has_viber: boolean;
+																has_whatsapp: boolean;
+															}> });
+
+		if (phonesUi?.phones && phonesUi?.phones?.length > 0) {
+				body.phones = phonesUi.phones.map((item:any) => {
+					if (phoneValidation(item.phone)) {
+						return {
+							title: item.title,
+							phone: item.phone,
+							notify: item.notify,
+							has_viber: item.has_viber,
+							has_whatsapp: item.has_whatsapp,
+						}
+					}
+					else {
+						throw new NodeOperationError(this.getNode(), 
+							`The phone number "${item.phone}" is not valid. Please use international format (e.g., +12021234567).`,
+							{ itemIndex: index }
+						);
+					}
+				});
+		}
+		const customFields = this.getNodeParameter('customFields', index) as any;
+		if (customFields?.value) {
+			// Получаем информацию о типах полей и преобразуем dateTime
+			const fieldsInfo = await getCustomFieldsInfo.call(this, 'organization');
+			const transformedCustomFields = transformCustomFieldsValues(customFields.value, fieldsInfo);
+			body.custom_fields = transformedCustomFields;
+		}
+		return await handlePost.call(this, index, `${BASE_URL}v2/contacts/organizations`, body);
 	}
 	return null;
 }
@@ -387,8 +487,7 @@ export async function executeSaleOperation(
 	index: number,
 ): Promise<any> {
 	if (operation === 'getAll') {
-		const url = `${BASE_URL}v2/sales`; 
-		return await handleGetAll.call(this, index, url);
+		return await handleGetAll.call(this, index, `${BASE_URL}v2/sales`);
 	}
 	return null;
 }

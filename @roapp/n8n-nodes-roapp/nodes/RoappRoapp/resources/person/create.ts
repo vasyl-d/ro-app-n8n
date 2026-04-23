@@ -40,4 +40,25 @@ export const personCreateDescription: INodeProperties[] = [
 			},
 		},
 	},
+	    {
+        displayName: 'Custom Fields',
+        name: 'customFields',
+        placeholder: 'Add custom field',
+        type: 'resourceMapper',
+        noDataExpression: true,
+        default: { mappingMode: 'defineBelow', value: {} },
+        typeOptions: {
+			loadOptionsDependsOn: [
+				'resource',
+				'operation',
+        	],
+            resourceMapper: {
+                resourceMapperMethod: 'getCustomFields',
+                mode: 'add',
+            },
+        },
+        displayOptions: {
+            show: showOnlyForPersonCreate,
+        }
+    },
 ];

@@ -56,8 +56,12 @@ export const orderCreateDescription: INodeProperties[] = [
         noDataExpression: true,
         default: { mappingMode: 'defineBelow', value: {} },
         typeOptions: {
+            loadOptionsDependsOn: [
+				'resource',
+				'operation',
+        	],
             resourceMapper: {
-                resourceMapperMethod: 'getOrderCustomFieldsCollection',
+                resourceMapperMethod: 'getCustomFields',
                 mode: 'add',
             },
         },
