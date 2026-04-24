@@ -1,32 +1,34 @@
 import { NodeConnectionTypes, 
 	type INodeType, 
 	type INodeTypeDescription, 
+	type IExecuteFunctions,
+	type INodeExecutionData,
 	ResourceMapperFields,
 	INodePropertyOptions,
-	ILoadOptionsFunctions } from 'n8n-workflow';
+	ILoadOptionsFunctions 
+} from 'n8n-workflow';
+import { globalFields } from './shared/sharedFields';
 import { personDescription } from './resources/person';
 import { organizationDescription } from './resources/organization';
 import { orderDescription } from './resources/order';
 import { saleDescription } from './resources/sale';
-import { invoiceDescription } from './resources/invoices';
+import { invoiceDescription } from './resources/invoices';	
 import { 
-	fetchCustomFieldsData,
-	getResourceStatuses
-} from './shared/methods';
-import { type IExecuteFunctions, type INodeExecutionData } from 'n8n-workflow';
-import { globalFields } from './shared/sharedFields';
-
+			fetchCustomFieldsData,
+			getResourceStatuses
+		} from './shared/methods';
+		
 export class RoappRoapp implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Roapp Roapp',
-		name: 'roappRoapp',
+		displayName: 'Roapp',
+		name: 'Roapp',
 		icon: { light: 'file:roapp_logo.png', dark: 'file:roapp_logo.dark.png' },
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
 		description: 'Interact with the Roapp Roapp API',
 		defaults: {
-			name: 'Roapp Roapp',
+			name: 'Roapp',
 		},
 		usableAsTool: true,
 		inputs: [NodeConnectionTypes.Main],
@@ -93,7 +95,7 @@ export class RoappRoapp implements INodeType {
 				return await fetchCustomFieldsData.call(this, resource);
 			}
 		}
-	}
+	};
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];

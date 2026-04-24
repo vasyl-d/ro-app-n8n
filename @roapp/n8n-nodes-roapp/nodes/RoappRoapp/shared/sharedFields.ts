@@ -115,7 +115,7 @@ export const globalFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				operation: ['getAll'],
-				resource: ['order', 'invoice', 'estimate']
+				resource: ['order', 'invoice']
 			},
 		},
 		default : {},
@@ -136,7 +136,7 @@ export const globalFields: INodeProperties[] = [
 	},
 	{
 		displayName: 'Get All',
-		name: 'getAll',
+		name: 'returnAll',
 		type: 'boolean',
 		displayOptions: {
 			show: {

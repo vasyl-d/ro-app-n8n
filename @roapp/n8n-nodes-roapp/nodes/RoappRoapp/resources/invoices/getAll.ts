@@ -10,10 +10,10 @@ export const getAllInvoicesDescription: INodeProperties[] = [
 	{
 		displayName: 'Status Name or ID',
 		name: 'statuses',
-		type: 'multiOptions',
+		type: 'multiOptions',		
 		displayOptions: {
 			show: showOnlyForInvoiceGetMany,
-		},
+		},		
 		typeOptions: {
 		loadOptionsDependsOn: [
 				'resource',

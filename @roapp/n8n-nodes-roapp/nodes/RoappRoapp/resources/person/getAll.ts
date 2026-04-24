@@ -5,6 +5,6 @@ import type { INodeProperties } from 'n8n-workflow';
 // 	resource: ['person'],
 // };
 
-export const organozationGetManyDescription: INodeProperties[] = [
+export const personGetAllDescription: INodeProperties[] = [
 
 ];

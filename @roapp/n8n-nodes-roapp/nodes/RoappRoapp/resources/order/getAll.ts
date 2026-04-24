@@ -9,16 +9,16 @@ export const orderGetManyDescription: INodeProperties[] = [
 	{
 		displayName: 'Status Name or ID',
 		name: 'statuses',
-		type: 'multiOptions',
+		type: 'multiOptions',		
+		displayOptions: {
+			show: showOnlyForOrderGetMany,
+		},		
 		typeOptions: {
 			loadOptionsDependsOn: [
 				'resource',
 				'operation',
 			],
 			loadOptionsMethod: 'getStatuses',
-		},
-		displayOptions: {
-			show: showOnlyForOrderGetMany,
 		},
 		default: [],
 		description: 'Filter by invoice status. Choose from the list, or specify an ID using an <a href="https://n8n.io">expression</a>.',

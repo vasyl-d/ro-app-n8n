@@ -54,6 +54,9 @@ export const orderCreateDescription: INodeProperties[] = [
         placeholder: 'Add custom field',
         type: 'resourceMapper',
         noDataExpression: true,
+        displayOptions: {
+            show: showOnlyForOrderCreate,
+        },
         default: { mappingMode: 'defineBelow', value: {} },
         typeOptions: {
             loadOptionsDependsOn: [
@@ -65,8 +68,5 @@ export const orderCreateDescription: INodeProperties[] = [
                 mode: 'add',
             },
         },
-        displayOptions: {
-            show: showOnlyForOrderCreate,
-        }
     },
 ];

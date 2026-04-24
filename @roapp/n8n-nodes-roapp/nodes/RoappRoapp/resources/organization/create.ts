@@ -23,6 +23,9 @@ export const organizationCreateDescription: INodeProperties[] = [
         placeholder: 'Add custom field',
         type: 'resourceMapper',
         noDataExpression: true,
+		displayOptions: {
+            show: showOnlyForOrganizationCreate,
+        },
         default: { mappingMode: 'defineBelow', value: {} },
         typeOptions: {
 			loadOptionsDependsOn: [
@@ -34,8 +37,5 @@ export const organizationCreateDescription: INodeProperties[] = [
 				mode: 'add',
             },
         },
-        displayOptions: {
-            show: showOnlyForOrganizationCreate,
-        }
     },
 ];

@@ -103,6 +103,9 @@ export async function getResourceStatuses(
 	resource: string) : Promise<INodePropertyOptions[]>  {
 
 	const url:string =  resources_stuses_urls[resource];
+	if (!url) {
+		return [];
+	}
 	const response = await this.helpers.httpRequestWithAuthentication.call(this, 'roappRoappApi', {
 	method: "GET",
 	url,
@@ -122,6 +125,9 @@ async function getCustomFieldsInfo(
 	resource: string
 ): Promise<{ [key: string]: string }> {
 	// Используем кеш вместо повторного запроса
+	if (!resources_cf_urls[resource]) {
+		return {}
+	};
 	const { fieldsInfo } = await fetchCustomFieldsData.call(this, resource);
 	return fieldsInfo;
 }
