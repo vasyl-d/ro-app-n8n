@@ -1,6 +1,5 @@
 import type { INodeProperties } from 'n8n-workflow';
 import { organozationGetManyDescription } from './getAll';
-import { organizationGetDescription } from './get';
 import { organizationCreateDescription } from './create';
 
 const showOnlyForCompanies = {
@@ -39,6 +38,5 @@ export const organizationDescription: INodeProperties[] = [
 		default: 'getAll',
 	},
 	...organozationGetManyDescription,
-	...organizationGetDescription,
 	...organizationCreateDescription
 ];

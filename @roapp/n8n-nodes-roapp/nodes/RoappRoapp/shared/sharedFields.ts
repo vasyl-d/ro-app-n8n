@@ -2,6 +2,19 @@ import { INodeProperties } from 'n8n-workflow';
 
 export const globalFields: INodeProperties[] = [
 		{
+		displayName: 'Entity ID',
+		name: 'Id',
+		type: 'string',
+		default: '',
+		displayOptions: {
+			show: {
+				operation: ['get'],
+				resource: ['sale', 'person', 'organization', 'order', 'invoice']
+			},
+		},
+		description: "The entity's ID to retrieve",
+	},
+		{
 		displayName: 'Email',
 		name: 'email',
 		type: 'string',

@@ -20,12 +20,12 @@ export const saleDescription: INodeProperties[] = [
 				value: 'getAll',
 				action: 'Get sales',
 				description: 'Get sales',
-				routing: {
-					request: {
-						method: 'GET',
-						url: 'v2/sales',
-					},
-				},
+			},
+			{
+				name: 'Get',
+				value: 'get',
+				action: 'Get sale by Id',
+				description: 'Get sale by Id',
 			},
 		],
 		default: 'getAll',

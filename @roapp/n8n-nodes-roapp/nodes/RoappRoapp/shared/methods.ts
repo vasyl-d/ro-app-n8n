@@ -356,7 +356,7 @@ export async function executeOrderOperation(
 		return await handleGetAll.call(this, index, `${BASE_URL}v2/orders`);
 
 		} else if (operation === 'get') {
-			return await handleGetOne.call(this, index, `${BASE_URL}v2/orders/${this.getNodeParameter('orderId', index)}`);
+			return await handleGetOne.call(this, index, `${BASE_URL}v2/orders/${this.getNodeParameter('Id', index)}`);
 		}
 	return null;
 }
@@ -413,7 +413,7 @@ export async function executePersonOperation(
 	} else if (operation === 'getAll') {
 		return await handleGetAll.call(this, index, `${BASE_URL}v2/contacts/people`);
 	} else if (operation === 'get') {
-		return await handleGetOne.call(this, index, `${BASE_URL}v2/contacts/people/${this.getNodeParameter('personId', index)}`);
+		return await handleGetOne.call(this, index, `${BASE_URL}v2/contacts/people/${this.getNodeParameter('Id', index)}`);
 	}
 	return null;
 }
@@ -426,7 +426,7 @@ export async function executeInvoiceOperation(
 	if (operation === 'getAll') {
 		return await handleGetAll.call(this, index, `${BASE_URL}v2/invoices`);
 	} else if (operation === 'get') {
-		return await handleGetOne.call(this, index, `${BASE_URL}v2/invoices/${this.getNodeParameter('invoiceId', index)}`);
+		return await handleGetOne.call(this, index, `${BASE_URL}v2/invoices/${this.getNodeParameter('Id', index)}`);
 	}
 	return null;
 }
@@ -439,7 +439,7 @@ export async function executeOrganizationOperation(
 	if (operation === 'getAll') {
 		return await handleGetAll.call(this, index, `${BASE_URL}v2/contacts/organizations`);
 	} else if (operation === 'get') {
-		return await handleGetOne.call(this, index, `${BASE_URL}v2/contacts/organizations/${this.getNodeParameter('organizationId', index)}`);
+		return await handleGetOne.call(this, index, `${BASE_URL}v2/contacts/organizations/${this.getNodeParameter('Id', index)}`);
 	} else if (operation === 'create') {
 		const body:any = {
 			name : this.getNodeParameter('name', index),
@@ -494,6 +494,8 @@ export async function executeSaleOperation(
 ): Promise<any> {
 	if (operation === 'getAll') {
 		return await handleGetAll.call(this, index, `${BASE_URL}v2/sales`);
+	} else if (operation === 'get') {
+		return await handleGetOne.call(this, index, `${BASE_URL}v2/sales/${this.getNodeParameter('Id', index)}`);
 	}
 	return null;
 }
