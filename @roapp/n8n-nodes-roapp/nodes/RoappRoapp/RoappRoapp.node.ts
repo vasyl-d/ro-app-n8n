@@ -11,8 +11,9 @@ import { globalFields } from './shared/sharedFields';
 import { personDescription } from './resources/person';
 import { organizationDescription } from './resources/organization';
 import { orderDescription } from './resources/order';
-import { saleDescription } from './resources/sale';
+import { saleDescription, executeSaleOperation } from './resources/sale';
 import { invoiceDescription } from './resources/invoices';	
+import { companyDescription, executeGetCompany } from './resources/company';
 import { 
 			fetchCustomFieldsData,
 			getResourceStatuses
@@ -49,6 +50,10 @@ export class RoappRoapp implements INodeType {
 				noDataExpression: true,
 				options: [
 					{
+						name: 'Company',
+						value: 'company',
+					},
+					{
 						name: 'Order',
 						value: 'order',
 					},
@@ -71,12 +76,14 @@ export class RoappRoapp implements INodeType {
 				],
 				default: 'Order',
 			},
+			...companyDescription,
 			...personDescription,
 			...orderDescription,
 			...organizationDescription,
 			...saleDescription,
 			...invoiceDescription,
 			...globalFields,
+		
 		],
 	};
 	methods = {
@@ -100,7 +107,7 @@ export class RoappRoapp implements INodeType {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
 
-		const { executeOrderOperation, executePersonOperation, executeInvoiceOperation, executeOrganizationOperation, executeSaleOperation } = await import('./shared/methods');
+		const { executeOrderOperation, executePersonOperation, executeInvoiceOperation, executeOrganizationOperation } = await import('./shared/methods');
 
 		for (let i = 0; i < items.length; i++) {
 			const resource = this.getNodeParameter('resource', i) as string;
@@ -123,6 +130,9 @@ export class RoappRoapp implements INodeType {
 					break;
 				case 'sale':
 					response = await executeSaleOperation.call(this, operation, i);
+					break;
+				case 'company':
+					response = await executeGetCompany.call(this, operation, i);
 					break;
 				default:
 					response = {};

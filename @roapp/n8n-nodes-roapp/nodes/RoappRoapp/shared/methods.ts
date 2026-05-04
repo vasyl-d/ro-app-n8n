@@ -220,7 +220,7 @@ function makeQs(
 	return qs;
 }
 
-async function handleGetAll(
+export async function handleGetAll(
     this: IExecuteFunctions,
     index: number,
     url: string
@@ -277,7 +277,7 @@ async function handleGetAll(
     return returnData;
 };
 
-async function handleGetOne(
+export async function handleGetOne(
 	this: IExecuteFunctions,
     index: number,
     url: string,
@@ -302,7 +302,7 @@ async function handleGetOne(
 	}
 };
 
-async function handlePost(
+export async function handlePost(
 	this: IExecuteFunctions,
     index: number,
     url: string,
@@ -483,19 +483,6 @@ export async function executeOrganizationOperation(
 			body.custom_fields = transformedCustomFields;
 		}
 		return await handlePost.call(this, index, `${BASE_URL}v2/contacts/organizations`, body);
-	}
-	return null;
-}
-
-export async function executeSaleOperation(
-	this: IExecuteFunctions,
-	operation: string,
-	index: number,
-): Promise<any> {
-	if (operation === 'getAll') {
-		return await handleGetAll.call(this, index, `${BASE_URL}v2/sales`);
-	} else if (operation === 'get') {
-		return await handleGetOne.call(this, index, `${BASE_URL}v2/sales/${this.getNodeParameter('Id', index)}`);
 	}
 	return null;
 }
