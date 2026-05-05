@@ -1,5 +1,5 @@
 import { INodeProperties, IExecuteFunctions } from 'n8n-workflow';
-import { handleGetOne, BASE_URL } from '../../shared/methods';
+import { handleGetOne, BASE_URL, handleGetAll } from '../../shared/methods';
 
 const showOnlyForCompany = {
     resource: ['company'],
@@ -26,6 +26,18 @@ export const companyDescription: INodeProperties[] = [
 				value: 'getLocations',
 				action: 'Get the locations of a company',
 				description: 'Get the locations of a company',					
+			},			
+            {
+				name: 'Get Location By Id',
+				value: 'getLocationById',
+				action: 'Get the location data',
+				description: 'Get the location data',					
+			},			
+            {
+				name: 'Get Location Resources',
+				value: 'getLocationResources',
+				action: 'Get resources for given location',
+				description: 'Get resources for given location',					
 			},			
             {
 				name: 'Get License',
@@ -78,7 +90,13 @@ export async function executeGetCompany(
 		return await handleGetOne.call(this, index, `${BASE_URL}v2/company/taxes`);
 	}
 	if (operation === 'getEmployees') {
-		return await handleGetOne.call(this, index, `${BASE_URL}v2/company/employees`);
+		return await handleGetAll.call(this, index, `${BASE_URL}v2/company/employees`);
+	}
+	if (operation === 'getLocaionById') {
+		return await handleGetOne.call(this, index, `${BASE_URL}v2/company/locations/${this.getNodeParameter('Id', index)}`);
+	}
+	if (operation === 'getLocationResources') {
+		return await handleGetOne.call(this, index, `${BASE_URL}v2/company/locations/${this.getNodeParameter('Id', index)}/resources`);
 	}
 	return null;
 }

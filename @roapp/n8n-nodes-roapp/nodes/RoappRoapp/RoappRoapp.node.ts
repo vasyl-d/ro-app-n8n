@@ -12,8 +12,10 @@ import { personDescription } from './resources/person';
 import { organizationDescription } from './resources/organization';
 import { orderDescription } from './resources/order';
 import { saleDescription, executeSaleOperation } from './resources/sale';
-import { invoiceDescription } from './resources/invoices';	
+import { invoiceDescription, executeInvoiceOperation } from './resources/invoices';	
 import { companyDescription, executeGetCompany } from './resources/company';
+import { marketingDescription, executeGetMarketing } from './resources/marketing';
+import { assetDescription, executeAssetOperation } from './resources/assets';
 import { 
 			fetchCustomFieldsData,
 			getResourceStatuses
@@ -54,6 +56,10 @@ export class RoappRoapp implements INodeType {
 						value: 'company',
 					},
 					{
+						name: 'Marketing',
+						value: 'marketing',
+					},
+					{
 						name: 'Order',
 						value: 'order',
 					},
@@ -73,15 +79,21 @@ export class RoappRoapp implements INodeType {
 						name: 'Invoice',
 						value: 'invoice',
 					},
+					{
+						name: 'Asset',
+						value: 'asset',
+					},
 				],
 				default: 'Order',
 			},
 			...companyDescription,
+			...marketingDescription,
 			...personDescription,
 			...orderDescription,
 			...organizationDescription,
 			...saleDescription,
 			...invoiceDescription,
+			...assetDescription,
 			...globalFields,
 		
 		],
@@ -107,7 +119,7 @@ export class RoappRoapp implements INodeType {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
 
-		const { executeOrderOperation, executePersonOperation, executeInvoiceOperation, executeOrganizationOperation } = await import('./shared/methods');
+		const { executeOrderOperation, executePersonOperation, executeOrganizationOperation } = await import('./shared/methods');
 
 		for (let i = 0; i < items.length; i++) {
 			const resource = this.getNodeParameter('resource', i) as string;
@@ -133,6 +145,12 @@ export class RoappRoapp implements INodeType {
 					break;
 				case 'company':
 					response = await executeGetCompany.call(this, operation, i);
+					break;
+				case 'marketing':
+					response = await executeGetMarketing.call(this, operation, i);
+					break;
+				case 'asset':
+					response = await executeAssetOperation.call(this, operation, i);
 					break;
 				default:
 					response = {};

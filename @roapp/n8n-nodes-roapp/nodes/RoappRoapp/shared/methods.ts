@@ -46,7 +46,7 @@ export const showOnlyForOrderCreate = {
 };
 
 // ==================== HELPER FUNCTIONS ====================
-function phoneValidation(
+export function phoneValidation(
 	phone:string,
 ):boolean {
 	const phoneRegex = /^\+?[1-9]\d{1,14}$/;
@@ -181,7 +181,7 @@ function makeQs(
 			try {
 				// Отримуємо значення параметра (з урахуванням виразів/expressions)
 				const value = this.getNodeParameter(parameterName, index);
-				if (Array.isArray(value)) {
+				if (Array.isArray(value) && value.length > 0) {
 					// ВАРІАНТ А: API очікує рядок через кому: ?status=active,pending
 					qs[`${parameterName}`] = value.join(`,`);
 
@@ -225,8 +225,8 @@ export async function handleGetAll(
     index: number,
     url: string
 ) {
-    const returnAll = this.getNodeParameter('returnAll', index, false) as boolean;
-    const limit = this.getNodeParameter('limit', index, 0) as number;
+    const returnAll = this.getNodeParameter('returnAll', index, true) as boolean;
+    const limit = this.getNodeParameter('limit', index, 50) as number;
     
     // Збираємо всі Query Parameters динамічно
     const qs = makeQs.call(this, index);
@@ -264,6 +264,7 @@ export async function handleGetAll(
 			// Адаптуйте під структуру вашого API (наприклад, responseData.items або responseData.data)
 			const items = Array.isArray(responseData) ? responseData : (responseData?.data || []);
 			returnData.push(...items);
+			// console.table(returnData);
 			
 			if (!returnAll && returnData.length >= limit) {
 				return returnData.slice(0, limit);
@@ -418,18 +419,6 @@ export async function executePersonOperation(
 	return null;
 }
 
-export async function executeInvoiceOperation(
-	this: IExecuteFunctions,
-	operation: string,
-	index: number,
-): Promise<any> {
-	if (operation === 'getAll') {
-		return await handleGetAll.call(this, index, `${BASE_URL}v2/invoices`);
-	} else if (operation === 'get') {
-		return await handleGetOne.call(this, index, `${BASE_URL}v2/invoices/${this.getNodeParameter('Id', index)}`);
-	}
-	return null;
-}
 
 export async function executeOrganizationOperation(
 	this: IExecuteFunctions,
