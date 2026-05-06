@@ -16,6 +16,7 @@ import { invoiceDescription, executeInvoiceOperation } from './resources/invoice
 import { companyDescription, executeGetCompany } from './resources/company';
 import { marketingDescription, executeGetMarketing } from './resources/marketing';
 import { assetDescription, executeAssetOperation } from './resources/assets';
+import { warehouseDescription, executeWarehouseOperation } from './resources/warehouse';
 import { 
 			fetchCustomFieldsData,
 			getResourceStatuses
@@ -83,6 +84,10 @@ export class RoappRoapp implements INodeType {
 						name: 'Asset',
 						value: 'asset',
 					},
+					{
+						name: 'Warehouse',
+						value: 'warehouse',
+					},
 				],
 				default: 'Order',
 			},
@@ -94,6 +99,7 @@ export class RoappRoapp implements INodeType {
 			...saleDescription,
 			...invoiceDescription,
 			...assetDescription,
+			...warehouseDescription,
 			...globalFields,
 		
 		],
@@ -151,6 +157,9 @@ export class RoappRoapp implements INodeType {
 					break;
 				case 'asset':
 					response = await executeAssetOperation.call(this, operation, i);
+					break;
+				case 'warehouse':
+					response = await executeWarehouseOperation.call(this, operation, i);
 					break;
 				default:
 					response = {};

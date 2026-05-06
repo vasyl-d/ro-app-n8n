@@ -285,11 +285,14 @@ export async function handleGetOne(
     method: IHttpRequestMethods = 'GET',
 	) {
 	try {
-		console.log(`Log ${url} before request`);
+		// Збираємо всі Query Parameters динамічно
+		const qs = makeQs.call(this, index);
+		console.log(`before request: ${url}, ${JSON.stringify(qs, null, 2)}`);
 		return await this.helpers.httpRequestWithAuthentication.call(this, 'roappRoappApi', {
 			method: method,
 			url: url,
 			json: true,
+			qs: qs,
 		});
 	} catch (error) {
 		// Якщо API повернуло помилку (наприклад, 400)

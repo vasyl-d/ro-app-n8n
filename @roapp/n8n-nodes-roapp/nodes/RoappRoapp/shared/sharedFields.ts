@@ -153,7 +153,7 @@ export const globalFields: INodeProperties[] = [
 		type: 'boolean',
 		displayOptions: {
 			show: {
-				operation: ['getAll', 'getEmployees', 'getReviews'],
+				operation: ['getAll', 'getEmployees', 'getReviews', 'getStock'],
 			},
 		},
 		default: false,
@@ -165,7 +165,7 @@ export const globalFields: INodeProperties[] = [
 		type: 'number',
 		displayOptions: {
 			show: {
-				operation: ['getAll', 'getEmployees', 'getReviews'],
+				operation: ['getAll', 'getEmployees', 'getReviews', 'getStock'],
 				returnAll: [false],
 			},
 		},
