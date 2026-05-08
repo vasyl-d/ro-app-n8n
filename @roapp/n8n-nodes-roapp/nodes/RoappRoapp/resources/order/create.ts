@@ -1,11 +1,24 @@
 import type { INodeProperties } from 'n8n-workflow';
 
 const showOnlyForOrderCreate = {
-    operation: ['create'],
+    operation: ['create', 'update'],
     resource: ['order'],
 };
 
 export const orderCreateDescription: INodeProperties[] = [
+    {
+        displayName: 'Order Id',
+        name: 'order_id',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: {
+            show: {
+                operation: ['update'],
+                resource: ['order'],
+            }
+        },       
+    },
     {
         displayName: 'Order branch_id',
         name: 'branch_id',
@@ -14,12 +27,6 @@ export const orderCreateDescription: INodeProperties[] = [
         required: true,
         displayOptions: {
             show: showOnlyForOrderCreate,
-        },
-        routing: {
-            send: {
-                type: 'body',
-                property: 'branch_id',
-            },
         },
     },
     {
@@ -31,12 +38,6 @@ export const orderCreateDescription: INodeProperties[] = [
         displayOptions: {
             show: showOnlyForOrderCreate,
         },
-        routing: {
-            send: {
-                type: 'body',
-                property: 'order_type_id',
-            },
-        },
     },
     {
         displayName: 'Order client_id',
@@ -44,6 +45,16 @@ export const orderCreateDescription: INodeProperties[] = [
         type: 'string',
         default: '18705800',
         required: true,
+        displayOptions: {
+            show: showOnlyForOrderCreate,
+        },
+    },
+    {
+        displayName: 'Asset Id',
+        name: 'asset_id',
+        type: 'string',
+        default: '',
+        required: false,
         displayOptions: {
             show: showOnlyForOrderCreate,
         },

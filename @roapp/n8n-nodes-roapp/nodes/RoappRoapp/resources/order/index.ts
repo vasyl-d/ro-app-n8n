@@ -29,6 +29,12 @@ export const orderDescription: INodeProperties[] = [
 				description: 'Create a new order',
 			},
 			{
+				name: 'Update',
+				value: 'update',
+				action: 'Update order',
+				description: 'Update an order',
+			},
+			{
 				name: 'Get',
 				value: 'get',
 				action: 'Get an order',

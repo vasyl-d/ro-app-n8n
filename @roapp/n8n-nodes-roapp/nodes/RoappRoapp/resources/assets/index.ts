@@ -1,7 +1,13 @@
 import type { INodeProperties, IExecuteFunctions } from 'n8n-workflow';
 import { assetGetManyDescription } from './getAll';
-import { handleGetAll, handleGetOne, BASE_URL} from '../../shared/methods';
-// import { assetCreateDescription } from './create';
+import { handleGetAll, 
+	handleGetOne, 
+	handleCreateUpdate,
+	// getCustomFieldsInfo, 
+	// transformCustomFieldsValues,
+	// handlePost, 
+	BASE_URL} from '../../shared/methods';
+import { assetCreateDescription } from './create';
 
 const showOnlyForAssets = {
 	resource: ['asset'],
@@ -23,12 +29,18 @@ export const assetDescription: INodeProperties[] = [
 				action: 'Get assets',
 				description: 'Get assets',
 			},
-			// {
-			// 	name: 'Create',
-			// 	value: 'create',
-			// 	action: 'Create asset',
-			// 	description: 'Create a new asset',
-			// },
+			{
+				name: 'Create',
+				value: 'create',
+				action: 'Create asset',
+				description: 'Create a new asset',
+			},
+			{
+				name: 'Update',
+				value: 'update',
+				action: 'Update asset',
+				description: 'Update a new asset',
+			},
 			{
 				name: 'Get',
 				value: 'get',
@@ -39,7 +51,7 @@ export const assetDescription: INodeProperties[] = [
 		default: 'getAll',
 	},
 	...assetGetManyDescription,
-	// ...assetCreateDescription,
+	...assetCreateDescription,
 ];
 
 export async function executeAssetOperation(
@@ -51,6 +63,10 @@ export async function executeAssetOperation(
 		return await handleGetAll.call(this, index, `${BASE_URL}warehouse/assets`);
 	} else if (operation === 'get') {
 		return await handleGetOne.call(this, index, `${BASE_URL}warehouse/assets${this.getNodeParameter('Id', index)}`);
+	} else if (operation === 'create') {
+		return await handleCreateUpdate.call(this, index, `${BASE_URL}warehouse/assets`, 'POST');
+	} else if  (operation === 'update') {
+		return await handleCreateUpdate.call(this, index, `${BASE_URL}warehouse/assets/${this.getNodeParameter('asset_id', index)}`, 'POST')
 	}
 	return null;
 }

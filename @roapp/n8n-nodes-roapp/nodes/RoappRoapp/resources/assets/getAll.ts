@@ -8,7 +8,7 @@ const showOnlyForAssetGetMany = {
 export const assetGetManyDescription: INodeProperties[] = [
 	{
 		displayName: 'Ids',
-		name: 'ids[]',
+		name: 'ids',
 		type: 'string',
 		typeOptions: {
 			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
@@ -21,7 +21,7 @@ export const assetGetManyDescription: INodeProperties[] = [
 	},
 	{
 		displayName: 'Uids',
-		name: 'uid[]',
+		name: 'uid',
 		type: 'string',
 		typeOptions: {
 			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
@@ -34,7 +34,7 @@ export const assetGetManyDescription: INodeProperties[] = [
 	},
 	{
 		displayName: 'Owner ids',
-		name: 'owner_id[]',
+		name: 'owner_id',
 		type: 'string',
 		typeOptions: {
 			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
@@ -47,7 +47,7 @@ export const assetGetManyDescription: INodeProperties[] = [
 	},
 	{
 		displayName: 'Warehouse ids',
-		name: 'warehouse_id[]',
+		name: 'warehouse_id',
 		type: 'string',
 		typeOptions: {
 			multipleValues: true, // Це перетворює звичайний інпут на динамічний список

@@ -97,25 +97,25 @@ export const globalFields: INodeProperties[] = [
 	},
 	{
 		displayName: "Created",
-		name: "created",
+		name: "created_at",
 		type: "collection",
 		displayOptions: {
 			show: {
 				operation: ['getAll'],
-				resource: ['order', 'invoice', 'sale']
+				resource: ['order', 'invoice', 'sale', 'person', 'organization']
 			},
 		},
 		default : {},
 		options: [
 			{
 				displayName: 'From',
-				name: 'created_from',
+				name: 'created_at_from',
 				type: 'dateTime',
 				default: ''
 			},
 			{
 				displayName: 'To',
-				name: 'created_to',
+				name: 'created_at_to',
 				type: 'dateTime',
 				default: ''
 			},
@@ -123,30 +123,185 @@ export const globalFields: INodeProperties[] = [
 	},
 	{
 		displayName: "Modified",
-		name: "modified",
+		name: "modified_at",
 		type: "collection",
 		displayOptions: {
 			show: {
 				operation: ['getAll'],
-				resource: ['order', 'invoice']
+				resource: ['order', 'invoice','person', 'organization']
 			},
 		},
 		default : {},
 		options: [
 			{
 				displayName: 'From',
-				name: 'modified_from',
+				name: 'modified_at_from',
 				type: 'dateTime',
 				default: ''
 			},
 			{
 				displayName: 'To',
-				name: 'modified_to',
+				name: 'modified_at_to',
 				type: 'dateTime',
 				default: ''
 			},
 		]
 	},
+	{
+		displayName: "Scheduled",
+		name: "scheduled_for",
+		type: "collection",
+		displayOptions: {
+			show: {
+				operation: ['getAll'],
+				resource: ['order', 'estimate']
+			},
+		},
+		default : {},
+		options: [
+			{
+				displayName: 'From',
+				name: 'scheduled_for_from',
+				type: 'dateTime',
+				default: ''
+			},
+			{
+				displayName: 'To',
+				name: 'scheduled_for_to',
+				type: 'dateTime',
+				default: ''
+			},
+		]
+	},
+	{
+		displayName: "Due date",
+		name: "due_date",
+		type: "collection",
+		displayOptions: {
+			show: {
+				operation: ['getAll'],
+				resource: ['order', 'estimate']
+			},
+		},
+		default : {},
+		options: [
+			{
+				displayName: 'From',
+				name: 'due_date_from',
+				type: 'dateTime',
+				default: ''
+			},
+			{
+				displayName: 'To',
+				name: 'due_date_to',
+				type: 'dateTime',
+				default: ''
+			},
+		]
+	},
+	{
+		displayName: "Scheduled_for",
+		name: "scheduled_for",
+		type: "dateTime",
+		displayOptions: {
+			show: {
+				operation: ['create', 'update'],
+				resource: ['order', 'estimate']
+			},
+		},
+		default : '',
+	},
+	{
+		displayName: "Scheduled_to",
+		name: "scheduled_to",
+		type: "dateTime",
+		displayOptions: {
+			show: {
+				operation: ['create', 'update'],
+				resource: ['order', 'estimate']
+			},
+		},
+		default : '',
+	},
+	{
+		displayName: "Due date",
+		name: "due_date",
+		type: "dateTime",
+		displayOptions: {
+			show: {
+				operation: ['create', 'update'],
+				resource: ['order', 'estimate']
+			},
+		},
+		default : '',
+	},
+	{
+		displayName: 'Names',
+		name: 'names',
+		type: 'string',
+		default: [],
+		typeOptions: {
+			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
+		},
+		description: 'Filter by customer Name',
+		displayOptions: {
+			show: {
+				operation: ['getAll'],
+				resource: ['person', 'organization']
+			},
+		},
+	},
+	{
+		displayName: 'Phones',
+		name: 'phones',
+		type: 'string',
+		default: [],
+		typeOptions: {
+			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
+		},
+		description: 'Filter by customer phone number',
+		displayOptions: {
+			show: {
+				operation: ['getAll'],
+				resource: ['person', 'organization']
+			},
+		},
+	},
+	{
+		displayName: 'Managers',
+		name: 'managers',
+		type: 'string',
+		default: [],
+		typeOptions: {
+			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
+		},
+		description: 'Filter by manager Ids',
+		displayOptions: {
+			show: {
+				operation: ['getAll'],
+				resource: ['person', 'organization', 'order', 'estimate']
+			},
+		},
+	},
+	{
+        displayName: "Ordering",
+        name: "ordering",
+        type: "options",
+        default: {},
+        options: [
+            { name: 'Id', value: 'id',  },
+            { name: '-Id', value: '-id' },
+            { name: 'Modified_at', value: 'modified_at' },
+            { name: '-Modified_at', value: '-modified_at' },
+            { name: 'All', value: '' },
+        ],
+        displayOptions: {
+			show: {
+				operation: ['getAll'],
+				resource: ['person', 'organization', 'order']
+			},
+        },
+    },
 	{
 		displayName: 'Get All',
 		name: 'returnAll',

@@ -25,7 +25,8 @@ const resources_cf_urls:{ [key: string]: string } = {
 	"order" : `${BASE_URL}v2/orders/custom-fields`,
 	"person": `${BASE_URL}v2/contacts/people/custom-fields`,
 	"organization": `${BASE_URL}v2/contacts/organizations/custom-fields`,
-	"lead": `${BASE_URL}v2/lead/custom-fields/`
+	"lead": `${BASE_URL}v2/lead/custom-fields/`,
+	'asset': `${BASE_URL}warehouse/assets/custom-fields/`
 };
 
 const resources_stuses_urls: { [key: string]: string } = {
@@ -67,12 +68,12 @@ export async function fetchCustomFieldsData(
 
 	// Получаем данные с API
 	const url = resources_cf_urls[resource];
-	const data = await this.helpers.httpRequestWithAuthentication.call(this, 'roappRoappApi', {
+	let data = await this.helpers.httpRequestWithAuthentication.call(this, 'roappRoappApi', {
 		method: 'GET',
 		url,
 		json: true,
 	});
-
+	data = data?.data || data;
 	// Формируем fields для resourceMapper
 	const fields = data.map((field: any) => ({
 		id: `f${field.id}`,
@@ -120,7 +121,7 @@ export async function getResourceStatuses(
 
 // ==================== HELPER FUNCTIONS ====================
 
-async function getCustomFieldsInfo(
+export async function getCustomFieldsInfo(
 	this: IExecuteFunctions,
 	resource: string
 ): Promise<{ [key: string]: string }> {
@@ -132,7 +133,7 @@ async function getCustomFieldsInfo(
 	return fieldsInfo;
 }
 
-function transformCustomFieldsValues(
+export function transformCustomFieldsValues(
 	customFieldsData: any,
 	fieldsInfo: { [key: string]: string }
 ): any {
@@ -192,16 +193,16 @@ function makeQs(
 				// Якщо це колекція "filters" або "additionalFields"
 				else if (typeof value === 'object' && value !== null) {
 					const processedFilters:{[key:string]:any}= { ...value };
-					if (parameterName == "created" || parameterName == "modified" || parameterName == "closed") {
+					if (parameterName == "created_at" || parameterName == "modified_at" || parameterName == "closed_at" || parameterName == "scheduled_for" || parameterName == "due_date") {
 						const from_name = `${parameterName}_from`;
 						const to_name = `${parameterName}_to`;
 						const from = processedFilters[from_name]
-							? `${String(DateTime.fromISO(String(processedFilters?.created_from)).toISO()).split(".")[0]}Z` // або .toISOString()
+							? `${String(DateTime.fromISO(String(processedFilters[from_name])).toISO()).split(".")[0]}Z` // або .toISOString()
 							: '';
 						const to = processedFilters[to_name]
-							? `,${String(DateTime.fromISO(String(processedFilters?.created_to)).toISO()).split(".")[0]}Z`
+							? `,${String(DateTime.fromISO(String(processedFilters[to_name])).toISO()).split(".")[0]}Z`
 							: '';
-						qs[`${parameterName}_at`] = `${from}${to}`;
+						qs[`${parameterName}`] = `${from}${to}`;
 					} else {
 						Object.assign(qs, value);
 					}
@@ -333,35 +334,86 @@ export async function handlePost(
 	}
 };
 
+export async function handleCreateUpdate(
+	this: IExecuteFunctions,
+    index: number,
+    url: string,
+    method: IHttpRequestMethods = 'POST',
+	) {
+	try {
+		let body:Record<string, any> = {};
+		const parameters = this.getNode().parameters;
+		for (const paramName in parameters) {
+			if (paramName == 'resource' || paramName == 'operation') {
+				continue
+			}
+			if (parameters.hasOwnProperty(paramName)) {
+				const value = this.getNodeParameter(paramName, index) as any;
+
+				// Перевірка: пропускаємо null, undefined та порожні рядки
+				if (value !== null && value !== undefined) {
+					if (paramName == "customFields" && value?.value ) {
+						const fieldsInfo = await getCustomFieldsInfo.call(this, this.getNodeParameter('resource', index));
+						const transformedCustomFields = transformCustomFieldsValues(value?.value, fieldsInfo);
+						body.custom_fields = transformedCustomFields;
+					} else if (paramName == "scheduled_for" || paramName == "scheduled_to" || paramName == "due_date" && value !== "") {
+						// body[paramName] = `${String(DateTime.fromISO(String(value)).toISO()).split(".")[0]}Z`; // або .toISOString()
+						body[paramName] = `${DateTime.fromISO(String(value)).toUTC().toFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")}`; // або .toISOString()
+					} 
+					else {
+						body[paramName] = value;
+					}
+				}
+			}
+		}
+		console.log(`Log ${url} body before request: ${JSON.stringify(body)}`);
+		return await this.helpers.httpRequestWithAuthentication.call(this, 'roappRoappApi', {
+			method: method,
+			url: url,
+			json: true,
+			body: body
+		});
+	} catch (error) {
+		// Якщо API повернуло помилку (наприклад, 400)
+		if (error.response) {
+			// error.response.body — це те, що повернуло ваше API (наприклад, { message: "Invalid phone" })
+			throw new NodeApiError(this.getNode(), error, { message: error.response?.body?.message });
+		}
+		// Якщо сталася інша помилка (мережа тощо)
+		throw error;
+		//todo: retry on 429 error
+	}
+};
+
 export async function executeOrderOperation(
 	this: IExecuteFunctions,
 	operation: string,
 	index: number,
 ): Promise<any> {
 	if (operation === 'create') {
-		const body: any = {
-			branch_id: this.getNodeParameter('branch_id', index),
-			order_type_id: this.getNodeParameter('order_type_id', index),
-			client_id: this.getNodeParameter('client_id', index),
-		};
+		// const body: any = {
+		// 	branch_id: this.getNodeParameter('branch_id', index),
+		// 	order_type_id: this.getNodeParameter('order_type_id', index),
+		// 	client_id: this.getNodeParameter('client_id', index),
+		// };
 
-		const customFields = this.getNodeParameter('customFields', index) as any;
-		if (customFields?.value) {
-			// Получаем информацию о типах полей и преобразуем dateTime
-			const fieldsInfo = await getCustomFieldsInfo.call(this, 'order');
-			const transformedCustomFields = transformCustomFieldsValues(customFields.value, fieldsInfo);
-			body.custom_fields = transformedCustomFields;
-		}
+		// const customFields = this.getNodeParameter('customFields', index) as any;
+		// if (customFields?.value) {
+		// 	// Получаем информацию о типах полей и преобразуем dateTime
+		// 	const fieldsInfo = await getCustomFieldsInfo.call(this, 'order');
+		// 	const transformedCustomFields = transformCustomFieldsValues(customFields.value, fieldsInfo);
+		// 	body.custom_fields = transformedCustomFields;
+		// }
 
-		return await handlePost.call(this, index, `${BASE_URL}v2/orders`, body );
+		return await handleCreateUpdate.call(this, index, `${BASE_URL}v2/orders`, 'POST');
 
 	} else if (operation === 'getAll') {
-
 		return await handleGetAll.call(this, index, `${BASE_URL}v2/orders`);
-
-		} else if (operation === 'get') {
-			return await handleGetOne.call(this, index, `${BASE_URL}v2/orders/${this.getNodeParameter('Id', index)}`);
-		}
+	} else if (operation === 'get') {
+		return await handleGetOne.call(this, index, `${BASE_URL}v2/orders/${this.getNodeParameter('Id', index)}`);
+	} else if (operation === 'update') {
+		return await handleCreateUpdate.call(this, index, `${BASE_URL}v2/orders/${this.getNodeParameter('order_id', index)}`, 'PATCH');
+	}
 	return null;
 }
 
