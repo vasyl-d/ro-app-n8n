@@ -117,7 +117,7 @@ export const assetCreateDescription: INodeProperties[] = [
             show: showOnlyForAssetCreate,
         },
     },
-
+// custom fileds works different from other resources without 'f'
     // {
     //     displayName: 'Custom Fields',
     //     name: 'customFields',

@@ -25,14 +25,20 @@ const resources_cf_urls:{ [key: string]: string } = {
 	"order" : `${BASE_URL}v2/orders/custom-fields`,
 	"person": `${BASE_URL}v2/contacts/people/custom-fields`,
 	"organization": `${BASE_URL}v2/contacts/organizations/custom-fields`,
-	"lead": `${BASE_URL}v2/lead/custom-fields/`,
+	"lead": `${BASE_URL}lead/custom-fields/`,
 	'asset': `${BASE_URL}warehouse/assets/custom-fields/`
 };
 
 const resources_stuses_urls: { [key: string]: string } = {
   "order": `${BASE_URL}v2/orders/statuses`,
-  "lead": `${BASE_URL}v2/leads/statuses`,
+  "lead": `${BASE_URL}statuses/leads`,
   "invoice": `${BASE_URL}v2/invoices/statuses`
+};
+
+const resources_types_urls: { [key: string]: string } = {
+  "order": `${BASE_URL}v2/orders/types`,
+  "lead": `${BASE_URL}lead/types/`,
+  "asset": `${BASE_URL}v2/assets/types`
 };
 
 // Кеш для custom fields данных
@@ -40,11 +46,6 @@ let cache: { [key: string]: { fields: any[], fieldsInfo: { [key: string]: string
 let cacheTTL: { [key: string]: number } = {};
 
 const CACHE_DURATION = 5 * 60 * 1000; // 5 минут в миллисекундах
-
-export const showOnlyForOrderCreate = {
-    operation: ['create'],
-    resource: ['order'],
-};
 
 // ==================== HELPER FUNCTIONS ====================
 export function phoneValidation(
@@ -107,13 +108,35 @@ export async function getResourceStatuses(
 	if (!url) {
 		return [];
 	}
-	const response = await this.helpers.httpRequestWithAuthentication.call(this, 'roappRoappApi', {
+	let response = await this.helpers.httpRequestWithAuthentication.call(this, 'roappRoappApi', {
 	method: "GET",
 	url,
 	json: true,
 	});
+	response = response?.data || response;
 	const fields:INodePropertyOptions[] = response.map((row:any) => ({
-		name: row.name,
+		name: row?.name || row?.title,
+		value: row.id
+	}));
+	return fields;
+}
+
+export async function getResourceTypes(
+	this: IAllExecuteFunctions, 
+	resource: string) : Promise<INodePropertyOptions[]>  {
+
+	const url:string =  resources_types_urls[resource];
+	if (!url) {
+		return [];
+	}
+	let response = await this.helpers.httpRequestWithAuthentication.call(this, 'roappRoappApi', {
+	method: "GET",
+	url,
+	json: true,
+	});
+	response = response?.data || response;
+	const fields:INodePropertyOptions[] = response.map((row:any) => ({
+		name: row?.title || row?.name,
 		value: row.id
 	}));
 	return fields;
@@ -191,7 +214,7 @@ function makeQs(
 					// qs[`${paramName}[]`] = value; 
 				}
 				// Якщо це колекція "filters" або "additionalFields"
-				else if (typeof value === 'object' && value !== null) {
+				else if (typeof value === 'object' && value !== null && value != undefined) {
 					const processedFilters:{[key:string]:any}= { ...value };
 					if (parameterName == "created_at" || parameterName == "modified_at" || parameterName == "closed_at" || parameterName == "scheduled_for" || parameterName == "due_date") {
 						const from_name = `${parameterName}_from`;

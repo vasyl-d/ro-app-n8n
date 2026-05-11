@@ -29,16 +29,33 @@ export const orderCreateDescription: INodeProperties[] = [
             show: showOnlyForOrderCreate,
         },
     },
-    {
-        displayName: 'Order order_type_id',
-        name: 'order_type_id',
-        type: 'string',
-        default: '60674',
-        required: true,
-        displayOptions: {
-            show: showOnlyForOrderCreate,
-        },
-    },
+    // {
+    //     displayName: 'Order order_type_id',
+    //     name: 'order_type_id',
+    //     type: 'string',
+    //     default: '60674',
+    //     required: true,
+    //     displayOptions: {
+    //         show: showOnlyForOrderCreate,
+    //     },
+    // },
+	{
+		displayName: 'Order order_type_id',
+		name: 'order_type_id',
+		type: 'options',		
+		displayOptions: {
+			show: showOnlyForOrderCreate,
+		},		
+		typeOptions: {
+			loadOptionsDependsOn: [
+				'resource',
+				'operation',
+			],
+			loadOptionsMethod: 'getTypes',
+		},
+		default: [],
+		description: 'Order type to create. Choose from the list, or specify an ID using an <a href="https://n8n.io">expression</a>.',
+	},
     {
         displayName: 'Order client_id',
         name: 'client_id',

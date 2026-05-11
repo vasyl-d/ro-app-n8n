@@ -9,7 +9,7 @@ export const globalFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				operation: ['get', 'getLocationById', 'getLocationResources'],
-				resource: ['sale', 'person', 'organization', 'order', 'invoice', 'company', 'asset']
+				resource: ['sale', 'person', 'organization', 'order', 'invoice', 'company', 'asset', 'lead']
 			},
 		},
 		description: "The entity's ID to retrieve",
@@ -148,6 +148,32 @@ export const globalFields: INodeProperties[] = [
 		]
 	},
 	{
+		displayName: "Closed",
+		name: "closed_at",
+		type: "collection",
+		displayOptions: {
+			show: {
+				operation: ['getAll'],
+				resource: ['order']
+			},
+		},
+		default : {},
+		options: [
+			{
+				displayName: 'From',
+				name: 'closed_at_from',
+				type: 'dateTime',
+				default: ''
+			},
+			{
+				displayName: 'To',
+				name: 'closed_at_to',
+				type: 'dateTime',
+				default: ''
+			},
+		]
+	},
+	{
 		displayName: "Scheduled",
 		name: "scheduled_for",
 		type: "collection",
@@ -222,6 +248,30 @@ export const globalFields: INodeProperties[] = [
 			},
 		},
 		default : '',
+	},
+	{
+		displayName: "Resource id",
+		name: "resource_id",
+		type: "string",
+		default: "",
+		displayOptions: {
+			show: {
+				operation: ['create', 'update'],
+				resource: ['order', 'estimate']
+			},
+		},
+	},
+	{
+		displayName: "Ad campaign id",
+		name: "ad_campaign_id",
+		type: "string",
+		default: "",
+		displayOptions: {
+			show: {
+				operation: ['create', 'update'],
+				resource: ['order', 'estimate', 'lead']
+			},
+		},
 	},
 	{
 		displayName: "Due date",

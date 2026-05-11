@@ -3,9 +3,6 @@ import { assetGetManyDescription } from './getAll';
 import { handleGetAll, 
 	handleGetOne, 
 	handleCreateUpdate,
-	// getCustomFieldsInfo, 
-	// transformCustomFieldsValues,
-	// handlePost, 
 	BASE_URL} from '../../shared/methods';
 import { assetCreateDescription } from './create';
 

@@ -17,16 +17,18 @@ import { companyDescription, executeGetCompany } from './resources/company';
 import { marketingDescription, executeGetMarketing } from './resources/marketing';
 import { assetDescription, executeAssetOperation } from './resources/assets';
 import { warehouseDescription, executeWarehouseOperation } from './resources/warehouse';
+import { leadDescription, executeLeadOperation } from './resources/lead';
 import { 
 			fetchCustomFieldsData,
-			getResourceStatuses
+			getResourceStatuses,
+			getResourceTypes
 		} from './shared/methods';
 		
 export class RoappRoapp implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Roapp',
 		name: 'Roapp',
-		icon: { light: 'file:roapp_logo.png', dark: 'file:roapp_logo.dark.png' },
+		icon: { light: 'file:roapp_logo512.png', dark: 'file:roapp_logo512.png' },
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
@@ -65,6 +67,10 @@ export class RoappRoapp implements INodeType {
 						value: 'order',
 					},
 					{
+						name: 'Lead',
+						value: 'lead',
+					},
+					{
 						name: 'Organization',
 						value: 'organization',
 					},
@@ -95,6 +101,7 @@ export class RoappRoapp implements INodeType {
 			...marketingDescription,
 			...personDescription,
 			...orderDescription,
+			...leadDescription,
 			...organizationDescription,
 			...saleDescription,
 			...invoiceDescription,
@@ -111,7 +118,13 @@ export class RoappRoapp implements INodeType {
 					const resource = this.getCurrentNodeParameter('resource') as string;
 					const fields = await getResourceStatuses.call(this, resource);
 					return fields;
-				}
+				},
+			async getTypes(
+				this: ILoadOptionsFunctions) : Promise<INodePropertyOptions[]>  {
+					const resource = this.getCurrentNodeParameter('resource') as string;
+					const fields = await getResourceTypes.call(this, resource);
+					return fields;
+				},
 		},
 		resourceMapping: {
 			async getCustomFields(this: ILoadOptionsFunctions): Promise<ResourceMapperFields> {
@@ -161,6 +174,10 @@ export class RoappRoapp implements INodeType {
 				case 'warehouse':
 					response = await executeWarehouseOperation.call(this, operation, i);
 					break;
+				case 'lead':
+					response = await executeLeadOperation.call(this, operation, i);
+					break;
+
 				default:
 					response = {};
 			}
