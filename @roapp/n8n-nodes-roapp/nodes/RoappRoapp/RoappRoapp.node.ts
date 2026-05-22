@@ -12,13 +12,14 @@ import { personDescription } from './resources/person';
 import { organizationDescription } from './resources/organization';
 import { orderDescription } from './resources/order';
 import { saleDescription, executeSaleOperation } from './resources/sale';
-import { invoiceDescription, executeInvoiceOperation } from './resources/invoices';	
+import { invoiceDescription, executeInvoiceOperation } from './resources/invoices';
 import { companyDescription, executeGetCompany } from './resources/company';
 import { marketingDescription, executeGetMarketing } from './resources/marketing';
 import { assetDescription, executeAssetOperation } from './resources/assets';
 import { warehouseDescription, executeWarehouseOperation } from './resources/warehouse';
 import { leadDescription, executeLeadOperation } from './resources/lead';
-import { 
+import { deduplicationDescription, executeDeduplicationOperation } from './resources/deduplication';
+import {
 			fetchCustomFieldsData,
 			getResourceStatuses,
 			getResourceTypes
@@ -90,12 +91,16 @@ export class RoappRoapp implements INodeType {
 						name: 'Asset',
 						value: 'asset',
 					},
-					{
-						name: 'Warehouse',
-						value: 'warehouse',
-					},
-				],
-				default: 'Order',
+				{
+					name: 'Warehouse',
+					value: 'warehouse',
+				},
+				{
+					name: 'Deduplication',
+					value: 'deduplication',
+				},
+			],
+			default: 'Order',
 			},
 			...companyDescription,
 			...marketingDescription,
@@ -107,6 +112,7 @@ export class RoappRoapp implements INodeType {
 			...invoiceDescription,
 			...assetDescription,
 			...warehouseDescription,
+			...deduplicationDescription,
 			...globalFields,
 		
 		],
@@ -176,6 +182,9 @@ export class RoappRoapp implements INodeType {
 					break;
 				case 'lead':
 					response = await executeLeadOperation.call(this, operation, i);
+					break;
+				case 'deduplication':
+					response = await executeDeduplicationOperation.call(this, operation, i);
 					break;
 
 				default:

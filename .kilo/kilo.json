@@ -1,3 +1,11 @@
 {
-  "$schema": "https://app.kilo.ai/config.json"
+  "$schema": "https://app.kilo.ai/config.json",
+  "mcp": {
+    "ro-app-mcp": {
+      "type": "remote",
+      "url": "https://roapp.readme.io/mcp",
+      "enabled": true,
+      "timeout": 15000
+    }
+  }
 }

@@ -357,6 +357,13 @@ export async function handlePost(
 	}
 };
 
+function isEmpty(value: any): boolean {
+	if (Array.isArray(value)) return value.length === 0;
+	if (value && typeof value === 'object') return Object.keys(value).length === 0;
+	if (value == null || value == undefined || String(value).trim() == '') return true;
+	return false;
+}
+
 export async function handleCreateUpdate(
 	this: IExecuteFunctions,
     index: number,
@@ -374,15 +381,21 @@ export async function handleCreateUpdate(
 				const value = this.getNodeParameter(paramName, index) as any;
 
 				// Перевірка: пропускаємо null, undefined та порожні рядки
-				if (value !== null && value !== undefined) {
+				if (! isEmpty(value)) {
 					if (paramName == "customFields" && value?.value ) {
 						const fieldsInfo = await getCustomFieldsInfo.call(this, this.getNodeParameter('resource', index));
 						const transformedCustomFields = transformCustomFieldsValues(value?.value, fieldsInfo);
 						body.custom_fields = transformedCustomFields;
-					} else if (paramName == "scheduled_for" || paramName == "scheduled_to" || paramName == "due_date" && value !== "") {
+					} else if (paramName == "scheduled_for" || paramName == "scheduled_to" || paramName == "due_date") {
 						// body[paramName] = `${String(DateTime.fromISO(String(value)).toISO()).split(".")[0]}Z`; // або .toISOString()
 						body[paramName] = `${DateTime.fromISO(String(value)).toUTC().toFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")}`; // або .toISOString()
-					} 
+					} else if (paramName == "issue_date_invoice" || paramName == "due_date_invoice") {
+						body[paramName.slice(0,-8)] = `${DateTime.fromISO(String(value)).toUTC().toFormat("yyyy-MM-dd")}`; // або .toISOString()
+					} else if (paramName == "items" && value?.item) {
+						body.items = transformInvoiceItems(value.item);
+					} else if (paramName == "items_custom" && value?.customItem) {
+						body.items_custom = transformInvoiceCustomItems(value.customItem);
+					}
 					else {
 						body[paramName] = value;
 					}
@@ -407,6 +420,69 @@ export async function handleCreateUpdate(
 		//todo: retry on 429 error
 	}
 };
+
+export function transformInvoiceItems(items: any[]): any[] {
+	if (!items || !Array.isArray(items)) return [];
+	return items.map(item => {
+		const result: any = {
+			entity_id: item.entity_id,
+			quantity: item.quantity,
+			price: item.price,
+		};
+		if (item.comment) result.comment = item.comment;
+		if (item.comment_visibility) result.comment_visibility = item.comment_visibility;
+		if (item.tax_ids?.length) result.tax_ids = item.tax_ids.filter((v: any) => v !== '').map((v: any) => Number(v));
+		if (item.discount_type || item.discount_percentage || item.discount_amount || item.discount_sponsor) {
+			result.discount = {
+				type: item.discount_type,
+				percentage: Number(item.discount_percentage) || 0,
+				amount: Number(item.discount_amount) || 0,
+				sponsor: item.discount_sponsor,
+			};
+		}
+		if (item.warranty_period || item.warranty_unit) {
+			result.warranty = {
+				period: Number(item.warranty_period) || 0,
+				unit: item.warranty_unit,
+			};
+		}
+		return result;
+	});
+}
+
+export function transformInvoiceCustomItems(items: any[]): any[] {
+	if (!items || !Array.isArray(items)) return [];
+	return items.map(item => {
+		const result: any = {
+			entity: {
+				type: item.entity_type,
+				title: item.entity_title,
+				uom_id: Number(item.entity_uom_id),
+			},
+			quantity: item.quantity,
+			price: item.price,
+		};
+		if (item.entity_description) result.entity.description = item.entity_description;
+		if (item.comment) result.comment = item.comment;
+		if (item.comment_visibility) result.comment_visibility = item.comment_visibility;
+		if (item.tax_ids?.length) result.tax_ids = item.tax_ids.filter((v: any) => v !== '').map((v: any) => Number(v));
+		if (item.discount_type || item.discount_percentage || item.discount_amount || item.discount_sponsor) {
+			result.discount = {
+				type: item.discount_type,
+				percentage: Number(item.discount_percentage) || 0,
+				amount: Number(item.discount_amount) || 0,
+				sponsor: item.discount_sponsor,
+			};
+		}
+		if (item.warranty_period || item.warranty_unit) {
+			result.warranty = {
+				period: Number(item.warranty_period) || 0,
+				unit: item.warranty_unit,
+			};
+		}
+		return result;
+	});
+}
 
 export async function executeOrderOperation(
 	this: IExecuteFunctions,

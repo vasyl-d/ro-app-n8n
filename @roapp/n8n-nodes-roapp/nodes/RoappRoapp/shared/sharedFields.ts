@@ -8,7 +8,7 @@ export const globalFields: INodeProperties[] = [
 		default: '',
 		displayOptions: {
 			show: {
-				operation: ['get', 'getLocationById', 'getLocationResources'],
+				operation: ['get', 'getLocationById', 'getLocationResources', 'delete', 'getItems'],
 				resource: ['sale', 'person', 'organization', 'order', 'invoice', 'company', 'asset', 'lead']
 			},
 		},
