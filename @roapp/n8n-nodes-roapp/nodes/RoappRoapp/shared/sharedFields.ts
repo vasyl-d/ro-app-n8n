@@ -8,8 +8,8 @@ export const globalFields: INodeProperties[] = [
 		default: '',
 		displayOptions: {
 			show: {
-				operation: ['get', 'getLocationById', 'getLocationResources', 'delete', 'getItems'],
-				resource: ['sale', 'person', 'organization', 'order', 'invoice', 'company', 'asset', 'lead']
+				operation: ['get', 'getLocationById', 'getLocationResources', 'delete', 'getItems', 'getServiceById', 'getProductById'],
+				resource: ['sale', 'person', 'organization', 'order', 'invoice', 'company', 'asset', 'lead', 'catalog']
 			},
 		},
 		description: "The entity's ID to retrieve",
@@ -358,7 +358,7 @@ export const globalFields: INodeProperties[] = [
 		type: 'boolean',
 		displayOptions: {
 			show: {
-				operation: ['getAll', 'getEmployees', 'getReviews', 'getStock'],
+				operation: ['getAll', 'getEmployees', 'getReviews', 'getStock', 'getServices', 'getProducts'],
 			},
 		},
 		default: false,
@@ -370,7 +370,7 @@ export const globalFields: INodeProperties[] = [
 		type: 'number',
 		displayOptions: {
 			show: {
-				operation: ['getAll', 'getEmployees', 'getReviews', 'getStock'],
+				operation: ['getAll', 'getEmployees', 'getReviews', 'getStock', 'getServices', 'getProducts'],
 				returnAll: [false],
 			},
 		},

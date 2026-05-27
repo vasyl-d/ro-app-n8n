@@ -19,6 +19,7 @@ import { assetDescription, executeAssetOperation } from './resources/assets';
 import { warehouseDescription, executeWarehouseOperation } from './resources/warehouse';
 import { leadDescription, executeLeadOperation } from './resources/lead';
 import { deduplicationDescription, executeDeduplicationOperation } from './resources/deduplication';
+import { catalogDescription, executeCatalogOperation } from './resources/catalog';
 import {
 			fetchCustomFieldsData,
 			getResourceStatuses,
@@ -54,43 +55,47 @@ export class RoappRoapp implements INodeType {
 				name: 'resource',
 				type: 'options',
 				noDataExpression: true,
-				options: [
-					{
-						name: 'Company',
-						value: 'company',
-					},
-					{
-						name: 'Marketing',
-						value: 'marketing',
-					},
-					{
-						name: 'Order',
-						value: 'order',
-					},
-					{
-						name: 'Lead',
-						value: 'lead',
-					},
-					{
-						name: 'Organization',
-						value: 'organization',
-					},
-					{
-						name: 'Person',
-						value: 'person',
-					},
-					{
-						name: 'Sale',
-						value: 'sale',
-					},
-					{
-						name: 'Invoice',
-						value: 'invoice',
-					},
-					{
-						name: 'Asset',
-						value: 'asset',
-					},
+			options: [
+				{
+					name: 'Catalog',
+					value: 'catalog',
+				},
+				{
+					name: 'Company',
+					value: 'company',
+				},
+				{
+					name: 'Marketing',
+					value: 'marketing',
+				},
+				{
+					name: 'Order',
+					value: 'order',
+				},
+				{
+					name: 'Lead',
+					value: 'lead',
+				},
+				{
+					name: 'Organization',
+					value: 'organization',
+				},
+				{
+					name: 'Person',
+					value: 'person',
+				},
+				{
+					name: 'Sale',
+					value: 'sale',
+				},
+				{
+					name: 'Invoice',
+					value: 'invoice',
+				},
+				{
+					name: 'Asset',
+					value: 'asset',
+				},
 				{
 					name: 'Warehouse',
 					value: 'warehouse',
@@ -113,6 +118,7 @@ export class RoappRoapp implements INodeType {
 			...assetDescription,
 			...warehouseDescription,
 			...deduplicationDescription,
+			...catalogDescription,
 			...globalFields,
 		
 		],
@@ -170,6 +176,9 @@ export class RoappRoapp implements INodeType {
 					break;
 				case 'company':
 					response = await executeGetCompany.call(this, operation, i);
+					break;
+				case 'catalog':
+					response = await executeCatalogOperation.call(this, operation, i);
 					break;
 				case 'marketing':
 					response = await executeGetMarketing.call(this, operation, i);
