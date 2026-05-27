@@ -9,7 +9,7 @@ export const globalFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				operation: ['get', 'getLocationById', 'getLocationResources', 'delete', 'getItems', 'getServiceById', 'getProductById'],
-				resource: ['sale', 'person', 'organization', 'order', 'invoice', 'company', 'asset', 'lead', 'catalog']
+				resource: ['sale', 'person', 'organization', 'order', 'invoice', 'company', 'asset', 'lead', 'catalog', 'booking']
 			},
 		},
 		description: "The entity's ID to retrieve",
@@ -102,7 +102,7 @@ export const globalFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				operation: ['getAll'],
-				resource: ['order', 'invoice', 'sale', 'person', 'organization']
+				resource: ['order', 'estimate', 'bookings']
 			},
 		},
 		default : {},
@@ -128,7 +128,7 @@ export const globalFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				operation: ['getAll'],
-				resource: ['order', 'invoice','person', 'organization']
+				resource: ['order', 'invoice','person', 'organization', 'bookings']
 			},
 		},
 		default : {},
@@ -269,7 +269,7 @@ export const globalFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				operation: ['create', 'update'],
-				resource: ['order', 'estimate', 'lead']
+				resource: ['order', 'estimate', 'bookings']
 			},
 		},
 	},
@@ -359,6 +359,7 @@ export const globalFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				operation: ['getAll', 'getEmployees', 'getReviews', 'getStock', 'getServices', 'getProducts'],
+				resource: ['sale', 'person', 'organization', 'order', 'invoice', 'company', 'asset', 'lead', 'catalog', 'booking']
 			},
 		},
 		default: false,

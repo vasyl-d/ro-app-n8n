@@ -20,6 +20,7 @@ import { warehouseDescription, executeWarehouseOperation } from './resources/war
 import { leadDescription, executeLeadOperation } from './resources/lead';
 import { deduplicationDescription, executeDeduplicationOperation } from './resources/deduplication';
 import { catalogDescription, executeCatalogOperation } from './resources/catalog';
+import { bookingsDescription, executeBookingOperation } from './resources/bookings';
 import {
 			fetchCustomFieldsData,
 			getResourceStatuses,
@@ -93,6 +94,10 @@ export class RoappRoapp implements INodeType {
 					value: 'invoice',
 				},
 				{
+					name: 'Booking',
+					value: 'booking',
+				},
+				{
 					name: 'Asset',
 					value: 'asset',
 				},
@@ -116,11 +121,11 @@ export class RoappRoapp implements INodeType {
 			...saleDescription,
 			...invoiceDescription,
 			...assetDescription,
+			...bookingsDescription,
 			...warehouseDescription,
 			...deduplicationDescription,
 			...catalogDescription,
 			...globalFields,
-		
 		],
 	};
 	methods = {
@@ -179,6 +184,9 @@ export class RoappRoapp implements INodeType {
 					break;
 				case 'catalog':
 					response = await executeCatalogOperation.call(this, operation, i);
+					break;
+				case 'booking':
+					response = await executeBookingOperation.call(this, operation, i);
 					break;
 				case 'marketing':
 					response = await executeGetMarketing.call(this, operation, i);
