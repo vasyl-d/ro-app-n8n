@@ -10,7 +10,7 @@ import { NodeConnectionTypes,
 import { globalFields } from './shared/sharedFields';
 import { personDescription } from './resources/person';
 import { organizationDescription } from './resources/organization';
-import { orderDescription } from './resources/order';
+import { ordersDescription, executeOrderOperation } from './resources/orders';
 import { saleDescription, executeSaleOperation } from './resources/sale';
 import { invoiceDescription, executeInvoiceOperation } from './resources/invoices';
 import { companyDescription, executeGetCompany } from './resources/company';
@@ -115,7 +115,7 @@ export class RoappRoapp implements INodeType {
 			...companyDescription,
 			...marketingDescription,
 			...personDescription,
-			...orderDescription,
+			...ordersDescription,
 			...leadDescription,
 			...organizationDescription,
 			...saleDescription,
@@ -155,7 +155,7 @@ export class RoappRoapp implements INodeType {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
 
-		const { executeOrderOperation, executePersonOperation, executeOrganizationOperation } = await import('./shared/methods');
+		const {executePersonOperation, executeOrganizationOperation } = await import('./shared/methods');
 
 		for (let i = 0; i < items.length; i++) {
 			const resource = this.getNodeParameter('resource', i) as string;

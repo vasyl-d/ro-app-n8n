@@ -38,6 +38,42 @@ export const getAllInvoicesDescription: INodeProperties[] = [
 		description: 'Add one or more Customer IDs',
 	},
 	{
+		displayName: 'Payer IDs',
+		name: 'payer_ids',
+		type: 'string',
+		typeOptions: {
+			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
+		},
+		displayOptions: {
+			show: showOnlyForInvoiceGetMany,
+		},
+		default: [], // Для багатократних значень дефолт має бути масивом
+		description: 'Add one or more Customer IDs',
+	},
+	{
+		displayName: "Issue date",
+		name: "issue_date",
+		type: "collection",
+		displayOptions: {
+			show: showOnlyForInvoiceGetMany,
+		},
+		default : {},
+		options: [
+			{
+				displayName: 'From',
+				name: 'issue_date_from',
+				type: 'dateTime',
+				default: ''
+			},
+			{
+				displayName: 'To',
+				name: 'issue_date_to',
+				type: 'dateTime',
+				default: ''
+			},
+		]
+	},
+	{
 		displayName: "Payment method",
 		name: "payment_method",
 		type: "options",

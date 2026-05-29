@@ -216,7 +216,7 @@ function makeQs(
 				// Якщо це колекція "filters" або "additionalFields"
 				else if (typeof value === 'object' && value !== null && value != undefined) {
 					const processedFilters:{[key:string]:any}= { ...value };
-					if (parameterName == "created_at" || parameterName == "modified_at" || parameterName == "closed_at" || parameterName == "scheduled_for" || parameterName == "due_date") {
+					if (parameterName == "created_at" || parameterName == "modified_at" || parameterName == "closed_at" || parameterName == "scheduled_for" || parameterName == "due_date" || parameterName == "issue_date") {
 						const from_name = `${parameterName}_from`;
 						const to_name = `${parameterName}_to`;
 						const from = processedFilters[from_name]
@@ -277,12 +277,10 @@ export async function handleGetAll(
 			});
 		} catch (error) {
 			// Якщо API повернуло помилку (наприклад, 400)
-			// if (error.response) {
-			// 	// error.response.body — це те, що повернуло ваше API (наприклад, { message: "Invalid phone" })
-			// 	throw new NodeApiError(this.getNode(), error, error?.response?.body?.message);
-			// }
-			// // Якщо сталася інша помилка (мережа тощо)
-			// throw error;
+			if (error?.response) {
+				// error.response.body — це те, що повернуло ваше API (наприклад, { message: "Invalid phone" })
+				throw new NodeApiError(this.getNode(), error, { message: JSON.stringify(error.response?.body?.message) });
+			}
 			break;
 		} finally {
 			// Адаптуйте під структуру вашого API (наприклад, responseData.items або responseData.data)
@@ -320,10 +318,9 @@ export async function handleGetOne(
 		});
 	} catch (error) {
 		// Якщо API повернуло помилку (наприклад, 400)
-		if (error.response) {
+		if (error?.response) {
 			// error.response.body — це те, що повернуло ваше API (наприклад, { message: "Invalid phone" })
-			console.log(`Error message: ${error.response?.body?.message}`);
-			throw new NodeApiError(this.getNode(), error, { message: error.response?.body?.message });
+			throw new NodeApiError(this.getNode(), error, { message: JSON.stringify(error.response?.body?.message) });
 		}
 		// Якщо сталася інша помилка (мережа тощо)
 		throw error;
@@ -347,9 +344,9 @@ export async function handlePost(
 		});
 	} catch (error) {
 		// Якщо API повернуло помилку (наприклад, 400)
-		if (error.response) {
+		if (error?.response) {
 			// error.response.body — це те, що повернуло ваше API (наприклад, { message: "Invalid phone" })
-			throw new NodeApiError(this.getNode(), error, { message: error.response?.body?.message });
+			throw new NodeApiError(this.getNode(), error, { message: JSON.stringify(error.response?.body?.message) });
 		}
 		// Якщо сталася інша помилка (мережа тощо)
 		throw error;
@@ -411,9 +408,9 @@ export async function handleCreateUpdate(
 		});
 	} catch (error) {
 		// Якщо API повернуло помилку (наприклад, 400)
-		if (error.response) {
+		if (error?.response) {
 			// error.response.body — це те, що повернуло ваше API (наприклад, { message: "Invalid phone" })
-			throw new NodeApiError(this.getNode(), error, { message: error.response?.body?.message });
+			throw new NodeApiError(this.getNode(), error, { message: JSON.stringify(error.response?.body?.message) });
 		}
 		// Якщо сталася інша помилка (мережа тощо)
 		throw error;
@@ -484,37 +481,47 @@ export function transformInvoiceCustomItems(items: any[]): any[] {
 	});
 }
 
-export async function executeOrderOperation(
-	this: IExecuteFunctions,
-	operation: string,
-	index: number,
-): Promise<any> {
-	if (operation === 'create') {
-		// const body: any = {
-		// 	branch_id: this.getNodeParameter('branch_id', index),
-		// 	order_type_id: this.getNodeParameter('order_type_id', index),
-		// 	client_id: this.getNodeParameter('client_id', index),
-		// };
-
-		// const customFields = this.getNodeParameter('customFields', index) as any;
-		// if (customFields?.value) {
-		// 	// Получаем информацию о типах полей и преобразуем dateTime
-		// 	const fieldsInfo = await getCustomFieldsInfo.call(this, 'order');
-		// 	const transformedCustomFields = transformCustomFieldsValues(customFields.value, fieldsInfo);
-		// 	body.custom_fields = transformedCustomFields;
-		// }
-
-		return await handleCreateUpdate.call(this, index, `${BASE_URL}v2/orders`, 'POST');
-
-	} else if (operation === 'getAll') {
-		return await handleGetAll.call(this, index, `${BASE_URL}v2/orders`);
-	} else if (operation === 'get') {
-		return await handleGetOne.call(this, index, `${BASE_URL}v2/orders/${this.getNodeParameter('Id', index)}`);
-	} else if (operation === 'update') {
-		return await handleCreateUpdate.call(this, index, `${BASE_URL}v2/orders/${this.getNodeParameter('order_id', index)}`, 'PATCH');
-	}
-	return null;
-}
+// export async function executeOrderOperation(
+// 	this: IExecuteFunctions,
+// 	operation: string,
+// 	index: number,
+// ): Promise<any> {
+// 	if (operation === 'getAll') {
+// 		return await handleGetAll.call(this, index, `${BASE_URL}v2/orders`);
+// 	} else if (operation === 'get') {
+// 		return await handleGetOne.call(this, index, `${BASE_URL}v2/orders/${this.getNodeParameter('Id', index)}`);
+// 	} else if (operation === 'delete') {
+// 		return await this.helpers.httpRequestWithAuthentication.call(this, 'roappRoappApi', {
+// 			method: 'DELETE',
+// 			url: `${BASE_URL}v2/orders/${this.getNodeParameter('Id', index)}`
+// 		});
+// 	} else if (operation === 'getItems') {
+// 		return await handleGetOne.call(this, index, `${BASE_URL}v2/orders/${this.getNodeParameter('Id', index)}/items`);
+// 	} else if (operation === 'create') {
+// 		return await handleCreateUpdate.call(this, index, `${BASE_URL}v2/orders`, 'POST');
+// 	} else if (operation === 'update') {
+// 		return await handleCreateUpdate.call(this, index, `${BASE_URL}v2/orders/${this.getNodeParameter('Id', index)}`, 'PATCH');
+// 	} else if (operation === 'getStatuses') {
+// 		return await handleGetOne.call(this, index, `${BASE_URL}v2/orders/${this.getNodeParameter('Id', index)}/statuses`);
+// 	} else if (operation === 'getTypes') {
+// 		return await handleGetOne.call(this, index, `${BASE_URL}v2/orders/${this.getNodeParameter('Id', index)}/types`);
+// 	} else if (operation === 'getCustomFields') {
+// 		return await handleGetOne.call(this, index, `${BASE_URL}v2/orders/${this.getNodeParameter('Id', index)}/custom-fields`);
+// 	} else if (operation === 'createItem') {
+// 		return await handleCreateUpdate.call(this, index, `${BASE_URL}v2/orders/${this.getNodeParameter('orderId', index)}/items`, 'POST');
+// 	} else if (operation === 'updateItem') {
+// 		return await handleCreateUpdate.call(this, index, `${BASE_URL}v2/orders/${this.getNodeParameter('orderId', index)}/items/${this.getNodeParameter('itemId', index)}`, 'PATCH');
+// 	} else if (operation === 'deleteItem') {
+// 		return await handleCreateUpdate.call(this, index, `${BASE_URL}v2/orders/${this.getNodeParameter('orderId', index)}/items/${this.getNodeParameter('itemId', index)}`, 'DELETE');
+// 	} else if (operation === 'updateStatus') {
+// 		return await handleCreateUpdate.call(this, index, `${BASE_URL}v2/orders/${this.getNodeParameter('Id', index)}/status`, 'POST');
+// 	} else if (operation === 'createComment') {
+// 		return await handleCreateUpdate.call(this, index, `${BASE_URL}v2/orders/${this.getNodeParameter('Id', index)}/comments`, 'POST');
+// 	} else if (operation === 'getPublicUrl') {
+// 		return await handleGetOne.call(this, index, `${BASE_URL}v2/orders/${this.getNodeParameter('Id', index)}/public-url`);
+// 	}
+// 	return null;
+// }
 
 export async function executePersonOperation(
 	this: IExecuteFunctions,

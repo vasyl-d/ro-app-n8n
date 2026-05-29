@@ -14,7 +14,7 @@ export const globalFields: INodeProperties[] = [
 		},
 		description: "The entity's ID to retrieve",
 	},
-		{
+	{
 		displayName: 'Email',
 		name: 'email',
 		type: 'string',
@@ -102,7 +102,7 @@ export const globalFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				operation: ['getAll'],
-				resource: ['order', 'estimate', 'bookings']
+				resource: ['order', 'estimate', 'booking', 'invoice']
 			},
 		},
 		default : {},
@@ -128,7 +128,7 @@ export const globalFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				operation: ['getAll'],
-				resource: ['order', 'invoice','person', 'organization', 'bookings']
+				resource: ['order', 'invoice','person', 'organization', 'bookings', 'invoice']
 			},
 		},
 		default : {},
@@ -196,6 +196,121 @@ export const globalFields: INodeProperties[] = [
 				name: 'scheduled_for_to',
 				type: 'dateTime',
 				default: ''
+			},
+		]
+	},
+	{
+		displayName: "Assignee id",
+		name: "assignee_id",
+		type: "string",
+		required: true,
+		default: '',
+		displayOptions: {
+			show: {
+				operation: ['createItem', 'updateItem'],
+				resource: ['order', 'estimate', 'invoice', 'booking']
+			},
+		},
+	},
+	{
+		displayName: "Discount",
+		name: "discount",
+		type: "collection",
+		required: true,
+		default: {},
+		displayOptions: {
+			show: {
+				operation: ['createItem', 'updateItem'],
+				resource: ['order', 'estimate', 'invoice', 'booking']
+			},
+		},
+		options: [
+			{
+				displayName: 'Discount Type',
+				name: 'type',
+				type: 'options',
+				default: 'percentage',
+				description: 'The type of discount',
+				options: [
+					{
+						name: 'Percentage',
+						value: 'percentage',
+					},
+					{
+						name: 'Amount',
+						value: 'value',
+					},
+				],
+			},
+			{
+				displayName: 'Discount Percentage',
+				name: 'percentage',
+				type: 'number',
+				default: 0,
+				description: 'The discount percentage (if type is percentage)',
+			},
+			{
+				displayName: 'Discount Amount',
+				name: 'amount',
+				type: 'number',
+				default: 0,
+				description: 'The discount amount (if type is amount)',
+			},
+			{
+				displayName: 'Discount Sponsor',
+				name: 'sponsor',
+				type: 'options',
+				default: 'staff',
+				description: 'The sponsor of the discount',
+				options: [
+					{
+						name: 'Staff',
+						value: 'staff',
+					},
+					{
+						name: 'Company',
+						value: 'company',
+					},
+				],
+			},
+		]
+	},
+	{
+		displayName: "Warranty",
+		name: "warranty",
+		type: "collection",
+		required: true,
+		default: {},
+		displayOptions: {
+			show: {
+				operation: ['createItem', 'updateItem'],
+				resource: ['order', 'estimate', 'invoice', 'booking']
+			},
+		},
+		options: [
+			{
+				displayName: 'Warranty Period',
+				name: 'period',
+				type: 'string',
+				default: '0',
+				description: 'The warranty period',
+			},
+			{
+				displayName: 'Warranty Unit',
+				name: 'unit',
+				type: 'options',
+				default: 'days',
+				description: 'The unit of the warranty period',
+				options: [
+					{
+						name: 'Days',
+						value: 'days',
+					},
+					{
+						name: 'Months',
+						value: 'months',
+					},
+				],
 			},
 		]
 	},

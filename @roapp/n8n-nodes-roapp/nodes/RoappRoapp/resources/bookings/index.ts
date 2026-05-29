@@ -28,16 +28,16 @@ export const bookingsDescription: INodeProperties[] = [
 				description: 'Get multiple bookings',
 			},
 			{
+				name: 'Get by Id',
+				value: 'get',
+				action: 'Get booking',
+				description: 'Get the data of a single booking',
+			},
+			{
 				name: 'Create',
 				value: 'create',
 				action: 'Create booking',
 				description: 'Create a new booking',
-			},
-			{
-				name: 'Get',
-				value: 'get',
-				action: 'Get booking',
-				description: 'Get the data of a single booking',
 			},
 			{
 				name: 'Update',

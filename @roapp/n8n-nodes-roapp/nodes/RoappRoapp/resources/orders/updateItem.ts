@@ -1,31 +1,31 @@
 import type { INodeProperties } from 'n8n-workflow';
 
-const showOnlyForBookingsUpdateItem = {
+const showOnlyForOrdersUpdateItem = {
 	operation: ['updateItem'],
-	resource: ['booking'],
+	resource: ['order'],
 };
 
-export const bookingsUpdateItemDescription: INodeProperties[] = [
+export const ordersUpdateItemDescription: INodeProperties[] = [
 	{
-		displayName: 'Booking ID',
-		name: 'bookingId',
+		displayName: 'Order ID',
+		name: 'order_id',
 		type: 'number',
 		default: 0,
 		required: true,
-		description: 'The ID of the booking',
+		description: 'The ID of the order',
 		displayOptions: {
-			show: showOnlyForBookingsUpdateItem,
+			show: showOnlyForOrdersUpdateItem,
 		},
 	},
 	{
 		displayName: 'Item ID',
-		name: 'itemId',
+		name: 'item_id',
 		type: 'number',
 		default: 0,
 		required: true,
-		description: 'The ID of the booking item to update',
+		description: 'The ID of the order item to update',
 		displayOptions: {
-			show: showOnlyForBookingsUpdateItem,
+			show: showOnlyForOrdersUpdateItem,
 		},
 	},
 	{
@@ -33,21 +33,21 @@ export const bookingsUpdateItemDescription: INodeProperties[] = [
 		name: 'entity_id',
 		type: 'number',
 		default: 0,
-		required: false,
+		required: true,
 		description: 'The ID of the product or service',
 		displayOptions: {
-			show: showOnlyForBookingsUpdateItem,
+			show: showOnlyForOrdersUpdateItem,
 		},
 	},
 	{
 		displayName: 'Quantity',
 		name: 'quantity',
 		type: 'number',
-		default: 0,
-		required: false,
+		default: 1,
+		required: true,
 		description: 'The quantity of the item',
 		displayOptions: {
-			show: showOnlyForBookingsUpdateItem,
+			show: showOnlyForOrdersUpdateItem,
 		},
 	},
 	{
@@ -58,7 +58,7 @@ export const bookingsUpdateItemDescription: INodeProperties[] = [
 		required: false,
 		description: 'The price per unit',
 		displayOptions: {
-			show: showOnlyForBookingsUpdateItem,
+			show: showOnlyForOrdersUpdateItem,
 		},
 	},
 	{
@@ -69,7 +69,7 @@ export const bookingsUpdateItemDescription: INodeProperties[] = [
 		required: false,
 		description: 'The unit cost',
 		displayOptions: {
-			show: showOnlyForBookingsUpdateItem,
+			show: showOnlyForOrdersUpdateItem,
 		},
 	},
 	{
@@ -80,7 +80,7 @@ export const bookingsUpdateItemDescription: INodeProperties[] = [
 		required: false,
 		description: 'Array of Tax IDs. Specify one or more IDs using an <a href="https://n8n.io">expression</a>.',
 		displayOptions: {
-			show: showOnlyForBookingsUpdateItem,
+			show: showOnlyForOrdersUpdateItem,
 		},
 		typeOptions: {
 			multipleValues: true,
@@ -94,7 +94,7 @@ export const bookingsUpdateItemDescription: INodeProperties[] = [
 		required: false,
 		description: 'Additional comments about the item',
 		displayOptions: {
-			show: showOnlyForBookingsUpdateItem,
+			show: showOnlyForOrdersUpdateItem,
 		},
 	},
 ];

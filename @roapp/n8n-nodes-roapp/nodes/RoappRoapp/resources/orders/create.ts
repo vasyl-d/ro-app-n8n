@@ -5,7 +5,7 @@ const showOnlyForOrderCreate = {
     resource: ['order'],
 };
 
-export const orderCreateDescription: INodeProperties[] = [
+export const ordersCreateDescription: INodeProperties[] = [
     {
         displayName: 'Order Id',
         name: 'order_id',
@@ -23,22 +23,12 @@ export const orderCreateDescription: INodeProperties[] = [
         displayName: 'Order branch_id',
         name: 'branch_id',
         type: 'string',
-        default: '37892',
+        default: '',
         required: true,
         displayOptions: {
             show: showOnlyForOrderCreate,
         },
     },
-    // {
-    //     displayName: 'Order order_type_id',
-    //     name: 'order_type_id',
-    //     type: 'string',
-    //     default: '60674',
-    //     required: true,
-    //     displayOptions: {
-    //         show: showOnlyForOrderCreate,
-    //     },
-    // },
 	{
 		displayName: 'Order order_type_id',
 		name: 'order_type_id',
@@ -60,7 +50,7 @@ export const orderCreateDescription: INodeProperties[] = [
         displayName: 'Order client_id',
         name: 'client_id',
         type: 'string',
-        default: '18705800',
+        default: '',
         required: true,
         displayOptions: {
             show: showOnlyForOrderCreate,

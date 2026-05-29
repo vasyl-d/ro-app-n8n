@@ -4,6 +4,9 @@ import {invoiceCreateDescription} from './create';
 import {invoiceUpdateDescription} from './update';
 import {invoiceUpdateStatusDescription} from './updateStatus';
 import {invoiceCreateCommentDescription} from './createComment';
+import {invoiceCreateItemDescription} from './createItem';
+import {invoiceUpdateItemDescription} from './updateItem';
+import {invoiceDeleteItemDescription} from './deleteItem';
 import { handleGetAll, handleGetOne, BASE_URL, handleCreateUpdate } from '../../shared/methods';
 
 const showOnlyForInvoices = {
@@ -17,7 +20,7 @@ export const invoiceDescription: INodeProperties[] = [
 		type: 'options',
 		noDataExpression: true,
 		displayOptions: {
-            show: showOnlyForInvoices,
+			show: showOnlyForInvoices,
 		},
 		options: [
 			{
@@ -43,6 +46,24 @@ export const invoiceDescription: INodeProperties[] = [
 				value: 'create',
 				action: 'Create an invoice',
 				description: 'Create an invoice',
+			},
+            {
+				name: 'Add Item',
+				value: 'createItem',
+				action: 'Add invoice item',
+				description: 'Add an item to an invoice',
+			},
+            {
+				name: 'Update Item',
+				value: 'updateItem',
+				action: 'Update invoice item',
+				description: 'Update an item in an invoice',
+			},
+            {
+				name: 'Delete Item',
+				value: 'deleteItem',
+				action: 'Delete invoice item',
+				description: 'Delete an item from an invoice',
 			},
             {
 				name: 'Update',
@@ -75,6 +96,9 @@ export const invoiceDescription: INodeProperties[] = [
 	...invoiceCreateDescription,
 	...invoiceUpdateStatusDescription,
 	...invoiceCreateCommentDescription,
+	...invoiceCreateItemDescription,
+	...invoiceUpdateItemDescription,
+	...invoiceDeleteItemDescription,
 	...invoiceUpdateDescription
 ];
 
@@ -100,26 +124,14 @@ export async function executeInvoiceOperation(
 		return await handleCreateUpdate.call(this, index, `${BASE_URL}v2/invoices/${this.getNodeParameter('Id', index)}`, 'PATCH');
 	} else if (operation === 'updateStatus') {
 		return await handleCreateUpdate.call(this, index, `${BASE_URL}v2/invoices/${this.getNodeParameter('Id', index)}/status`, 'POST');
-		// const invoiceId = this.getNodeParameter('Id', index);
-		// const statusId = this.getNodeParameter('status_id', index);
-		// return await this.helpers.httpRequestWithAuthentication.call(this, 'roappRoappApi', {
-		// 	method: 'POST',
-		// 	url: `${BASE_URL}v2/invoices/${invoiceId}/status`,
-		// 	json: true,
-		// 	body: { status_id: statusId }
-		// });
 	} else if (operation === 'createComment') {
 		return await handleCreateUpdate.call(this, index, `${BASE_URL}v2/invoices/${this.getNodeParameter('Id', index)}/comments`, 'POST');
-	
-	// 	const invoiceId = this.getNodeParameter('Id', index);
-	// 	const comment = this.getNodeParameter('comment', index);
-	// 	const visibility = this.getNodeParameter('visibility', index, 'public');
-	// 	return await this.helpers.httpRequestWithAuthentication.call(this, 'roappRoappApi', {
-	// 		method: 'POST',
-	// 		url: `${BASE_URL}v2/invoices/${invoiceId}/comments`,
-	// 		json: true,
-	// 		body: { comment, visibility }
-	// 	});
+	} else if (operation === 'createItem') {
+		return await handleCreateUpdate.call(this, index, `${BASE_URL}v2/invoices/${this.getNodeParameter('Id', index)}/items`, 'POST');
+	} else if (operation === 'updateItem') {
+		return await handleCreateUpdate.call(this, index, `${BASE_URL}v2/invoices/${this.getNodeParameter('Id', index)}/items/${this.getNodeParameter('itemId', index)}`, 'PATCH');
+	} else if (operation === 'deleteItem') {
+		return await handleCreateUpdate.call(this, index, `${BASE_URL}v2/invoices/${this.getNodeParameter('Id', index)}/items/${this.getNodeParameter('itemId', index)}`, 'DELETE');
 	}
 	return null;
 }
