@@ -277,11 +277,16 @@ export async function handleGetAll(
 			});
 		} catch (error) {
 			// Якщо API повернуло помилку (наприклад, 400)
-			if (error?.response) {
-				// error.response.body — це те, що повернуло ваше API (наприклад, { message: "Invalid phone" })
-				throw new NodeApiError(this.getNode(), error, { message: JSON.stringify(error.response?.body?.message) });
-			}
-			break;
+			// Better error extraction
+			console.log(error);
+			const errorMessage = error?.response?.body?.message || 
+								error?.response?.body?.error ||
+								error?.message ||
+								'Unknown error occurred';
+			
+			throw new NodeApiError(this.getNode(), error, { 
+				message: errorMessage 
+			});
 		} finally {
 			// Адаптуйте під структуру вашого API (наприклад, responseData.items або responseData.data)
 			const items = Array.isArray(responseData) ? responseData : (responseData?.data || []);
@@ -318,12 +323,16 @@ export async function handleGetOne(
 		});
 	} catch (error) {
 		// Якщо API повернуло помилку (наприклад, 400)
-		if (error?.response) {
-			// error.response.body — це те, що повернуло ваше API (наприклад, { message: "Invalid phone" })
-			throw new NodeApiError(this.getNode(), error, { message: JSON.stringify(error.response?.body?.message) });
-		}
-		// Якщо сталася інша помилка (мережа тощо)
-		throw error;
+		// Better error extraction
+		console.log(error);
+		const errorMessage = error?.response?.body?.message || 
+							error?.response?.body?.error ||
+							error?.message ||
+							'Unknown error occurred';
+		
+		throw new NodeApiError(this.getNode(), error, { 
+			message: errorMessage 
+		});
 	}
 };
 
@@ -344,13 +353,16 @@ export async function handlePost(
 		});
 	} catch (error) {
 		// Якщо API повернуло помилку (наприклад, 400)
-		if (error?.response) {
-			// error.response.body — це те, що повернуло ваше API (наприклад, { message: "Invalid phone" })
-			throw new NodeApiError(this.getNode(), error, { message: JSON.stringify(error.response?.body?.message) });
-		}
-		// Якщо сталася інша помилка (мережа тощо)
-		throw error;
-		//todo: retry on 429 error
+		// Better error extraction
+		console.log(error);
+		const errorMessage = error?.response?.body?.message || 
+							error?.response?.body?.error ||
+							error?.message ||
+							'Unknown error occurred';
+		
+		throw new NodeApiError(this.getNode(), error, { 
+			message: errorMessage 
+		});
 	}
 };
 
@@ -408,12 +420,16 @@ export async function handleCreateUpdate(
 		});
 	} catch (error) {
 		// Якщо API повернуло помилку (наприклад, 400)
-		if (error?.response) {
-			// error.response.body — це те, що повернуло ваше API (наприклад, { message: "Invalid phone" })
-			throw new NodeApiError(this.getNode(), error, { message: JSON.stringify(error.response?.body?.message) });
-		}
-		// Якщо сталася інша помилка (мережа тощо)
-		throw error;
+		// Better error extraction
+		console.log(error);
+		const errorMessage = error?.response?.body?.message || 
+							error?.response?.body?.error ||
+							error?.message ||
+							'Unknown error occurred';
+		
+		throw new NodeApiError(this.getNode(), error, { 
+			message: errorMessage 
+		});
 		//todo: retry on 429 error
 	}
 };
