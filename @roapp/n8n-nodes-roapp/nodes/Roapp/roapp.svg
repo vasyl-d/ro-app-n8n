@@ -1,0 +1,26 @@
+<svg xmlns="http://w3.org" viewBox="0 0 500 500" width="100%" height="100%">
+  <style>
+    .brand-blue { fill: #0066ff; }
+    .brand-light-blue { fill: #cce0ff; }
+    .brand-dark { fill: #111827; }
+    .text-main { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-weight: 500; }
+  </style>
+  
+  <g transform="translate(110, 210)">
+    <!-- Буква R -->
+    <path class="brand-blue" d="M0,52 L0,2 H27 C38,2 47,8 47,21 C47,31 40,37 31,39 L50,52 L36,52 L19,40 L12,40 L12,52 Z M12,30 L25,30 C32,30 36,27 36,21 C36,15 32,12 25,12 L12,12 Z" />
+    
+    <!-- Буква o (Кастомный элемент со стрелкой) -->
+    <g transform="translate(56, 16)">
+      <!-- Основное полукольцо стрелки -->
+      <path class="brand-blue" d="M37,18 C37,8 29,0 18,0 C8,0 0,8 0,18 C0,28 8,36 18,36 L18,25 C14,25 11,22 11,18 C11,14 14,11 18,11 C22,11 25,14 25,18 L25,23 L30,19 L37,25 Z" />
+      <!-- Наконечник стрелки -->
+      <polygon class="brand-blue" points="30,19 40,19 35,27" />
+      <!-- Светло-голубой квадратик снизу справа -->
+      <rect class="brand-light-blue" x="25" y="25" width="11" height="11" />
+    </g>
+    
+    <!-- Текст "app" -->
+    <text x="112" y="45" font-size="58" class="brand-dark text-main" letter-spacing="-2">app</text>
+  </g>
+</svg>

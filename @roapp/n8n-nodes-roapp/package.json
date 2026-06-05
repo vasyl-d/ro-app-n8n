@@ -1,14 +1,19 @@
 {
   "name": "@roapp/n8n-nodes-roapp",
-  "version": "0.1.0",
-  "description": "",
+  "version": "1.0.0",
+  "description": "package for roapp.io API",
   "license": "MIT",
   "homepage": "",
-  "keywords": ["n8n-community-node-package roapp.io roapp"],
-  "author": { "name": "vasyl-d", "email": "vpets07@gmail.com" },
+  "keywords": [
+    "n8n-community-node-package roapp.io roapp", "n8n-community-node-package"
+  ],
+  "author": {
+    "name": "vasyl-d",
+    "email": "vasyld.dev@gmail.com"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/<...>/n8n-nodes-<...>.git"
+    "url": "https://github.com/vasyl-d/ro-app-n8n/@roapp/n8n-nodes-roapp.git"
   },
   "scripts": {
     "build": "n8n-node build",
@@ -19,25 +24,27 @@
     "release": "n8n-node release",
     "prepublishOnly": "n8n-node prerelease"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "n8n": {
     "n8nNodesApiVersion": 1,
     "strict": true,
-    "credentials": ["dist/credentials/RoappRoappApi.credentials.js"],
-    "nodes": ["dist/nodes/RoappRoapp/RoappRoapp.node.js"]
+    "credentials": [
+      "dist/credentials/RoappApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/Roapp/Roapp.node.js"
+    ]
   },
   "devDependencies": {
     "@n8n/node-cli": "*",
-    "eslint": "^10.2.0",
+    "minimatch": "^10.2.5",
     "prettier": "^3.8.3",
     "release-it": "^20.0.0",
-    "typescript": "^6.0.2",
-    "minimatch": "^10.2.5"
+    "typescript": "^6.0.2"
   },
-  "peerDependencies": { "n8n-workflow": "^2.13.1" },
-  "dependencies": { "minimatch": "^10.2.5", "n8n-core": "^2.16.1" },
-  "overrides": {
-    "eslint-plugin-n8n-nodes-base": { "minimatch": "^10.2.5" },
-    "fast-xml-parser": "4.5.5"
+  "peerDependencies": {
+    "n8n-workflow": "*"
   }
 }

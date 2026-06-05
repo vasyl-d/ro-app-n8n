@@ -1,6 +1,6 @@
 # n8n-nodes-roapp
 
-This is an n8n community node. It lets you use [ROapp.io API](https://roapp.readme.io/) in your n8n workflows.
+This is an n8n community node. It lets you use ROapp.io in your n8n workflows.
 
 ROapp.io is a comprehensive business management platform that helps companies manage their operations including orders, invoices, bookings, customers, inventory, and more.
 
@@ -20,7 +20,7 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Credentials
 
-To use this node, you need to create [ROapp.io API](https://roapp.readme.io/) credentials:
+To use this node, you need to create ROapp API credentials:
 
 1. Sign up for a ROapp.io account at https://roapp.io/
 2. Get an API access token from your ROapp.io account settings
@@ -51,8 +51,8 @@ The Roapp node supports the following resources and operations:
 
 ## Compatibility
 
-- **Minimum n8n version**: 2.16.1
-- **Tested against**: n8n 2.16.1+
+- **Minimum n8n version**: 1.0.0
+- **Tested against**: n8n 1.0.0+
 - **Known incompatibilities**: None reported
 
 ## Usage
@@ -75,7 +75,7 @@ The node automatically handles custom fields for supported resources through the
 
 ## Resources
 
-The Roapp node provides access to the following [ROapp.io API](https://roapp.readme.io/) resources:
+The Roapp node provides access to the following ROapp.io resources:
 
 ### Business Operations
 - **Orders**: Manage customer orders, including items, status, payments
@@ -110,7 +110,7 @@ Most resources support standard fields like:
 
 ### Version 1.0.0
 - Initial release
-- Support for all major [ROapp.io API](https://roapp.readme.io/) resources
+- Support for all major ROapp.io resources
 - Full CRUD operations for each resource
 - Specialized operations for line items, status updates, and comments
 - Custom field handling and resource mapping
