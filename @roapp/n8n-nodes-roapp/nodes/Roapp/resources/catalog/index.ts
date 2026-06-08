@@ -1,6 +1,6 @@
 import { INodeProperties , IExecuteFunctions, INodeExecutionData} from 'n8n-workflow';
 import { handleGetAll, handleGetOne, BASE_URL  } from '../../shared/methods';
-import { getAllDescription } from './get';
+import { getAllDescription } from './getAll';
 
 const showOnlyForCatalog = {
     resource: ['catalog'],

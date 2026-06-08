@@ -1,5 +1,8 @@
 {
   "$schema": "https://app.kilo.ai/config.json",
+  "indexing": {
+    "enabled": false
+  },
   "mcp": {
     "ro-app-mcp": {
       "type": "remote",
