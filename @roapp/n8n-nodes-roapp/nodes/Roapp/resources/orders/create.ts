@@ -19,18 +19,8 @@ export const ordersCreateDescription: INodeProperties[] = [
             }
         },       
     },
-    {
-        displayName: 'Order Branch_id',
-        name: 'branch_id',
-        type: 'string',
-        default: '',
-        required: true,
-        displayOptions: {
-            show: showOnlyForOrderCreate,
-        },
-    },
 	{
-		displayName: 'Order Order_type_id Name or ID',
+		displayName: 'Order Type Name or ID',
 		name: 'order_type_id',
 		type: 'options',		
 		displayOptions: {
@@ -47,7 +37,7 @@ export const ordersCreateDescription: INodeProperties[] = [
 		description: 'Order type to create. Choose from the list, or specify an ID using an <a href="https://n8n.io">expression</a>. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 	},
     {
-        displayName: 'Order Client_id',
+        displayName: 'Order Client ID',
         name: 'client_id',
         type: 'string',
         default: '',

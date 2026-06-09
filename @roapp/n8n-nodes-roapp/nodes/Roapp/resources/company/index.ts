@@ -78,16 +78,16 @@ export async function executeCompanyOperations(
 		return await handleGetOne.call(this, index, `${BASE_URL}v2/company`);
 	} 
 	if (operation === 'getLocations') {
-		return await handleGetOne.call(this, index, `${BASE_URL}v2/company/locations`);
+		return await handleGetAll.call(this, index, `${BASE_URL}v2/company/locations`);
 	} 
 	if (operation === 'getLicense') {
 		return await handleGetOne.call(this, index, `${BASE_URL}v2/company/license`);
 	} 
 	if (operation === 'getLegalEntities') {
-		return await handleGetOne.call(this, index, `${BASE_URL}v2/company/legal-entities`);
+		return await handleGetAll.call(this, index, `${BASE_URL}v2/company/legal-entities`);
 	} 
 	if (operation === 'getTaxes') {
-		return await handleGetOne.call(this, index, `${BASE_URL}v2/company/taxes`);
+		return await handleGetAll.call(this, index, `${BASE_URL}v2/company/taxes`);
 	}
 	if (operation === 'getEmployees') {
 		return await handleGetAll.call(this, index, `${BASE_URL}v2/company/employees`);
@@ -96,7 +96,7 @@ export async function executeCompanyOperations(
 		return await handleGetOne.call(this, index, `${BASE_URL}v2/company/locations/${this.getNodeParameter('Id', index)}`);
 	}
 	if (operation === 'getLocationResources') {
-		return await handleGetOne.call(this, index, `${BASE_URL}v2/company/locations/${this.getNodeParameter('Id', index)}/resources`);
+		return await handleGetAll.call(this, index, `${BASE_URL}v2/company/locations/${this.getNodeParameter('Id', index)}/resources`);
 	}
 	return [[{json:{}, 
 		pairedItem: {

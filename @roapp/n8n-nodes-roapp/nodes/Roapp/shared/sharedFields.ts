@@ -199,17 +199,25 @@ export const globalFields: INodeProperties[] = [
 		]
 	},
 	{
-		displayName: 'Assignee ID',
+		displayName: 'Assignee Name or ID',
 		name: "assignee_id",
-		type: "string",
+		type: "options",
 		required: true,
-		default: '',
 		displayOptions: {
 			show: {
 				operation: ['createItem', 'updateItem'],
 				resource: ['order', 'estimate', 'invoice', 'booking']
 			},
 		},
+		typeOptions: {
+			loadOptionsDependsOn: [
+				'resource',
+				'operation',
+			],
+			loadOptionsMethod: 'getEmployees',
+		},
+		default: [],
+		description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 	},
 	{
 		displayName: "Discount",
@@ -345,7 +353,7 @@ export const globalFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				operation: ['create', 'update'],
-				resource: ['order', 'estimate']
+				resource: ['order', 'estimate', 'booking']
 			},
 		},
 		default : '',
@@ -357,22 +365,92 @@ export const globalFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				operation: ['create', 'update'],
-				resource: ['order', 'estimate']
+				resource: ['order', 'estimate', 'booking']
 			},
 		},
 		default : '',
 	},
 	{
-		displayName: 'Resource ID',
-		name: "resource_id",
-		type: "string",
-		default: "",
+		displayName: 'Location Name or ID',
+		name: 'branch_id',
+		type: 'options',		
+		required: true,
+		displayOptions: {
+			show: {
+				operation: ['create', 'update'],
+				resource: ['order', 'estimate', 'booking']
+			},
+		},		
+		typeOptions: {
+			loadOptionsDependsOn: [
+				'resource',
+				'operation',
+			],
+			loadOptionsMethod: 'getLocations',
+			reloadNodeOptions: true, 
+		},
+		default: [],
+		description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+	},
+	{
+		displayName: 'Assigned Employee Name or ID',
+		name: 'assignee_id',
+		type: 'options',
 		displayOptions: {
 			show: {
 				operation: ['create', 'update'],
 				resource: ['order', 'estimate']
 			},
+		},		
+		typeOptions: {
+			loadOptionsDependsOn: [
+				'resource',
+				'operation',
+			],
+			loadOptionsMethod: 'getEmployees',
 		},
+		default: [],
+		description: 'The ID of the employee assigned. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+	},
+	{
+		displayName: 'Manager Name or ID',
+		name: 'manager_id',
+		type: 'options',		
+		displayOptions: {
+			show: {
+				operation: ['create', 'update'],
+				resource: ['order', 'estimate', 'lead', 'invoice']
+			},
+		},		
+		typeOptions: {
+			loadOptionsDependsOn: [
+				'resource',
+				'operation',
+			],
+			loadOptionsMethod: 'getEmployees',
+		},
+		default: [],
+		description: 'Responsible manager ID. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+	},
+	{
+		displayName: 'Resource Name or ID',
+		name: 'resource_id',
+		type: 'options',
+		description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+		displayOptions: {
+			show: {
+				operation: ['create', 'update'],
+				resource: ['order', 'estimate', 'booking']
+			},
+		},
+		typeOptions: {
+			loadOptionsDependsOn: [
+				'resource',
+				'operation',
+			],
+			loadOptionsMethod: 'getLocationResources',
+		},
+		default: [],
 	},
 	{
 		displayName: 'Ad Campaign ID',

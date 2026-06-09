@@ -18,24 +18,49 @@ export const leadCreateDescription: INodeProperties[] = [
 				resource: ['lead'],
 			}
 		},
-		description: 'Inquiry type ID',
 	},
 	{
-		displayName: 'Lead Type ID',
+		displayName: 'Lead Type Name or ID',
 		name: 'leadtype_id',
-		type: 'number',
-		required: true,
-		default: 0,
+		type: 'options',		
 		displayOptions: {
 			show: showOnlyForLeadCreate,
+		},		
+		typeOptions: {
+			loadOptionsDependsOn: [
+				'resource',
+				'operation',
+			],
+			loadOptionsMethod: 'getTypes',
 		},
-		description: 'Inquiry type ID',
+		default: [],
+		description: 'Lead type to create. Choose from the list, or specify an ID using an <a href="https://n8n.io">expression</a>. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 	},
+	{
+        displayName: 'Lead Status Name or ID',
+        name: 'status_id',
+        type: 'options',
+		default: [],
+		displayOptions: {
+			show: {
+				operation: ['update'],
+				resource: ['lead'],
+			}
+		},
+        typeOptions: {
+            loadOptionsDependsOn: [
+                'resource',
+                'operation',
+            ],
+            loadOptionsMethod: 'getStatuses',
+		},
+		description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>'
+    },
 	{
 		displayName: 'Client ID',
 		name: 'client_id',
 		type: 'number',
-		default: 0,
+		default: '',
 		displayOptions: {
 			show: showOnlyForLeadCreate,
 		},
@@ -49,7 +74,7 @@ export const leadCreateDescription: INodeProperties[] = [
 		displayOptions: {
 			show: showOnlyForLeadCreate,
 		},
-		description: 'Inquiry contact number. Must be set with contact_name if client_id is absent.',
+		description: 'Lead contact number. Must be set with contact_name if client_id is absent.',
 	},
 	{
 		displayName: 'Contact Name',
@@ -59,7 +84,7 @@ export const leadCreateDescription: INodeProperties[] = [
 		displayOptions: {
 			show: showOnlyForLeadCreate,
 		},
-		description: 'Inquiry contact name',
+		description: 'Lead contact name',
 	},
 	{
 		displayName: 'Is Juridical',
@@ -69,27 +94,25 @@ export const leadCreateDescription: INodeProperties[] = [
 		displayOptions: {
 			show: showOnlyForLeadCreate,
 		},
-		description: 'Whether the inquiry contact is a legal entity',
+		description: 'Whether the lead contact is a legal entity',
 	},
 	{
-		displayName: 'Branch ID',
+		displayName: 'Branch Name or ID',
 		name: 'branch_id',
-		type: 'number',
-		default: 0,
+		type: 'options',
+		required: true,		
 		displayOptions: {
 			show: showOnlyForLeadCreate,
+		},		
+		typeOptions: {
+			loadOptionsDependsOn: [
+				'resource',
+				'operation',
+			],
+			loadOptionsMethod: 'getLocations',
 		},
-		description: 'Location ID',
-	},
-	{
-		displayName: 'Manager ID',
-		name: 'manager_id',
-		type: 'number',
-		default: 0,
-		displayOptions: {
-			show: showOnlyForLeadCreate,
-		},
-		description: 'Responsible manager ID',
+		default: [],
+		description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 	},
 	{
 		displayName: 'Description',
@@ -102,14 +125,21 @@ export const leadCreateDescription: INodeProperties[] = [
 		description: 'Inquiry description',
 	},
 	{
-		displayName: 'Ad Campaign ID',
+		displayName: 'Ad Campaign Name or ID',
 		name: 'ad_campaign_id',
-		type: 'number',
-		default: 0,
+		type: 'options',		
 		displayOptions: {
 			show: showOnlyForLeadCreate,
+		},		
+		typeOptions: {
+			loadOptionsDependsOn: [
+				'resource',
+				'operation',
+			],
+			loadOptionsMethod: 'getAdCampaigns',
 		},
-		description: 'Advertising campaign ID',
+		default: [],
+		description: 'Advertising campaign ID. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 	},
 	{
 		displayName: 'Is Urgent',

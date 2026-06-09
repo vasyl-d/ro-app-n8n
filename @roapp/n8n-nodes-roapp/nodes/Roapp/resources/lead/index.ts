@@ -29,6 +29,12 @@ export const leadDescription: INodeProperties[] = [
 				description: 'Create a new lead',
 			},
 			{
+				name: 'Create Comment',
+				value: 'createComment',
+				action: 'Create lead comment',
+				description: 'Create Lead Comment',
+			},
+			{
 				name: 'Get',
 				value: 'get',
 				action: 'Get a lead',
@@ -40,12 +46,12 @@ export const leadDescription: INodeProperties[] = [
 				action: 'Get leads',
 				description: 'Get leads',
 			},
-			{
-				name: 'Update',
-				value: 'update',
-				action: 'Update lead',
-				description: 'Update the lead',
-			},
+			// {
+			// 	name: 'Update',
+			// 	value: 'update',
+			// 	action: 'Update lead',
+			// 	description: 'Update the lead',
+			// },
 			{
 				name: 'Update Status',
 				value: 'updateStatus',
@@ -72,12 +78,12 @@ export async function executeLeadOperation(
 		return await handleGetOne.call(this, index, `${BASE_URL}lead/?ids[]=${this.getNodeParameter('Id', index)}`);
 	} else if (operation === 'create') {
 		return await handleCreateUpdate.call(this, index, `${BASE_URL}lead/`, 'POST');
-	} else if  (operation === 'update') {
-		return await handleCreateUpdate.call(this, index, `${BASE_URL}lead/`, 'PUT');
+	// } else if  (operation === 'update') {
+	// 	return await handleCreateUpdate.call(this, index, `${BASE_URL}lead/`, 'PUT');
 	} else if (operation === 'updateStatus') {
-		return await handleCreateUpdate.call(this, index, `${BASE_URL}lead/status/`, 'PUT');
+		return await handleCreateUpdate.call(this, index, `${BASE_URL}lead/status/`, 'POST');
 	} else if (operation === 'createComment') {
-		return await handleCreateUpdate.call(this, index, `${BASE_URL}lead/${this.getNodeParameter('lead_id', index)}/comment/`, 'POST');
+		return await handleCreateUpdate.call(this, index, `${BASE_URL}lead/${this.getNodeParameter('lead_id', index)}/comments`, 'POST');
 	}
 	return [[{json:{},
 		pairedItem: {

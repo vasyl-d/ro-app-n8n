@@ -144,6 +144,74 @@ export async function getResourceTypes(
 	return fields;
 }
 
+export async function getAdCampaigns(
+	this: IAllExecuteFunctions) : Promise<INodePropertyOptions[]>  {
+	const url:string =  `${BASE_URL}marketing/campaigns/`;
+	let response = await this.helpers.httpRequestWithAuthentication.call(this, 'roappApi', {
+		method: "GET",
+		url,
+		json: true,
+	});
+	response = response?.data || response;
+	const fields:INodePropertyOptions[] = response.map((row: IDataObject) => ({
+		name: row?.title || row?.name,
+		value: row.id
+	}));
+	return fields;
+}
+
+export async function getEmployees(
+	this: IAllExecuteFunctions) : Promise<INodePropertyOptions[]>  {
+	const url:string =  `${BASE_URL}v2/company/employees`;
+	let response = await this.helpers.httpRequestWithAuthentication.call(this, 'roappApi', {
+		method: "GET",
+		url,
+		json: true,
+	});
+	response = response?.data || response;
+	const fields:INodePropertyOptions[] = response.map((row: IDataObject) => ({
+		name: `${row?.first_name} ${row?.last_name}`,
+		value: row.id
+	}));
+	return fields;
+}
+
+export async function getLocations(
+	this: IAllExecuteFunctions) : Promise<INodePropertyOptions[]>  {
+	const url:string =  `${BASE_URL}v2/company/locations`;
+	let response = await this.helpers.httpRequestWithAuthentication.call(this, 'roappApi', {
+		method: "GET",
+		url,
+		json: true,
+	});
+	response = response?.data || response;
+	const fields:INodePropertyOptions[] = response.map((row: IDataObject) => ({
+		name: row?.name,
+		value: row.id
+	}));
+	return fields;
+}
+
+export async function getLocationResources(
+	this: IAllExecuteFunctions,
+	branch_id: string) : Promise<INodePropertyOptions[]>  {
+
+	if (!branch_id) {
+		return [];
+	};
+	const url:string =  `${BASE_URL}v2/company/locations/${branch_id}/resources`;
+	const response = await this.helpers.httpRequestWithAuthentication.call(this, 'roappApi', {
+		method: "GET",
+		url,
+		json: true,
+	});
+	const fields:INodePropertyOptions[] = response.map((row: IDataObject) => ({
+		name: row.name,
+		value: row.id
+	}));
+	return fields;
+}
+
 // ==================== HELPER FUNCTIONS ====================
 
 export async function getCustomFieldsInfo(
@@ -295,7 +363,7 @@ export async function handleGetAll(
 		resObj = (responseData || {}) as IDataObject;
 		
 		// Витягуємо масив даних з відповіді API
-		const items = (resObj?.data || []) as IDataObject[];
+		const items = (resObj?.data || responseData || []) as IDataObject[];
 		console.log(`Items count: ${items.length}`);
 
 		// 🛑 ЗАХИСТ 1: Якщо API повернуло порожній масив, негайно зупиняємося (навіть якщо total_pages каже інакше)

@@ -24,6 +24,10 @@ import { catalogDescription, executeCatalogOperation } from './resources/catalog
 import { bookingsDescription, executeBookingOperation } from './resources/bookings';
 import {
 			fetchCustomFieldsData,
+			getAdCampaigns,
+			getEmployees,
+			getLocationResources,
+			getLocations,
 			getResourceStatuses,
 			getResourceTypes
 		} from './shared/methods';
@@ -143,6 +147,26 @@ export class Roapp implements INodeType {
 					const fields = await getResourceTypes.call(this, resource);
 					return fields;
 				},
+			async getAdCampaigns(this: ILoadOptionsFunctions) : Promise<INodePropertyOptions[]>  {
+				const fields = await getAdCampaigns.call(this)
+				return fields;
+			},
+			async getEmployees(this: ILoadOptionsFunctions) : Promise<INodePropertyOptions[]>  {
+				const fields = await getEmployees.call(this)
+				return fields;
+			},
+			async getLocations(this: ILoadOptionsFunctions) : Promise<INodePropertyOptions[]>  {
+				const fields = await getLocations.call(this)
+				return fields;
+			},
+			async getLocationResources(this: ILoadOptionsFunctions) : Promise<INodePropertyOptions[]>  {
+				const branch_id = this.getCurrentNodeParameter('branch_id') as string;
+				if (!branch_id) {
+					return [];
+				};
+				const fields = await getLocationResources.call(this, branch_id);
+				return fields;
+			},
 		},
 		resourceMapping: {
 			async getCustomFields(this: ILoadOptionsFunctions): Promise<ResourceMapperFields> {

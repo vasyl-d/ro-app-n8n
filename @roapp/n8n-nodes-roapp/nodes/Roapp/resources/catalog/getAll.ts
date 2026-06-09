@@ -34,7 +34,7 @@ export const getAllDescription: INodeProperties[] = [
 		typeOptions: {
 			multipleValues: true,
 		},
-		default: 0,
+		default: '',
 		description: 'List of Service Category IDs',
 		displayOptions: {
 			show: showGetCatalogue

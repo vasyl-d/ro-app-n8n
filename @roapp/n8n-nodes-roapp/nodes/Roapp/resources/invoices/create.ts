@@ -37,15 +37,6 @@ export const invoiceCreateDescription: INodeProperties[] = [
         }
     },
     {
-        displayName: 'Manager ID',
-        name: 'manager_id',
-        type: 'string',
-        default: '',
-        displayOptions: {
-            show: showOnlyForInvoiceCreate
-        }
-    },
-    {
         displayName: 'Issue Date',
         name: 'issue_date_invoice',
         type: 'dateTime',

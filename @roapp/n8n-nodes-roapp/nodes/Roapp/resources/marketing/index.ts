@@ -1,5 +1,5 @@
 import { INodeProperties, IExecuteFunctions,INodeExecutionData } from 'n8n-workflow';
-import { handleGetOne, handleGetAll, BASE_URL } from '../../shared/methods';
+import { handleGetAll, BASE_URL } from '../../shared/methods';
 
 const showOnlyForMarketing = {
     resource: ['marketing'],
@@ -41,7 +41,7 @@ export async function executeGetMarketing(
 		return await handleGetAll.call(this, index, `${BASE_URL}marketing/reviews`);
 	} 
 	if (operation === 'getAdCampaigns') {
-		return await handleGetOne.call(this, index, `${BASE_URL}marketing/campaigns/`);
+		return await handleGetAll.call(this, index, `${BASE_URL}marketing/campaigns/`);
 	} 
 	return [[{json:{}, 
 		pairedItem: {
