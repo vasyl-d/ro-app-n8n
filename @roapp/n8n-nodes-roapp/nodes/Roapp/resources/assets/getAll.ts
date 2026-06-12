@@ -47,7 +47,7 @@ export const assetGetManyDescription: INodeProperties[] = [
 	},
 	{
 		displayName: 'Warehouse IDs',
-		name: 'warehouse_id',
+		name: 'warehouse_id[]',
 		type: 'string',
 		typeOptions: {
 			multipleValues: true, // Це перетворює звичайний інпут на динамічний список

@@ -9,6 +9,7 @@ import {INodePropertyOptions,
 	IDataObject,
 	INodeExecutionData,
 	ResourceMapperField,
+	JsonObject,
  } from 'n8n-workflow';
 import { DateTime } from 'luxon';
 
@@ -51,6 +52,24 @@ const cacheTTL: { [key: string]: number } = {};
 const CACHE_DURATION = 5 * 60 * 1000; // 5 минут в миллисекундах
 
 // ==================== HELPER FUNCTIONS ====================
+
+function errorHelper(
+	this: IExecuteFunctions | ILoadOptionsFunctions, 
+	error: JsonObject, 
+	):NodeApiError 
+{
+	const response = error?.response as IDataObject;
+	const data = response?.data as IDataObject;
+	const errorMessage = String(data?.message) || 
+						String(data?.error) ||
+						String(error?.message) ||
+						'Unknown error occurred';
+
+	throw new NodeApiError(this.getNode(), error, { 
+		message: errorMessage 
+		});		
+}
+
 export function phoneValidation(
 	phone:string,
 ):boolean {
@@ -257,6 +276,27 @@ export function transformCustomFieldsValues(
 	return transformed;
 }
 
+function isVisible(param: IDataObject, resourceName:string, operationName:string): boolean {
+		const opts = param.displayOptions as IDataObject;
+		if (!opts) return true;
+
+		const show = opts.show as IDataObject;
+		const hide = opts.hide as IDataObject;
+		const hideResource = hide.resource as string[];
+		const hideOperation = hide.operation as string[];
+		const showResource = show.resource as string[];
+		const showOperation = show.operation as string[];
+		if (hide) {
+			if (hideResource && Array.isArray(hideResource) && (hideResource.includes(resourceName))) return false;
+			if (hideOperation && Array.isArray((hideOperation) && (hideOperation.includes(operationName)))) return false;
+		}
+		if (show) {
+			if (showResource && Array.isArray(showResource) && !(showResource.includes(resourceName))) return false;
+			if (showOperation && Array.isArray(showOperation) && !(showOperation.includes(operationName))) return false;
+		}
+		return true;
+	}
+
 // ==================== EXECUTE METHODS FOR EACH RESOURCE ====================
 
 //helper funcs
@@ -269,19 +309,27 @@ function makeQs(
 	const parameters = this.getNode().parameters;
 	const qs: IDataObject = {};
 	const ignoredParameters = ['resource', 'operation', 'returnAll', 'limit', ...ignored];
+	const oldApiRresources = ['asset', 'lead'] as string[];
+	const resourceName = this.getNodeParameter('resource', index) as string;
+	const operationName = this.getNodeParameter('operation', index) as string;
 
 	for (const parameterName of Object.keys(parameters)) {
+		if (!isVisible(parameters[parameterName] as IDataObject, resourceName, operationName)) continue;
 		if (!ignoredParameters.includes(parameterName)) {
 			try {
 				// Отримуємо значення параметра (з урахуванням виразів/expressions)
 				const value = this.getNodeParameter(parameterName, index);
 				if (Array.isArray(value) && value.length > 0) {
-					// ВАРІАНТ А: API очікує рядок через кому: ?status=active,pending
-					qs[`${parameterName}`] = value.join(`,`);
-
-					// ВАРІАНТ Б: API очікує формат з квадратними дужками: ?status[]=active&status[]=pending
-					// (Більшість бібліотек роблять це автоматично, але іноді треба вказати ключ явно)
-					// qs[`${paramName}[]`] = value; 
+					if (oldApiRresources.includes(resourceName)) {
+						// ВАРІАНТ API очікує формат з квадратними дужками: ?status[]=active&status[]=pending
+						// (Більшість бібліотек роблять це автоматично, але іноді треба вказати ключ явно)
+						// qs[`${parameterName}[]`] = value.join(`&${parameterName}[]=`); 
+						qs[`${parameterName}[]`] = value; 
+					} else {
+						// ВАРІАНТ API очікує рядок через кому: ?status=active,pending
+						qs[`${parameterName}`] = value; 
+						// qs[`${parameterName}`] = value.join(`,`);
+					}
 				}
 				// Якщо це колекція "filters" або "additionalFields"
 				else if (typeof value === 'object' && value !== null && value != undefined) {
@@ -289,13 +337,26 @@ function makeQs(
 					if (parameterName == "created_at" || parameterName == "modified_at" || parameterName == "closed_at" || parameterName == "scheduled_for" || parameterName == "due_date" || parameterName == "issue_date") {
 						const from_name = `${parameterName}_from`;
 						const to_name = `${parameterName}_to`;
-						const from = processedFilters[from_name]
-							? `${String(DateTime.fromISO(String(processedFilters[from_name])).toISO()).split(".")[0]}Z` // або .toISOString()
-							: '';
-						const to = processedFilters[to_name]
-							? `,${String(DateTime.fromISO(String(processedFilters[to_name])).toISO()).split(".")[0]}Z`
-							: '';
-						qs[`${parameterName}`] = `${from}${to}`;
+						let from:String = '';
+						let to:String = '';
+						if (parameterName != "issue_date") {
+							from = processedFilters[from_name]
+								? `${String(DateTime.fromISO(String(processedFilters[from_name])).toISO()).split(".")[0]}Z` // або .toISOString()
+								: '';
+							to = processedFilters[to_name]
+								? `,${String(DateTime.fromISO(String(processedFilters[to_name])).toISO()).split(".")[0]}Z`
+								: '';
+							} else {
+								from = processedFilters[from_name]
+								? `${String(DateTime.fromISO(String(processedFilters[from_name])).toISO({includeOffset: false, precision: 'day' }))}` // або .toISOString()
+								: '';
+								to = processedFilters[to_name]
+								? `,${String(DateTime.fromISO(String(processedFilters[to_name])).toISO({includeOffset: false, precision: 'day' }))}`
+								: '';
+							}
+							if (from || to) {
+								qs[`${parameterName}`] = `${from}${to}`;
+							}
 					} else {
 						Object.assign(qs, value);
 					}
@@ -326,7 +387,8 @@ export async function handleGetAll(
 ): Promise<INodeExecutionData[][]> {
 	const returnAll = this.getNodeParameter('returnAll', index, true) as boolean;
 	const limit = this.getNodeParameter('limit', index, 50) as number;
-	
+	const resourceName = this.getNodeParameter('resource', index) as string;
+	const oldApiRresources = ['asset', 'lead'] as string[];
 	const qs = makeQs.call(this, index);
 	
 	const rawItems: IDataObject[] = [];
@@ -340,24 +402,26 @@ export async function handleGetAll(
 		if (page !== 1) {
 			qs.page = page;
 		}
+
 		console.log(`Requesting page ${page}: ${url}, QS: ${JSON.stringify(qs)}`);
-		
+		const options:IDataObject = {};
+
+		if (oldApiRresources.includes(resourceName)) {
+			options["arrayFormat"] = 'repeat';
+		} else {
+			options["arrayFormat"] = 'comma';
+		};
+	
 		try {
 			responseData = await this.helpers.httpRequestWithAuthentication.call(this, 'roappApi', {
 				method: 'GET',
 				url: url,
 				json: true,
 				qs: qs,
+				...options
 			});
 		} catch (error) {
-			const errorMessage = error?.response?.body?.message || 
-								error?.response?.body?.error ||
-								error?.message ||
-								'Unknown error occurred';
-			
-			throw new NodeApiError(this.getNode(), error, { 
-				message: errorMessage 
-			});
+			errorHelper.call(this, error);
 		}
 
 		resObj = (responseData || {}) as IDataObject;
@@ -435,17 +499,8 @@ export async function handleGetOne(
 				item: index, // Зв'язуємо з поточним вхідним індексом
 		},}]];
 	} catch (error) {
-		// Якщо API повернуло помилку (наприклад, 400)
-		// Better error extraction
-		// console.log(error);
-		const errorMessage = error?.response?.body?.message || 
-							error?.response?.body?.error ||
-							error?.message ||
-							'Unknown error occurred';
-		
-		throw new NodeApiError(this.getNode(), error, { 
-			message: errorMessage 
-		});
+		errorHelper.call(this, error);
+		return [[{json: {}, pairedItem: {item: index}}]];
 	}
 };
 
@@ -469,17 +524,8 @@ export async function handlePost(
 			item: index, // Зв'язуємо з поточним вхідним індексом
 		},}]];
 	} catch (error) {
-		// Якщо API повернуло помилку (наприклад, 400)
-		// Better error extraction
-		// console.log(error);
-		const errorMessage = error?.response?.body?.message || 
-							error?.response?.body?.error ||
-							error?.message ||
-							'Unknown error occurred';
-		
-		throw new NodeApiError(this.getNode(), error, { 
-			message: errorMessage 
-		});
+		errorHelper.call(this, error);
+		return [[{json: {}, pairedItem: {item: index}}]];
 	}
 };
 
@@ -557,14 +603,8 @@ export async function handleCreateUpdate(
 			} }]];
 
 	} catch (error) {
-		const errorMessage = error?.response?.body?.message || 
-							error?.response?.body?.error ||
-							error?.message ||
-							'Unknown error occurred';
-		
-		throw new NodeApiError(this.getNode(), error, { 
-			message: errorMessage 
-		});
+		errorHelper.call(this, error);
+		return [[{json: {}, pairedItem: {item: index}}]];
 	}
 }
 

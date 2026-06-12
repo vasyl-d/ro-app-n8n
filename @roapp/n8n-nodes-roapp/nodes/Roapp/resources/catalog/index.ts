@@ -86,11 +86,11 @@ export async function executeCatalogOperation(
 	if (operation === 'getServices') {
 		return await handleGetAll.call(this, index, `${BASE_URL}v2/catalog/services`);
 	} else if (operation === 'getServicesCategories') {
-		return await handleGetOne.call(this, index, `${BASE_URL}v2/catalog/services/categories`);
+		return await handleGetAll.call(this, index, `${BASE_URL}v2/catalog/services/categories`);
 	} else if (operation === 'getServiceById') {
 		return await handleGetOne.call(this, index, `${BASE_URL}v2/catalog/services/${this.getNodeParameter('Id', index)}`);
 	} else if (operation === 'getProductsCategories') {
-		return await handleGetOne.call(this, index, `${BASE_URL}v2/catalog/products/categories`);
+		return await handleGetAll.call(this, index, `${BASE_URL}v2/catalog/products/categories`);
 	} else if (operation === 'getProductById') {
 		return await handleGetOne.call(this, index, `${BASE_URL}v2/catalog/products/${this.getNodeParameter('Id', index)}`);
 	} else if (operation === 'getProducts') {
