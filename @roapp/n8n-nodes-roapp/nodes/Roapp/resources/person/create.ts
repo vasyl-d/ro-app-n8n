@@ -1,11 +1,24 @@
 import type { INodeProperties } from 'n8n-workflow';
 
 const showOnlyForPersonCreate = {
-	operation: ['create'],
+	operation: ['create', 'update'],
 	resource: ['person'],
 };
 
 export const personCreateDescription: INodeProperties[] = [
+	{
+        displayName: 'Person ID',
+        name: 'person_id',
+        type: 'string',
+        default: '',
+        required: true,
+        displayOptions: {
+            show: {
+                operation: ['update'],
+                resource: ['person'],
+            }
+        },       
+    },
 	{
 		displayName: 'First_name',
 		name: 'first_name',

@@ -7,5 +7,7 @@ CLAUDE.md
 .continue
 *.sh
 .kilo
+.kilo/*
 .DS_Store
 @roapp/n8n-nodes-roapp/.DS_Store
+deduplication/*

@@ -6,15 +6,25 @@ const showOnlyForGetWarehouses = {
 };
 
 export const warehouseGetWhDescription: INodeProperties[] = [
-    {
-        displayName: 'Location ID',
-        name: "branch_id",
-        type: "string",
-        default: '',
-        displayOptions: {
-            show: showOnlyForGetWarehouses
-        },
-    },
+	{
+		displayName: 'Location Name or ID',
+		name: 'branch_id',
+		type: 'options',		
+		required: true,
+		displayOptions: {
+			show: showOnlyForGetWarehouses,
+		},		
+		typeOptions: {
+			loadOptionsDependsOn: [
+				'resource',
+				'operation',
+			],
+			loadOptionsMethod: 'getLocations',
+			reloadNodeOptions: true, 
+		},
+		default: [],
+		description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+	},
     {
         displayName: "Type",
         name: "type",

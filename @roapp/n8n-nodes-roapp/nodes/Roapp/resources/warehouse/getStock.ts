@@ -10,7 +10,8 @@ export const warehouseGetStockDescription: INodeProperties[] = [
 		displayName: 'Warehouse ID',
 		name: "warehouse_id",
 		type: 'number',
-		default: '',
+		required: true,
+		default: 0,
 		displayOptions: {
 			show: showOnlyForGetStock
 		}
@@ -27,12 +28,12 @@ export const warehouseGetStockDescription: INodeProperties[] = [
 	},
 	{
 		displayName: 'Product ID',
-		name: 'ids[]',
-		type: 'number',
+		name: 'ids',
+		type: 'string',
 		typeOptions: {
 			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
 		},
-		default: 0,
+		default: [],
 		description: 'Filter by product IDs. Specify one or more IDs using an <a href="https://n8n.io">expression</a>.',
 		displayOptions: {
 			show: showOnlyForGetStock,
@@ -40,12 +41,12 @@ export const warehouseGetStockDescription: INodeProperties[] = [
 	},
 	{
 		displayName: 'Categories ID',
-		name: 'categories[]',
-		type: 'number',
+		name: 'categories',
+		type: 'string',
 		typeOptions: {
 			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
 		},
-		default: 0,
+		default: [],
 		description: 'Filter by category IDs. Specify one or more IDs using an <a href="https://n8n.io">expression</a>.',
 		displayOptions: {
 			show: showOnlyForGetStock,
@@ -53,7 +54,7 @@ export const warehouseGetStockDescription: INodeProperties[] = [
 	},
 	{
 		displayName: 'Articles ID',
-		name: 'articles[]',
+		name: 'articles',
 		type: 'string',
 		typeOptions: {
 			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
@@ -66,7 +67,7 @@ export const warehouseGetStockDescription: INodeProperties[] = [
 	},
 	{
 		displayName: 'Barcodes ID',
-		name: 'barcodes[]',
+		name: 'barcodes',
 		type: 'string',
 		typeOptions: {
 			multipleValues: true, // Це перетворює звичайний інпут на динамічний список

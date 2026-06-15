@@ -17,16 +17,16 @@ export const saleDescription: INodeProperties[] = [
 		},
 		options: [
 			{
-				name: 'Get Many',
-				value: 'getAll',
-				action: 'Get sales',
-				description: 'Get sales',
-			},
-			{
 				name: 'Get',
 				value: 'get',
 				action: 'Get sale by id',
 				description: 'Get sale by ID',
+			},
+			{
+				name: 'Get Many',
+				value: 'getAll',
+				action: 'Get sales',
+				description: 'Get sales',
 			},
 		],
 		default: 'getAll',

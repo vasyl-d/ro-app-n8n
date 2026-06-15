@@ -9,8 +9,8 @@ import { NodeConnectionTypes,
 	NodeApiError 
 } from 'n8n-workflow';
 import { globalFields } from './shared/sharedFields';
-import { personDescription } from './resources/person';
-import { organizationDescription } from './resources/organization';
+import { personDescription, executePersonOperation } from './resources/person';
+import { organizationDescription, executeOrganizationOperation } from './resources/organization';
 import { ordersDescription, executeOrderOperation } from './resources/orders';
 import { saleDescription, executeSaleOperation } from './resources/sale';
 import { invoiceDescription, executeInvoiceOperation } from './resources/invoices';
@@ -150,15 +150,14 @@ export class Roapp implements INodeType {
 					return fields;
 				},
 			async getAdCampaigns(this: ILoadOptionsFunctions) : Promise<INodePropertyOptions[]>  {
-				const fields = await getAdCampaigns.call(this)
-				return fields;
+				return await getAdCampaigns.call(this);
 			},
 			async getEmployees(this: ILoadOptionsFunctions) : Promise<INodePropertyOptions[]>  {
-				const fields = await getEmployees.call(this)
+				const fields = await getEmployees.call(this);
 				return fields;
 			},
 			async getLocations(this: ILoadOptionsFunctions) : Promise<INodePropertyOptions[]>  {
-				const fields = await getLocations.call(this)
+				const fields = await getLocations.call(this);
 				return fields;
 			},
 			async getLocationResources(this: ILoadOptionsFunctions) : Promise<INodePropertyOptions[]>  {
@@ -181,8 +180,6 @@ export class Roapp implements INodeType {
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[][] = [];
-
-		const {executePersonOperation, executeOrganizationOperation } = await import('./shared/methods');
 
 		for (let i = 0; i < items.length; i++) {
 			const resource = this.getNodeParameter('resource', i) as string;

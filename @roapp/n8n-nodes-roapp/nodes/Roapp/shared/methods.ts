@@ -61,12 +61,9 @@ function errorHelper(
 	error: JsonObject, 
 	):NodeApiError 
 {
-	const response = error?.response as IDataObject;
-	const data = response?.data as IDataObject || {};
-	const errorMessage = String(response?.message) || 
-							String(data?.message) || 
-							String(error?.message) ||
-							'Unknown error occurred';
+	const context = error?.context as IDataObject;
+	const errorMessage = `${String(JSON.stringify(error?.description || context?.data))} ${String(error?.messages)}`;
+	// console.log(errorMessage);
 
 	throw new NodeApiError(this.getNode(), error, { 
 		message: errorMessage 
@@ -174,9 +171,9 @@ export async function getAdCampaigns(
 		url,
 		json: true,
 	});
-	response = response?.data || response;
+	response = response?.data;
 	const fields:INodePropertyOptions[] = response.map((row: IDataObject) => ({
-		name: row?.title || row?.name,
+		name: row.name,
 		value: row.id
 	}));
 	return fields;
@@ -312,7 +309,7 @@ function makeQs(
 	const parameters = this.getNode().parameters;
 	const qs: IDataObject = {};
 	const ignoredParameters = ['resource', 'operation', 'returnAll', 'limit', ...ignored];
-	const oldApiRresources = ['asset', 'lead'] as string[];
+	const oldApiRresources = ['asset', 'lead', 'warehouse'] as string[];
 	const resourceName = this.getNodeParameter('resource', index) as string;
 	const operationName = this.getNodeParameter('operation', index) as string;
 
@@ -406,7 +403,7 @@ export async function handleGetAll(
 			qs.page = page;
 		}
 
-		console.log(`Requesting page ${page}: ${url}, QS: ${JSON.stringify(qs)}`);
+		// console.log(`Requesting page ${page}: ${url}, QS: ${JSON.stringify(qs)}`);
 		const options:IDataObject = {};
 
 		if (oldApiRresources.includes(resourceName)) {
@@ -431,7 +428,7 @@ export async function handleGetAll(
 		
 		// Витягуємо масив даних з відповіді API
 		const items = (resObj?.data || responseData || []) as IDataObject[];
-		console.log(`Items count: ${items.length}`);
+		// console.log(`Items count: ${items.length}`);
 
 		// 🛑 ЗАХИСТ 1: Якщо API повернуло порожній масив, негайно зупиняємося (навіть якщо total_pages каже інакше)
 		if (items.length === 0) {
@@ -457,7 +454,7 @@ export async function handleGetAll(
 			break;
 		}
 
-		console.log(`Total pages: ${total_pages}, finished page ${page}`);
+		// console.log(`Total pages: ${total_pages}, finished page ${page}`);
 		
 		// 🛑 ЗАХИСТ 3: Якщо ми щойно обробили останню сторінку, виходимо без інкременту
 		if (page >= total_pages) {
@@ -490,7 +487,7 @@ export async function handleGetOne(
 	try {
 		// Збираємо всі Query Parameters динамічно
 		const qs = makeQs.call(this, index);
-		console.log(`before request: ${url}, ${JSON.stringify(qs, null, 2)}`);
+		// console.log(`before request: ${url}, ${JSON.stringify(qs, null, 2)}`);
 		return [[{
 			json: await this.helpers.httpRequestWithAuthentication.call(this, 'roappApi', {
 				method: method,
@@ -515,7 +512,7 @@ export async function handlePost(
     method: IHttpRequestMethods = 'POST',
 ):Promise<INodeExecutionData[][]> {
 	try {
-		console.log(`Log ${url} body before request: ${JSON.stringify(body)}`);
+		// console.log(`Log ${url} body before request: ${JSON.stringify(body)}`);
 		return [[{ 
 		json: await this.helpers.httpRequestWithAuthentication.call(this, 'roappApi', {
 			method: method,
@@ -582,6 +579,37 @@ export async function handleCreateUpdate(
 					} 
 					else if (paramName === "items_custom" && valueObj?.customItem) {
 						body.items_custom = transformInvoiceCustomItems(valueObj.customItem as IDataObject[]);
+					} 
+					else if (paramName === "phonesUi" && valueObj?.phones) {
+						const phonesUi = Object.assign(valueObj as {
+													phones?: Array<{
+														title: string;
+														phone: string;
+														notify: boolean;
+														has_viber: boolean;
+														has_whatsapp: boolean;
+													}> });
+
+						if (phonesUi?.phones && phonesUi?.phones?.length > 0) {
+							body.phones = phonesUi.phones.map((item:IDataObject) => {
+								const phone = item.phone as string;
+								if (phoneValidation(phone)) {
+									return {
+										title: item.title,
+										phone: item.phone,
+										notify: item.notify,
+										has_viber: item.has_viber,
+										has_whatsapp: item.has_whatsapp,
+									}
+								}
+								else {
+									throw new NodeOperationError(this.getNode(), 
+										`The phone number "${item.phone}" is not valid. Please use international format (e.g., +12021234567).`,
+										{ itemIndex: index }
+									);
+								}
+							});
+						}
 					}
 					else {
 						// Оскільки body має тип IDataObject, ми можемо присвоїти туди unknown значення
@@ -590,7 +618,7 @@ export async function handleCreateUpdate(
 				}
 			}
 		}
-		console.log(`Log ${url} body before request: ${JSON.stringify(body)}`);
+		// console.log(`Log ${url} body before request: ${JSON.stringify(body)}`);
 		// Робимо запит до API та явно кажемо TypeScript, що відповідь — це об'єкт (IDataObject)
 		const responseData = await this.helpers.httpRequestWithAuthentication.call(this, 'roappApi', {
 			method: method,
@@ -677,121 +705,121 @@ export function transformInvoiceCustomItems(items: IDataObject[]): IDataObject[]
 }
 
 
-export async function executePersonOperation(
-	this: IExecuteFunctions,
-	operation: string,
-	index: number,
-):Promise<INodeExecutionData[][]> {
-	if (operation === 'create') {
-		const body: IDataObject = {
-			first_name: this.getNodeParameter('first_name', index),
-			last_name: this.getNodeParameter('last_name', index),
-		};
-		if (this.getNodeParameter('email', index)) {
-			body.email = this.getNodeParameter('email', index);
-		}
-		const phonesUi = Object.assign(this.getNodeParameter('phonesUi', index, {}) as {
-															phones?: Array<{
-																title: string;
-																phone: string;
-																notify: boolean;
-																has_viber: boolean;
-																has_whatsapp: boolean;
-															}> });
+// export async function executePersonOperation(
+// 	this: IExecuteFunctions,
+// 	operation: string,
+// 	index: number,
+// ):Promise<INodeExecutionData[][]> {
+// 	if (operation === 'create') {
+// 		const body: IDataObject = {
+// 			first_name: this.getNodeParameter('first_name', index),
+// 			last_name: this.getNodeParameter('last_name', index),
+// 		};
+// 		if (this.getNodeParameter('email', index)) {
+// 			body.email = this.getNodeParameter('email', index);
+// 		}
+// 		const phonesUi = Object.assign(this.getNodeParameter('phonesUi', index, {}) as {
+// 															phones?: Array<{
+// 																title: string;
+// 																phone: string;
+// 																notify: boolean;
+// 																has_viber: boolean;
+// 																has_whatsapp: boolean;
+// 															}> });
 
-		if (phonesUi?.phones && phonesUi?.phones?.length > 0) {
-				body.phones = phonesUi.phones.map((item:IDataObject) => {
-					const phone = item.phone as string;
-					if (phoneValidation(phone)) {
-						return {
-							title: item.title,
-							phone: item.phone,
-							notify: item.notify,
-							has_viber: item.has_viber,
-							has_whatsapp: item.has_whatsapp,
-						}
-					}
-					else {
-						throw new NodeOperationError(this.getNode(), 
-							`The phone number "${item.phone}" is not valid. Please use international format (e.g., +12021234567).`,
-							{ itemIndex: index }
-						);
-					}
-				});
-		}
-		const customFields = this.getNodeParameter('customFields', index) as IDataObject;
-		if (customFields?.value) {
-			// Получаем информацию о типах полей и преобразуем dateTime
-			const fieldsInfo = await getCustomFieldsInfo.call(this, 'person');
-			const valObj = customFields?.value as IDataObject;
-			const transformedCustomFields = transformCustomFieldsValues(valObj, fieldsInfo);
-			body.custom_fields = transformedCustomFields;
-		}
-		return await handlePost.call(this, index, `${BASE_URL}v2/contacts/people`, body);
-	} else if (operation === 'getAll') {
-		return await handleGetAll.call(this, index, `${BASE_URL}v2/contacts/people`);
-	} else if (operation === 'get') {
-		return await handleGetOne.call(this, index, `${BASE_URL}v2/contacts/people/${this.getNodeParameter('Id', index)}`);
-	}
-	return [[{json: {}}]];
-}
+// 		if (phonesUi?.phones && phonesUi?.phones?.length > 0) {
+// 				body.phones = phonesUi.phones.map((item:IDataObject) => {
+// 					const phone = item.phone as string;
+// 					if (phoneValidation(phone)) {
+// 						return {
+// 							title: item.title,
+// 							phone: item.phone,
+// 							notify: item.notify,
+// 							has_viber: item.has_viber,
+// 							has_whatsapp: item.has_whatsapp,
+// 						}
+// 					}
+// 					else {
+// 						throw new NodeOperationError(this.getNode(), 
+// 							`The phone number "${item.phone}" is not valid. Please use international format (e.g., +12021234567).`,
+// 							{ itemIndex: index }
+// 						);
+// 					}
+// 				});
+// 		}
+// 		const customFields = this.getNodeParameter('customFields', index) as IDataObject;
+// 		if (customFields?.value) {
+// 			// Получаем информацию о типах полей и преобразуем dateTime
+// 			const fieldsInfo = await getCustomFieldsInfo.call(this, 'person');
+// 			const valObj = customFields?.value as IDataObject;
+// 			const transformedCustomFields = transformCustomFieldsValues(valObj, fieldsInfo);
+// 			body.custom_fields = transformedCustomFields;
+// 		}
+// 		return await handlePost.call(this, index, `${BASE_URL}v2/contacts/people`, body);
+// 	} else if (operation === 'getAll') {
+// 		return await handleGetAll.call(this, index, `${BASE_URL}v2/contacts/people`);
+// 	} else if (operation === 'get') {
+// 		return await handleGetOne.call(this, index, `${BASE_URL}v2/contacts/people/${this.getNodeParameter('Id', index)}`);
+// 	}
+// 	return [[{json: {}}]];
+// }
 
 
-export async function executeOrganizationOperation(
-	this: IExecuteFunctions,
-	operation: string,
-	index: number,
-):Promise<INodeExecutionData[][]> {
-	if (operation === 'getAll') {
-		return await handleGetAll.call(this, index, `${BASE_URL}v2/contacts/organizations`);
-	} else if (operation === 'get') {
-		return await handleGetOne.call(this, index, `${BASE_URL}v2/contacts/organizations/${this.getNodeParameter('Id', index)}`);
-	} else if (operation === 'create') {
-		const body:IDataObject = {
-			name : this.getNodeParameter('name', index),
-		};
-		if (this.getNodeParameter('email', index)) {
-			body.email = this.getNodeParameter('email', index);
-		}
-		const phonesUi = Object.assign(this.getNodeParameter('phonesUi', index, {}) as {
-															phones?: Array<{
-																title: string;
-																phone: string;
-																notify: boolean;
-																has_viber: boolean;
-																has_whatsapp: boolean;
-															}> });
+// export async function executeOrganizationOperation(
+// 	this: IExecuteFunctions,
+// 	operation: string,
+// 	index: number,
+// ):Promise<INodeExecutionData[][]> {
+// 	if (operation === 'getAll') {
+// 		return await handleGetAll.call(this, index, `${BASE_URL}v2/contacts/organizations`);
+// 	} else if (operation === 'get') {
+// 		return await handleGetOne.call(this, index, `${BASE_URL}v2/contacts/organizations/${this.getNodeParameter('Id', index)}`);
+// 	} else if (operation === 'create') {
+// 		const body:IDataObject = {
+// 			name : this.getNodeParameter('name', index),
+// 		};
+// 		if (this.getNodeParameter('email', index)) {
+// 			body.email = this.getNodeParameter('email', index);
+// 		}
+// 		const phonesUi = Object.assign(this.getNodeParameter('phonesUi', index, {}) as {
+// 															phones?: Array<{
+// 																title: string;
+// 																phone: string;
+// 																notify: boolean;
+// 																has_viber: boolean;
+// 																has_whatsapp: boolean;
+// 															}> });
 
-		if (phonesUi?.phones && phonesUi?.phones?.length > 0) {
-				body.phones = phonesUi.phones.map((item:IDataObject) => {
-					const phone = item.phone as string;
-					if (phoneValidation(phone)) {
-						return {
-							title: item.title,
-							phone: item.phone,
-							notify: item.notify,
-							has_viber: item.has_viber,
-							has_whatsapp: item.has_whatsapp,
-						}
-					}
-					else {
-						throw new NodeOperationError(this.getNode(), 
-							`The phone number "${item.phone}" is not valid. Please use international format (e.g., +12021234567).`,
-							{ itemIndex: index }
-						);
-					}
-				});
-		}
-		const customFields = this.getNodeParameter('customFields', index) as IDataObject;
-		if (customFields?.value) {
-			// Получаем информацию о типах полей и преобразуем dateTime
-			const fieldsInfo = await getCustomFieldsInfo.call(this, 'organization');
-			const valObj = customFields?.value as IDataObject;
-			const transformedCustomFields = transformCustomFieldsValues(valObj, fieldsInfo);
-			body.custom_fields = transformedCustomFields;
-		}
-		return await handlePost.call(this, index, `${BASE_URL}v2/contacts/organizations`, body);
-	}
-	return [[{json: {}}]]
-}
+// 		if (phonesUi?.phones && phonesUi?.phones?.length > 0) {
+// 				body.phones = phonesUi.phones.map((item:IDataObject) => {
+// 					const phone = item.phone as string;
+// 					if (phoneValidation(phone)) {
+// 						return {
+// 							title: item.title,
+// 							phone: item.phone,
+// 							notify: item.notify,
+// 							has_viber: item.has_viber,
+// 							has_whatsapp: item.has_whatsapp,
+// 						}
+// 					}
+// 					else {
+// 						throw new NodeOperationError(this.getNode(), 
+// 							`The phone number "${item.phone}" is not valid. Please use international format (e.g., +12021234567).`,
+// 							{ itemIndex: index }
+// 						);
+// 					}
+// 				});
+// 		}
+// 		const customFields = this.getNodeParameter('customFields', index) as IDataObject;
+// 		if (customFields?.value) {
+// 			// Получаем информацию о типах полей и преобразуем dateTime
+// 			const fieldsInfo = await getCustomFieldsInfo.call(this, 'organization');
+// 			const valObj = customFields?.value as IDataObject;
+// 			const transformedCustomFields = transformCustomFieldsValues(valObj, fieldsInfo);
+// 			body.custom_fields = transformedCustomFields;
+// 		}
+// 		return await handlePost.call(this, index, `${BASE_URL}v2/contacts/organizations`, body);
+// 	}
+// 	return [[{json: {}}]]
+// }
 

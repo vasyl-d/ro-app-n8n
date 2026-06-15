@@ -1,14 +1,14 @@
 import { INodeProperties } from 'n8n-workflow';
 
 export const globalFields: INodeProperties[] = [
-		{
+	{
 		displayName: 'Entity ID',
 		name: 'Id',
 		type: 'string',
 		default: '',
 		displayOptions: {
 			show: {
-				operation: ['get', 'getLocationById', 'getLocationResources', 'delete', 'getItems', 'getServiceById', 'getProductById'],
+				operation: ['get', 'getLocationById', 'getLocationResources', 'delete', 'getItems', 'getServiceById', 'getProductById', 'getOrganizationPeople', 'getPersonOrganization'],
 				resource: ['sale', 'person', 'organization', 'order', 'invoice', 'company', 'asset', 'lead', 'catalog', 'booking']
 			},
 		},
@@ -25,12 +25,69 @@ export const globalFields: INodeProperties[] = [
 		},
 		displayOptions: {
 			show: {
-				operation: ['create'],
+				operation: ['create', 'update'],
 				resource: ['person', 'organization']
 			},
 		},
-		description: 'The email of the Company',
+		description: 'The email of the Company/Person',
 
+	},
+	{
+		displayName: 'Address',
+		name: 'address',
+		type: 'string',
+		default: '',
+		displayOptions: {
+			show: {
+				operation: ['create', 'update'],
+				resource: ['person', 'organization']
+			},
+		},
+		description: 'The address of the Company/Person',
+
+	},
+	{
+		displayName: 'Notes',
+		name: 'notes',
+		type: 'string',
+		default: '',
+		displayOptions: {
+			show: {
+				operation: ['create', 'update'],
+				resource: ['person', 'organization']
+			},
+		},
+		description: 'The notes of the Company/Person',
+
+	},
+	{
+		displayName: 'Tags',
+		name: 'tags',
+		type: 'string',
+		displayOptions: {
+			show: {
+				operation: ['create', 'update'],
+				resource: ['person', 'organization']
+			},
+		},
+		description: 'The tags of the Company/Person',
+		default: [],
+		typeOptions: {
+			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
+		},
+	},
+	{
+		displayName: 'Is Supplier',
+		name: 'supplier',
+		type: 'boolean',
+		default: false,
+		displayOptions: {
+			show: {
+				operation: ['create', 'update'],
+				resource: ['person', 'organization']
+			},
+		},
+		description: 'Whether the entity is a supplier',
 	},
 	{
 		displayName: 'Phones',
@@ -40,7 +97,7 @@ export const globalFields: INodeProperties[] = [
 		placeholder: 'Add Phone',
 		displayOptions: {
 			show: {
-				operation: ['create'],
+				operation: ['create', 'update'],
 				resource: ['person', 'organization']
 			},
 		},
@@ -101,7 +158,7 @@ export const globalFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				operation: ['getAll'],
-				resource: ['order', 'estimate', 'booking', 'invoice']
+				resource: ['order', 'estimate', 'booking', 'invoice', 'sale']
 			},
 		},
 		default : {},
@@ -419,7 +476,7 @@ export const globalFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				operation: ['create', 'update'],
-				resource: ['order', 'estimate', 'lead', 'invoice']
+				resource: ['order', 'estimate', 'lead', 'invoice', 'person', 'organization']
 			},
 		},		
 		typeOptions: {
@@ -453,18 +510,19 @@ export const globalFields: INodeProperties[] = [
 		default: '',
 	},
 	{
-		displayName: 'Ad Campaign ID',
+		displayName: 'Ad Campaign Name or ID',
 		name: "ad_campaign_id",
-		type: "string",
+		type: "options",
+		description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 		default: "",
 		displayOptions: {
 			show: {
 				operation: ['create', 'update'],
-				resource: ['order', 'estimate', 'bookings']
+				resource: ['order', 'estimate', 'bookings', 'person', 'organization']
 			},
 		},
 		typeOptions: {
-		loadOptionsDependsOn: [
+			loadOptionsDependsOn: [
 				'resource',
 				'operation',
 			],
@@ -557,7 +615,7 @@ export const globalFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				operation: ['getAll', 'getEmployees', 'getReviews', 'getStock', 'getServices', 'getProducts', 'getAdCampaigns'],
-				resource: ['sale', 'person', 'organization', 'order', 'invoice', 'company', 'asset', 'lead', 'catalog', 'booking', 'marketing']
+				resource: ['sale', 'person', 'organization', 'order', 'invoice', 'company', 'asset', 'lead', 'catalog', 'booking', 'marketing', 'warehouse']
 			},
 		},
 		default: false,

@@ -1,7 +1,7 @@
 import type { INodeProperties, IExecuteFunctions, INodeExecutionData } from 'n8n-workflow';
 import { warehouseGetWhDescription } from './getWarehouses';
 import { warehouseGetStockDescription } from './getStock';
-import { handleGetAll, handleGetOne, BASE_URL} from '../../shared/methods';
+import { handleGetAll, BASE_URL} from '../../shared/methods';
 
 const showOnlyForWarehouse = {
 	resource: ['warehouse'],
@@ -41,7 +41,7 @@ export async function executeWarehouseOperation(
 	index: number,
 ): Promise<INodeExecutionData[][]> {
 	if (operation === 'getWarehouses') {
-		return await handleGetOne.call(this, index, `${BASE_URL}warehouse/`);
+		return await handleGetAll.call(this, index, `${BASE_URL}warehouse/`);
 	} else if (operation === 'getStock') {
 		return await handleGetAll.call(this, index, `${BASE_URL}warehouse/goods/${this.getNodeParameter('warehouse_id', index)}`);
 	}
