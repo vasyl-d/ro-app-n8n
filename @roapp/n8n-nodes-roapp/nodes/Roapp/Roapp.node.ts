@@ -19,6 +19,7 @@ import { marketingDescription, executeGetMarketing } from './resources/marketing
 import { assetDescription, executeAssetOperation } from './resources/assets';
 import { warehouseDescription, executeWarehouseOperation } from './resources/warehouse';
 import { leadDescription, executeLeadOperation } from './resources/lead';
+import { estimatesDescription, executeEstimateOperation } from './resources/estimates';
 // import { deduplicationDescription, executeDeduplicationOperation } from './resources/deduplication';
 import { catalogDescription, executeCatalogOperation } from './resources/catalog';
 import { bookingsDescription, executeBookingOperation } from './resources/bookings';
@@ -79,8 +80,8 @@ export class Roapp implements INodeType {
 					value: 'company',
 				},
 				{
-					name: 'Deduplication',
-					value: 'deduplication',
+					name: 'Estimate',
+					value: 'estimate',
 				},
 				{
 					name: 'Invoice',
@@ -127,6 +128,7 @@ export class Roapp implements INodeType {
 			...invoiceDescription,
 			...assetDescription,
 			...bookingsDescription,
+			...estimatesDescription,
 			...warehouseDescription,
 			// ...deduplicationDescription,
 			...catalogDescription,
@@ -219,10 +221,13 @@ export class Roapp implements INodeType {
 					case 'asset':
 						response = await executeAssetOperation.call(this, operation, i);
 						break;
-					case 'warehouse':
-						response = await executeWarehouseOperation.call(this, operation, i);
-						break;
-					case 'lead':
+				case 'warehouse':
+					response = await executeWarehouseOperation.call(this, operation, i);
+					break;
+				case 'estimate':
+					response = await executeEstimateOperation.call(this, operation, i);
+					break;
+				case 'lead':
 						response = await executeLeadOperation.call(this, operation, i);
 						break;
 					// case 'deduplication':

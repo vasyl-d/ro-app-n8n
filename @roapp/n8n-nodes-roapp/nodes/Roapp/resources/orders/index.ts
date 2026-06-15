@@ -1,7 +1,6 @@
 import type { INodeProperties, IExecuteFunctions, INodeExecutionData } from 'n8n-workflow';
 import { ordersGetAllDescription } from './getAll';
 import { ordersCreateDescription } from './create';
-// import { ordersUpdateDescription } from './update';
 import { ordersCreateItemDescription } from './createItem';
 import { ordersUpdateItemDescription } from './updateItem';
 import { ordersDeleteItemDescription } from './deleteItem';
@@ -119,7 +118,6 @@ export const ordersDescription: INodeProperties[] = [
 	},
 	...ordersGetAllDescription,
 	...ordersCreateDescription,
-	// ...ordersUpdateDescription,
 	...ordersCreateItemDescription,
 	...ordersUpdateItemDescription,
 	...ordersDeleteItemDescription,
@@ -133,6 +131,7 @@ export async function executeOrderOperation(
 	operation: string,
 	index: number,
 ): Promise<INodeExecutionData[][]>{
+
 	if (operation === 'getAll') {
 		return await handleGetAll.call(this, index, `${BASE_URL}v2/orders`);
 	} else if (operation === 'get') {

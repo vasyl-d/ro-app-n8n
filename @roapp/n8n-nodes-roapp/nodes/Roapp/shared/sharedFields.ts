@@ -450,7 +450,7 @@ export const globalFields: INodeProperties[] = [
 			],
 			loadOptionsMethod: 'getLocationResources',
 		},
-		default: [],
+		default: '',
 	},
 	{
 		displayName: 'Ad Campaign ID',
@@ -462,6 +462,13 @@ export const globalFields: INodeProperties[] = [
 				operation: ['create', 'update'],
 				resource: ['order', 'estimate', 'bookings']
 			},
+		},
+		typeOptions: {
+		loadOptionsDependsOn: [
+				'resource',
+				'operation',
+			],
+			loadOptionsMethod: 'getAdCampaigns',
 		},
 	},
 	{

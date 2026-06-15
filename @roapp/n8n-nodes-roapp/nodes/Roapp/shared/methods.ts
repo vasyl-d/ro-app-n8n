@@ -27,6 +27,7 @@ const cf_types: { [key: number]: string }= {
 
 const resources_cf_urls:{ [key: string]: string } = {
 	"order" : `${BASE_URL}v2/orders/custom-fields`,
+	"estimate" : `${BASE_URL}v2/estimates/custom-fields`,
 	"person": `${BASE_URL}v2/contacts/people/custom-fields`,
 	"organization": `${BASE_URL}v2/contacts/organizations/custom-fields`,
 	"lead": `${BASE_URL}lead/custom-fields/`,
@@ -35,12 +36,14 @@ const resources_cf_urls:{ [key: string]: string } = {
 
 const resources_stuses_urls: { [key: string]: string } = {
   "order": `${BASE_URL}v2/orders/statuses`,
+  "estimate": `${BASE_URL}v2/estimates/statuses`,
   "lead": `${BASE_URL}statuses/leads`,
   "invoice": `${BASE_URL}v2/invoices/statuses`
 };
 
 const resources_types_urls: { [key: string]: string } = {
   "order": `${BASE_URL}v2/orders/types`,
+  "estimate": `${BASE_URL}v2/estimates/types`,
   "lead": `${BASE_URL}lead/types/`,
   "asset": `${BASE_URL}v2/assets/types`
 };
@@ -59,11 +62,11 @@ function errorHelper(
 	):NodeApiError 
 {
 	const response = error?.response as IDataObject;
-	const data = response?.data as IDataObject;
-	const errorMessage = String(data?.message) || 
-						String(data?.error) ||
-						String(error?.message) ||
-						'Unknown error occurred';
+	const data = response?.data as IDataObject || {};
+	const errorMessage = String(response?.message) || 
+							String(data?.message) || 
+							String(error?.message) ||
+							'Unknown error occurred';
 
 	throw new NodeApiError(this.getNode(), error, { 
 		message: errorMessage 
@@ -337,8 +340,8 @@ function makeQs(
 					if (parameterName == "created_at" || parameterName == "modified_at" || parameterName == "closed_at" || parameterName == "scheduled_for" || parameterName == "due_date" || parameterName == "issue_date") {
 						const from_name = `${parameterName}_from`;
 						const to_name = `${parameterName}_to`;
-						let from:String = '';
-						let to:String = '';
+						let from:string = '';
+						let to:string = '';
 						if (parameterName != "issue_date") {
 							from = processedFilters[from_name]
 								? `${String(DateTime.fromISO(String(processedFilters[from_name])).toISO()).split(".")[0]}Z` // або .toISOString()

@@ -21,7 +21,7 @@ export const getAllDescription: INodeProperties[] = [
 		displayName: 'Barcode',
 		name: 'barcode',
 		type: 'string',
-		default: [],
+		default: '',
 		description: 'Service barcode',
 		displayOptions: {
 			show: showGetCatalogue
@@ -34,7 +34,7 @@ export const getAllDescription: INodeProperties[] = [
 		typeOptions: {
 			multipleValues: true,
 		},
-		default: [],
+		default: '',
 		description: 'List of Service Category IDs',
 		displayOptions: {
 			show: showGetCatalogue
