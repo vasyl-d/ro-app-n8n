@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - '*.*.*' # Triggers when you push a version tag like 1.0.0
+      - 'v*.*.*'
 
 jobs:
   publish:
@@ -33,5 +34,4 @@ jobs:
       # Publishes using GitHub OIDC auth and cryptographically signs the provenance metadata
       - name: Publish to npm with Provenance
         run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
