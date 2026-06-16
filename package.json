@@ -1,11 +1,12 @@
 {
   "name": "@roapp/n8n-nodes-roapp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "package for roapp.io API",
   "license": "MIT",
   "homepage": "",
   "keywords": [
-    "n8n-community-node-package roapp.io roapp", "n8n-community-node-package"
+    "n8n-community-node-package roapp.io roapp",
+    "n8n-community-node-package"
   ],
   "author": {
     "name": "vasyl-d",
