@@ -1,5 +1,5 @@
 {
-  "name": "@roapp/n8n-nodes-roapp",
+  "name": "n8n-nodes-roapp",
   "version": "1.0.6",
   "description": "package for roapp.io API",
   "license": "MIT",
