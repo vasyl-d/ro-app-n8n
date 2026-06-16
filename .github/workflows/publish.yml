@@ -31,6 +31,6 @@ jobs:
 
       # КРИТИЧНЕ ВИПРАВЛЕННЯ: додано env з NODE_AUTH_TOKEN
       - name: Publish to npm with Provenance
-        run: npm publish --provenance --access public
+        run: npm publish --provenance --access public --ignore-scripts
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # npm автоматично розпізнає цей токен через Trusted Publishers
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
