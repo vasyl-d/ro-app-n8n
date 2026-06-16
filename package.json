@@ -40,6 +40,7 @@
   },
   "devDependencies": {
     "@n8n/node-cli": "*",
+    "@types/luxon": "^3.7.1",
     "minimatch": "^10.2.5",
     "prettier": "^3.8.3",
     "release-it": "^20.0.0",
