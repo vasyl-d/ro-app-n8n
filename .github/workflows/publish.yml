@@ -33,3 +33,5 @@ jobs:
       # Publishes using GitHub OIDC auth and cryptographically signs the provenance metadata
       - name: Publish to npm with Provenance
         run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
