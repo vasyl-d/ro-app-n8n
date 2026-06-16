@@ -49,7 +49,7 @@
 #
 # Run the following command locally to start an interactive release:
 #
-#   npm run release
+#   npm run release 
 #
 # This will lint, build, prompt for a version bump, update the changelog,
 # commit, tag, and push — which triggers this workflow to publish to npm.
