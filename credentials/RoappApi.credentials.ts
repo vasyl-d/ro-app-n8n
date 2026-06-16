@@ -7,7 +7,7 @@ import type {
 
 export class RoappApi implements ICredentialType {
 	name = 'roappApi';
-	icon: Icon = 'file:../nodes/ROapp/roapp.svg';
+	icon: Icon = 'file:../nodes/Roapp/roapp.svg';
 
 	displayName = 'RoappApi API';
 	
