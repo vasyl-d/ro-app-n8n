@@ -3,16 +3,15 @@ name: Publish to npm
 on:
   push:
     tags:
-      - '*.*.*' # Triggers when you push a version tag like 1.0.0
+      - '*.*.*'
       - 'v*.*.*'
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    # CRITICAL: These permissions allow GitHub to mint the OIDC ID token for npm provenance
     permissions:
       contents: read
-      id-token: write
+      id-token: write # Дозволяє згенерувати OIDC токен для provenance
     
     steps:
       - name: Checkout repository
@@ -24,14 +23,14 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
-      # Enforces clean installation using your package-lock.json
       - name: Install dependencies
         run: npm ci
 
       - name: Build node production assets
         run: npm run build
 
-      # Publishes using GitHub OIDC auth and cryptographically signs the provenance metadata
+      # КРИТИЧНЕ ВИПРАВЛЕННЯ: додано env з NODE_AUTH_TOKEN
       - name: Publish to npm with Provenance
         run: npm publish --provenance --access public
-
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }} # npm автоматично розпізнає цей токен через Trusted Publishers
