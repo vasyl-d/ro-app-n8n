@@ -11,7 +11,7 @@ export const assetGetManyDescription: INodeProperties[] = [
 		name: 'ids',
 		type: 'string',
 		typeOptions: {
-			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
+			multipleValues: true, // Converts regular input into a dynamic list
 		},
 		default:[],
 		description: 'Filter by asset ID Specify one or more IDs using an <a href="https://n8n.io">expression</a>',
@@ -24,7 +24,7 @@ export const assetGetManyDescription: INodeProperties[] = [
 		name: 'uid',
 		type: 'string',
 		typeOptions: {
-			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
+			multipleValues: true, // Converts regular input into a dynamic list
 		},
 		default:[],
 		description: 'Filter by asset uid/serial number. Specify one or more IDs using an <a href="https://n8n.io">expression</a>.',
@@ -37,7 +37,7 @@ export const assetGetManyDescription: INodeProperties[] = [
 		name: 'owner_id',
 		type: 'string',
 		typeOptions: {
-			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
+			multipleValues: true, // Converts regular input into a dynamic list
 		},
 		default:[],
 		description: 'Filter by customer ID. Specify one or more IDs using an <a href="https://n8n.io">expression</a>.',
@@ -50,7 +50,7 @@ export const assetGetManyDescription: INodeProperties[] = [
 		name: 'warehouse_id[]',
 		type: 'string',
 		typeOptions: {
-			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
+			multipleValues: true, // Converts regular input into a dynamic list
 		},
 		default:[],
 		description: 'Filter by warehouse ID. Specify one or more IDs using an <a href="https://n8n.io">expression</a>.',

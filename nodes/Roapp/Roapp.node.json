@@ -1,17 +1,17 @@
 {
-	"node": "@roapp/n8n-nodes-roapp",
+	"node": "n8n-nodes-roapp.roapp",
 	"nodeVersion": "1.0",
 	"codexVersion": "1.0",
-	"categories": ["Development", "Developer Tools"],
+	"categories": ["Development", "CRM"],
 	"resources": {
 		"credentialDocumentation": [
 			{
-				"url": "https://github.com/org/repo?tab=readme-ov-file#credentials"
+				"url": "https://github.com/vasyl-d/ro-app-n8n#credentials"
 			}
 		],
 		"primaryDocumentation": [
 			{
-				"url": "https://github.com/org/repo?tab=readme-ov-file"
+				"url": "https://github.com/vasyl-d/ro-app-n8n#readme"
 			}
 		]
 	}

@@ -12,7 +12,7 @@ export class RoappApi implements ICredentialType {
 	displayName = 'RoappApi API';
 	
 	// Link to your community node's README
-	documentationUrl = 'https://github.com/vasyl-d/vasyl-d/ro-app-n8n/@roapp/-roapp?tab=readme-ov-file#credentials';
+	documentationUrl = 'https://github.com/vasyl-d/ro-app-n8n#credentials';
 	
 	properties: INodeProperties[] = [
 		{
@@ -22,6 +22,13 @@ export class RoappApi implements ICredentialType {
 			typeOptions: { password: true },
 			required: true,
 			default: '',
+		},
+		// The same authorization fields
+		{
+			displayName: 'Base URL',
+			name: 'baseUrl',
+			type: 'hidden',
+			default: 'https://api.roapp.io/', // Exact URL for Orderry
 		},
 	];
 	

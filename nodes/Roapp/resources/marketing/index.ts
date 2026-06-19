@@ -19,7 +19,7 @@ export const marketingDescription: INodeProperties[] = [
 				name: 'Get Reviews',
 				value: 'getReviews',
 				action: 'Get customer reviews',
-				description: 'Get Customer Reviews',
+				description: 'Get customer reviews',
 			},
             {
 				name: 'Get Ad Campaigns',
@@ -45,6 +45,6 @@ export async function executeGetMarketing(
 	} 
 	return [[{json:{}, 
 		pairedItem: {
-			item: index, // Зв'язуємо з поточним вхідним індексом
+			item: index, // Link to current input index
 		}}]];
 }

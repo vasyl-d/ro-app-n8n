@@ -26,7 +26,7 @@ export const warehouseDescription: INodeProperties[] = [
 				name: 'Get Stock',
 				value: 'getStock',
 				action: 'Get stock by warehouse',
-				description: 'Get Stock by warehouse',
+				description: 'Get stock by warehouse',
 			},
 		],
 		default: 'getWarehouses',

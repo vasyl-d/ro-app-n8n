@@ -67,6 +67,6 @@ export async function executeAssetOperation(
 	}
 	return [[{json:{}, 
 		pairedItem: {
-			item: index, // Зв'язуємо з поточним вхідним індексом
+			item: index, // Link to current input index
 		}}]];
 }

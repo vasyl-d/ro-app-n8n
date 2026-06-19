@@ -11,7 +11,7 @@ export const leadGetManyDescription: INodeProperties[] = [
 		name: 'ids',
 		type: 'string',
 		typeOptions: {
-			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
+			multipleValues: true, // Converts regular input into a dynamic list
 		},
 		default:[],
 		description: 'Filter by asset ID Specify one or more IDs using an <a href="https://n8n.io">expression</a>',
@@ -24,7 +24,7 @@ export const leadGetManyDescription: INodeProperties[] = [
 		name: 'id_labels',
 		type: 'string',
 		typeOptions: {
-			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
+			multipleValues: true, // Converts regular input into a dynamic list
 		},
 		default:[],
 		description: 'Filter by lead number. Specify one or more IDs using an <a href="https://n8n.io">expression</a>.',
@@ -71,7 +71,7 @@ export const leadGetManyDescription: INodeProperties[] = [
 		name: 'managers',
 		type: 'string',
 		typeOptions: {
-			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
+			multipleValues: true, // Converts regular input into a dynamic list
 		},
 		default:[],
 		description: 'Filter by warehouse ID. Specify one or more IDs using an <a href="https://n8n.io">expression</a>.',
@@ -84,7 +84,7 @@ export const leadGetManyDescription: INodeProperties[] = [
 		name: 'names',
 		type: 'string',
 		typeOptions: {
-			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
+			multipleValues: true, // Converts regular input into a dynamic list
 		},
 		default:[],
 		description: 'Filter by lead customer name. Specify one or more using an <a href="https://n8n.io">expression</a>.',
@@ -97,7 +97,7 @@ export const leadGetManyDescription: INodeProperties[] = [
 		name: 'phones',
 		type: 'string',
 		typeOptions: {
-			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
+			multipleValues: true, // Converts regular input into a dynamic list
 		},
 		default:[],
 		description: 'Filter by lead customer name. Specify one or more using an <a href="https://n8n.io">expression</a>.',

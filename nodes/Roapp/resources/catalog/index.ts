@@ -19,7 +19,6 @@ export const catalogDescription: INodeProperties[] = [
 			{
 				name: 'Get Product by ID',
 				value: 'getProductById',
-				description: 'Retrieve Product data',
 				action: 'Get product by id',
 			},
 			{
@@ -106,6 +105,6 @@ export async function executeCatalogOperation(
 	}
 	return [[{json:{}, 
 		pairedItem: {
-			item: index, // Зв'язуємо з поточним вхідним індексом
+			item: index, // Link to current input index
 		}}]];
 }

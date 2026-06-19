@@ -20,7 +20,7 @@ export const personCreateDescription: INodeProperties[] = [
         },       
     },
 	{
-		displayName: 'First_name',
+		displayName: 'First Name',
 		name: 'first_name',
 		type: 'string',
 		default: '',
@@ -29,15 +29,9 @@ export const personCreateDescription: INodeProperties[] = [
 			show: showOnlyForPersonCreate,
 		},
 		description: 'The name of the user',
-		routing: {
-			send: {
-				type: 'body',
-				property: 'first_name',
-			},
-		},
 	},
 	{
-		displayName: 'Last_name',
+		displayName: 'Last Name',
 		name: 'last_name',
 		type: 'string',
 		default: '',
@@ -46,12 +40,6 @@ export const personCreateDescription: INodeProperties[] = [
 			show: showOnlyForPersonCreate,
 		},
 		description: 'The last name of the user',
-		routing: {
-			send: {
-				type: 'body',
-				property: 'last_name',
-			},
-		},
 	},
 	{
         displayName: 'Custom Fields',

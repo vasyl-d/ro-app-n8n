@@ -73,7 +73,7 @@ export const globalFields: INodeProperties[] = [
 		description: 'The tags of the Company/Person',
 		default: [],
 		typeOptions: {
-			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
+			multipleValues: true, // Converts regular input into a dynamic list
 		},
 	},
 	{
@@ -91,7 +91,7 @@ export const globalFields: INodeProperties[] = [
 	},
 	{
 		displayName: 'Phones',
-		name: 'phonesUi', // Використовуємо суфікс Ui, щоб потім перетворити в чистий масив
+		name: 'phonesUi', // Use Ui suffix to later convert to plain array
 		type: 'fixedCollection',
 		default: {},
 		placeholder: 'Add Phone',
@@ -404,7 +404,7 @@ export const globalFields: INodeProperties[] = [
 		]
 	},
 	{
-		displayName: "Scheduled_for",
+		displayName: "Scheduled For",
 		name: "scheduled_for",
 		type: "dateTime",
 		displayOptions: {
@@ -416,7 +416,7 @@ export const globalFields: INodeProperties[] = [
 		default : '',
 	},
 	{
-		displayName: "Scheduled_to",
+		displayName: "Scheduled To",
 		name: "scheduled_to",
 		type: "dateTime",
 		displayOptions: {
@@ -547,7 +547,7 @@ export const globalFields: INodeProperties[] = [
 		type: 'string',
 		default: [],
 		typeOptions: {
-			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
+			multipleValues: true, // Converts regular input into a dynamic list
 		},
 		description: 'Filter by customer Name',
 		displayOptions: {
@@ -563,7 +563,7 @@ export const globalFields: INodeProperties[] = [
 		type: 'string',
 		default: [],
 		typeOptions: {
-			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
+			multipleValues: true, // Converts regular input into a dynamic list
 		},
 		description: 'Filter by customer phone number',
 		displayOptions: {
@@ -579,7 +579,7 @@ export const globalFields: INodeProperties[] = [
 		type: 'string',
 		default: [],
 		typeOptions: {
-			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
+			multipleValues: true, // Converts regular input into a dynamic list
 		},
 		description: 'Filter by manager IDs',
 		displayOptions: {
@@ -596,10 +596,10 @@ export const globalFields: INodeProperties[] = [
         default: 'id',
         options: [
             { name: '-ID', value: '-id' },
-            { name: '-Modified_at', value: '-modified_at' },
+            { name: '-Modified At', value: '-modified_at' },
             { name: 'All', value: '' },
             { name: 'ID', value: 'id',  },
-            { name: 'Modified_at', value: 'modified_at' },
+            { name: 'Modified At', value: 'modified_at' },
         ],
         displayOptions: {
 			show: {

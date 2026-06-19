@@ -137,7 +137,7 @@ export async function executeEstimateOperation(
 	} else if (operation === 'get') {
 		return await handleGetOne.call(this, index, `${BASE_URL}v2/estimates/${this.getNodeParameter('Id', index)}`);
 	} else if (operation === 'delete') {
-		return await this.helpers.httpRequestWithAuthentication.call(this, 'roappRoappApi', {
+		return await this.helpers.httpRequestWithAuthentication.call(this, 'roappApi', {
 			method: 'DELETE',
 			url: `${BASE_URL}v2/estimates/${this.getNodeParameter('Id', index)}`
 		});
@@ -168,6 +168,6 @@ export async function executeEstimateOperation(
 	}
 	return [[{json:{}, 
 		pairedItem: {
-			item: index, // Зв'язуємо з поточним вхідним індексом
+			item: index, // Link to current input index
 		}}]];
 }

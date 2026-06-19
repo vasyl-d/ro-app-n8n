@@ -3,7 +3,7 @@
   "version": "1.0.11",
   "description": "package for roapp.io API",
   "license": "MIT",
-  "homepage": "",
+  "homepage": "https://github.com/vasyl-d/ro-app-n8n#readme",
   "keywords": [
     "n8n-community-node-package roapp.io roapp crm",
     "n8n-community-node-package"

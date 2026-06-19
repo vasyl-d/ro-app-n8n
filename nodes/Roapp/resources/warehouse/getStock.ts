@@ -31,7 +31,7 @@ export const warehouseGetStockDescription: INodeProperties[] = [
 		name: 'ids',
 		type: 'string',
 		typeOptions: {
-			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
+			multipleValues: true, // Converts regular input into a dynamic list
 		},
 		default: [],
 		description: 'Filter by product IDs. Specify one or more IDs using an <a href="https://n8n.io">expression</a>.',
@@ -44,7 +44,7 @@ export const warehouseGetStockDescription: INodeProperties[] = [
 		name: 'categories',
 		type: 'string',
 		typeOptions: {
-			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
+			multipleValues: true, // Converts regular input into a dynamic list
 		},
 		default: [],
 		description: 'Filter by category IDs. Specify one or more IDs using an <a href="https://n8n.io">expression</a>.',
@@ -57,7 +57,7 @@ export const warehouseGetStockDescription: INodeProperties[] = [
 		name: 'articles',
 		type: 'string',
 		typeOptions: {
-			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
+			multipleValues: true, // Converts regular input into a dynamic list
 		},
 		default:[],
 		description: 'Filter by article IDs. Specify one or more IDs using an <a href="https://n8n.io">expression</a>.',
@@ -70,7 +70,7 @@ export const warehouseGetStockDescription: INodeProperties[] = [
 		name: 'barcodes',
 		type: 'string',
 		typeOptions: {
-			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
+			multipleValues: true, // Converts regular input into a dynamic list
 		},
 		default:[],
 		description: 'Filter by barcode IDs. Specify one or more IDs using an <a href="https://n8n.io">expression</a>.',

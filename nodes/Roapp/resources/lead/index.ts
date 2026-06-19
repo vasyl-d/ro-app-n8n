@@ -32,7 +32,7 @@ export const leadDescription: INodeProperties[] = [
 				name: 'Create Comment',
 				value: 'createComment',
 				action: 'Create lead comment',
-				description: 'Create Lead Comment',
+				description: 'Create lead comment',
 			},
 			{
 				name: 'Get',
@@ -87,6 +87,6 @@ export async function executeLeadOperation(
 	}
 	return [[{json:{},
 		pairedItem: {
-			item: index, // Зв'язуємо з поточним вхідним індексом
+			item: index, // Link to current input index
 		}}]];
 }

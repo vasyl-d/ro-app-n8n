@@ -100,6 +100,6 @@ export async function executeCompanyOperations(
 	}
 	return [[{json:{}, 
 		pairedItem: {
-			item: index, // Зв'язуємо з поточним вхідним індексом
+			item: index, // Link to current input index
 		}}]];
 }

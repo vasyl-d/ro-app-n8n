@@ -49,13 +49,6 @@ export class Roapp implements INodeType {
 		inputs: [NodeConnectionTypes.Main],
 		outputs: [NodeConnectionTypes.Main],
 		credentials: [{ name: 'roappApi', required: true }],
-		requestDefaults: {
-			baseURL: 'https://api.roapp.io/',
-			headers: {
-				Accept: 'application/json',
-				'Content-Type': 'application/json',
-			},
-		},
 		properties: [
 			{
 				displayName: 'Resource',
@@ -171,7 +164,7 @@ export class Roapp implements INodeType {
 		},
 		resourceMapping: {
 			async getCustomFields(this: ILoadOptionsFunctions): Promise<ResourceMapperFields> {
-				// Отримуємо поточний обраний ресурс з UI
+				// Get currently selected resource from UI
 				const resource = this.getCurrentNodeParameter('resource') as string;
 				return await fetchCustomFieldsData.call(this, resource);
 			}
@@ -234,14 +227,14 @@ export class Roapp implements INodeType {
 					default:
 						response = [[{json:{}, 
 									pairedItem: {
-										item: i, // Зв'язуємо з поточним вхідним індексом
+										item: i, // Link to current input index
 									}}]];
 				}
 			} catch (error) {
 			if (this.continueOnFail()) {
 				returnData.push([{ json: { error: error.message }, 
 									pairedItem: {
-										item: i, // Зв'язуємо з поточним вхідним індексом
+										item: i, // Link to current input index
 									} }]);
 				continue;
 			}

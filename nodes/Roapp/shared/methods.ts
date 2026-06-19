@@ -11,6 +11,7 @@ import {INodePropertyOptions,
 	ResourceMapperField,
 	JsonObject,
  } from 'n8n-workflow';
+
 import { DateTime } from 'luxon';
 
 export const BASE_URL:string = "https://api.roapp.io/";
@@ -48,11 +49,11 @@ const resources_types_urls: { [key: string]: string } = {
   "asset": `${BASE_URL}v2/assets/types`
 };
 
-// Кеш для custom fields данных
+// Custom fields data cache
 const cache: { [key: string]: { fields: ResourceMapperField[], fieldsInfo: { [key: string]: string } }} = {};
 const cacheTTL: { [key: string]: number } = {};
 
-const CACHE_DURATION = 5 * 60 * 1000; // 5 минут в миллисекундах
+const CACHE_DURATION = 5 * 60 * 1000; // 5 min in ms
 
 // ==================== HELPER FUNCTIONS ====================
 
@@ -81,15 +82,15 @@ export async function fetchCustomFieldsData(
 	this: IExecuteFunctions | ILoadOptionsFunctions,
 	resource: string
 ): Promise<{ fields: ResourceMapperField[], fieldsInfo: { [key: string]: string } }> {
-	// Получаем ключ для кеша на основе ресурса
+	// get chache key by resource
 	const cacheKey = `cf_${resource}`;
 
-	// Проверяем, есть ли актуальный кеш
+	// If data is in cache and not expired, return it
 	if (cache[cacheKey] && cacheTTL[cacheKey] > Date.now()) {
 		return cache[cacheKey];
 	}
 
-	// Получаем данные с API
+	// Get custom fields data
 	const url = resources_cf_urls[resource];
 	let data = await this.helpers.httpRequestWithAuthentication.call(this, 'roappApi', {
 		method: 'GET',
@@ -97,7 +98,7 @@ export async function fetchCustomFieldsData(
 		json: true,
 	});
 	data = data?.data || data;
-	// Формируем fields для resourceMapper
+	// make fields
 	const fields = data.map((field: { [key: string]: string }) => ({
 		id: `f${field.id}`,
 		displayName: field.title || field.name,
@@ -107,14 +108,14 @@ export async function fetchCustomFieldsData(
 		display: true,
 	}));
 
-	// Формируем fieldsInfo для трансформации значений
+	// make fieldsInfo
 	const fieldsInfo: { [key: string]: string } = {};
 	for (const field of data) {
 		const fieldType = cf_types[parseInt(field.type)] || 'string';
 		fieldsInfo[`f${field.id}`] = fieldType;
 	}
 
-	// Сохраняем в кеш
+	// store cache
 	cache[cacheKey] = { fields, fieldsInfo };
 	cacheTTL[cacheKey] = Date.now() + CACHE_DURATION;
 
@@ -237,7 +238,7 @@ export async function getCustomFieldsInfo(
 	this: IExecuteFunctions,
 	resource: string
 ): Promise<{ [key: string]: string }> {
-	// Используем кеш вместо повторного запроса
+	// use cache data
 	if (!resources_cf_urls[resource]) {
 		return {}
 	};
@@ -254,13 +255,13 @@ export function transformCustomFieldsValues(
 	for (const [fieldKey, fieldValue] of Object.entries(customFieldsData)) {
 		const fieldType = fieldsInfo[fieldKey];
 
-		// Преобразуем dateTime поля в ISO формат
+		// dateTime to ISO format
 		if (fieldType === 'dateTime' && fieldValue) {
 			try {
-				// Если это строка, парсим как дату
+				// str to date
 				const dateObj = new Date(fieldValue as string);
 				if (!isNaN(dateObj.getTime())) {
-					// Преобразуем в ISO формат: "2024-01-15T10:30:00Z"
+					// to iso: "2024-01-15T10:30:00Z"
 					transformed[fieldKey] = dateObj.toISOString().split('.')[0] + 'Z';
 				} else {
 					transformed[fieldKey] = fieldValue;
@@ -305,7 +306,7 @@ function makeQs(
 	index: number,
 	ignored: string[] = []
 ):IDataObject {
-	// 1. Отримуємо всі параметри, які є в описі цієї ноди для поточного індексу
+	// 1. Get all Node parameters
 	const parameters = this.getNode().parameters;
 	const qs: IDataObject = {};
 	const ignoredParameters = ['resource', 'operation', 'returnAll', 'limit', ...ignored];
@@ -317,21 +318,21 @@ function makeQs(
 		if (!isVisible(parameters[parameterName] as IDataObject, resourceName, operationName)) continue;
 		if (!ignoredParameters.includes(parameterName)) {
 			try {
-				// Отримуємо значення параметра (з урахуванням виразів/expressions)
+		// Get parameter value (considering expressions)
 				const value = this.getNodeParameter(parameterName, index);
 				if (Array.isArray(value) && value.length > 0) {
 					if (oldApiRresources.includes(resourceName)) {
-						// ВАРІАНТ API очікує формат з квадратними дужками: ?status[]=active&status[]=pending
-						// (Більшість бібліотек роблять це автоматично, але іноді треба вказати ключ явно)
+					// API option expects array format with square brackets: ?status[]=active&status[]=pending
+					// (Most libraries do this automatically, but sometimes you need to specify the key explicitly)
 						// qs[`${parameterName}[]`] = value.join(`&${parameterName}[]=`); 
 						qs[`${parameterName}[]`] = value; 
 					} else {
-						// ВАРІАНТ API очікує рядок через кому: ?status=active,pending
+						// API option expects comma-separated string: ?status=active,pending
 						qs[`${parameterName}`] = value; 
 						// qs[`${parameterName}`] = value.join(`,`);
 					}
 				}
-				// Якщо це колекція "filters" або "additionalFields"
+				// If this is a "filters" or "additionalFields" collection
 				else if (typeof value === 'object' && value !== null && value != undefined) {
 					const processedFilters:{[key:string]:unknown} = { ...value };
 					if (parameterName == "created_at" || parameterName == "modified_at" || parameterName == "closed_at" || parameterName == "scheduled_for" || parameterName == "due_date" || parameterName == "issue_date") {
@@ -341,14 +342,14 @@ function makeQs(
 						let to:string = '';
 						if (parameterName != "issue_date") {
 							from = processedFilters[from_name]
-								? `${String(DateTime.fromISO(String(processedFilters[from_name])).toISO()).split(".")[0]}Z` // або .toISOString()
+								? `${String(DateTime.fromISO(String(processedFilters[from_name])).toISO()).split(".")[0]}Z` // or .toISOString()
 								: '';
 							to = processedFilters[to_name]
 								? `,${String(DateTime.fromISO(String(processedFilters[to_name])).toISO()).split(".")[0]}Z`
 								: '';
 							} else {
 								from = processedFilters[from_name]
-								? `${String(DateTime.fromISO(String(processedFilters[from_name])).toISO({includeOffset: false, precision: 'day' }))}` // або .toISOString()
+								? `${String(DateTime.fromISO(String(processedFilters[from_name])).toISO({includeOffset: false, precision: 'day' }))}` // or .toISOString()
 								: '';
 								to = processedFilters[to_name]
 								? `,${String(DateTime.fromISO(String(processedFilters[to_name])).toISO({includeOffset: false, precision: 'day' }))}`
@@ -361,10 +362,10 @@ function makeQs(
 						Object.assign(qs, value);
 					}
 
-					// Створюємо окрему константу з явним приведенням типу
+					// Create a separate constant with explicit type casting
 					const idValues = processedFilters?.idValues as IDataObject[] | undefined;
 
-					// Тепер безпечно перевіряємо, чи це дійсно масив
+					// Now safely check if it's actually an array
 					if (Array.isArray(idValues)) {
 						qs[parameterName] = idValues.map((v: IDataObject) => v.value).join(',');
 					}
@@ -372,7 +373,7 @@ function makeQs(
 					qs[parameterName] = value;
 				}
 			} catch {
-				// Параметр може бути прихований по displayOptions, тоді getNodeParameter викине помилку
+				// Parameter may be hidden by displayOptions, then getNodeParameter will throw an error
 			continue;
 			}
 		}
@@ -426,11 +427,11 @@ export async function handleGetAll(
 
 		resObj = (responseData || {}) as IDataObject;
 		
-		// Витягуємо масив даних з відповіді API
+		// Extract data array from API response
 		const items = (resObj?.data || responseData || []) as IDataObject[];
 		// console.log(`Items count: ${items.length}`);
 
-		// 🛑 ЗАХИСТ 1: Якщо API повернуло порожній масив, негайно зупиняємося (навіть якщо total_pages каже інакше)
+		// Safety 1: If API returned empty array, stop immediately (even if total_pages says otherwise)
 		if (items.length === 0) {
 			break;
 		}
@@ -440,13 +441,13 @@ export async function handleGetAll(
 		const paging = resObj?.paging as IDataObject | undefined;
 		const rawCount = Number(resObj?.count);
 		
-		// Надійний розрахунок total_pages із захистом від NaN та невірних значень
+		// Reliable total_pages calculation with protection against NaN and invalid values
 		if (paging?.total_pages !== undefined) {
 			total_pages = Number(paging.total_pages);
 		} else if (!isNaN(rawCount) && rawCount > 0) {
 			total_pages = Math.ceil(rawCount / 50);
 		} else {
-			// 🛑 ЗАХИСТ 2: Якщо API не дало мета-даних про сторінки, вважаємо, що сторінка всього одна
+			// Safety 2: If API didn't provide page metadata, assume there is only one page
 			total_pages = 1; 
 		}
 
@@ -456,7 +457,7 @@ export async function handleGetAll(
 
 		// console.log(`Total pages: ${total_pages}, finished page ${page}`);
 		
-		// 🛑 ЗАХИСТ 3: Якщо ми щойно обробили останню сторінку, виходимо без інкременту
+		// Safety 3: If we just processed the last page, exit without incrementing
 		if (page >= total_pages) {
 			break;
 		}
@@ -466,11 +467,11 @@ export async function handleGetAll(
 	} while (page <= total_pages);
 
 	const finalItems = returnAll ? rawItems : rawItems.slice(0, limit);
-	// 2. Вручну конвертуємо сирі дані у формат INodeExecutionData з додаванням pairedItem
+	// 2. Manually convert raw data to INodeExecutionData format with pairedItem
 	const executionData: INodeExecutionData[] = finalItems.map((item) => ({
 		json: item,
 		pairedItem: {
-			item: index, // Зв'язуємо з поточним вхідним індексом
+			item: index, // Link to current input index
 		},
 	}));
 
@@ -485,7 +486,7 @@ export async function handleGetOne(
     method: IHttpRequestMethods = 'GET',
 	):Promise<INodeExecutionData[][]>  {
 	try {
-		// Збираємо всі Query Parameters динамічно
+		// Collect all Query Parameters dynamically
 		const qs = makeQs.call(this, index);
 		// console.log(`before request: ${url}, ${JSON.stringify(qs, null, 2)}`);
 		return [[{
@@ -496,7 +497,7 @@ export async function handleGetOne(
 				qs: qs,
 			}),		
 			pairedItem: {
-				item: index, // Зв'язуємо з поточним вхідним індексом
+				item: index, // Link to current input index
 		},}]];
 	} catch (error) {
 		errorHelper.call(this, error);
@@ -521,7 +522,7 @@ export async function handlePost(
 			body: body
 		}),
 		pairedItem: {
-			item: index, // Зв'язуємо з поточним вхідним індексом
+			item: index, // Link to current input index
 		},}]];
 	} catch (error) {
 		errorHelper.call(this, error);
@@ -545,7 +546,7 @@ export async function handleCreateUpdate(
 	try {
 		const body: IDataObject = {};
 		
-		// Отримуємо параметри як об'єкт (словник) ключ-значення
+		// Get parameters as key-value object
 		const parameters = this.getNode().parameters as IDataObject;
 
 		for (const paramName in parameters) {
@@ -554,12 +555,12 @@ export async function handleCreateUpdate(
 			}
 			
 			if (Object.prototype.hasOwnProperty.call(parameters, paramName)) {
-				// Замінено any на unknown. Лінтер n8n це схвалює.
+				// Replaced any with unknown. n8n linter approves.
 				const value = this.getNodeParameter(paramName, index) as unknown;
 
-				// Перевірка: пропускаємо null, undefined та порожні рядки
+				// Validation: skip null, undefined and empty strings
 				if (!isEmpty(value)) {
-					// Приводимо до IDataObject для безпечного читання вкладених полів (value?.value тощо)
+					// Cast to IDataObject for safe access to nested fields (value?.value etc.)
 					const valueObj = value as IDataObject;
 
 					if (paramName === "customFields" && valueObj?.value) {
@@ -612,14 +613,14 @@ export async function handleCreateUpdate(
 						}
 					}
 					else {
-						// Оскільки body має тип IDataObject, ми можемо присвоїти туди unknown значення
+						// Since body is typed as IDataObject, we can assign unknown values to it
 						body[paramName] = this.getNodeParameter(paramName, index);
 					}
 				}
 			}
 		}
 		// console.log(`Log ${url} body before request: ${JSON.stringify(body)}`);
-		// Робимо запит до API та явно кажемо TypeScript, що відповідь — це об'єкт (IDataObject)
+		// Make the API request and explicitly tell TypeScript the response is an object (IDataObject)
 		const responseData = await this.helpers.httpRequestWithAuthentication.call(this, 'roappApi', {
 			method: method,
 			url: url,
@@ -630,7 +631,7 @@ export async function handleCreateUpdate(
 		return [[{ 
 			json: responseData, 		
 			pairedItem: {
-				item: index, // Зв'язуємо з поточним вхідним індексом
+				item: index, // Link to current input index
 			} }]];
 
 	} catch (error) {
@@ -703,123 +704,4 @@ export function transformInvoiceCustomItems(items: IDataObject[]): IDataObject[]
 		return result;
 	});
 }
-
-
-// export async function executePersonOperation(
-// 	this: IExecuteFunctions,
-// 	operation: string,
-// 	index: number,
-// ):Promise<INodeExecutionData[][]> {
-// 	if (operation === 'create') {
-// 		const body: IDataObject = {
-// 			first_name: this.getNodeParameter('first_name', index),
-// 			last_name: this.getNodeParameter('last_name', index),
-// 		};
-// 		if (this.getNodeParameter('email', index)) {
-// 			body.email = this.getNodeParameter('email', index);
-// 		}
-// 		const phonesUi = Object.assign(this.getNodeParameter('phonesUi', index, {}) as {
-// 															phones?: Array<{
-// 																title: string;
-// 																phone: string;
-// 																notify: boolean;
-// 																has_viber: boolean;
-// 																has_whatsapp: boolean;
-// 															}> });
-
-// 		if (phonesUi?.phones && phonesUi?.phones?.length > 0) {
-// 				body.phones = phonesUi.phones.map((item:IDataObject) => {
-// 					const phone = item.phone as string;
-// 					if (phoneValidation(phone)) {
-// 						return {
-// 							title: item.title,
-// 							phone: item.phone,
-// 							notify: item.notify,
-// 							has_viber: item.has_viber,
-// 							has_whatsapp: item.has_whatsapp,
-// 						}
-// 					}
-// 					else {
-// 						throw new NodeOperationError(this.getNode(), 
-// 							`The phone number "${item.phone}" is not valid. Please use international format (e.g., +12021234567).`,
-// 							{ itemIndex: index }
-// 						);
-// 					}
-// 				});
-// 		}
-// 		const customFields = this.getNodeParameter('customFields', index) as IDataObject;
-// 		if (customFields?.value) {
-// 			// Получаем информацию о типах полей и преобразуем dateTime
-// 			const fieldsInfo = await getCustomFieldsInfo.call(this, 'person');
-// 			const valObj = customFields?.value as IDataObject;
-// 			const transformedCustomFields = transformCustomFieldsValues(valObj, fieldsInfo);
-// 			body.custom_fields = transformedCustomFields;
-// 		}
-// 		return await handlePost.call(this, index, `${BASE_URL}v2/contacts/people`, body);
-// 	} else if (operation === 'getAll') {
-// 		return await handleGetAll.call(this, index, `${BASE_URL}v2/contacts/people`);
-// 	} else if (operation === 'get') {
-// 		return await handleGetOne.call(this, index, `${BASE_URL}v2/contacts/people/${this.getNodeParameter('Id', index)}`);
-// 	}
-// 	return [[{json: {}}]];
-// }
-
-
-// export async function executeOrganizationOperation(
-// 	this: IExecuteFunctions,
-// 	operation: string,
-// 	index: number,
-// ):Promise<INodeExecutionData[][]> {
-// 	if (operation === 'getAll') {
-// 		return await handleGetAll.call(this, index, `${BASE_URL}v2/contacts/organizations`);
-// 	} else if (operation === 'get') {
-// 		return await handleGetOne.call(this, index, `${BASE_URL}v2/contacts/organizations/${this.getNodeParameter('Id', index)}`);
-// 	} else if (operation === 'create') {
-// 		const body:IDataObject = {
-// 			name : this.getNodeParameter('name', index),
-// 		};
-// 		if (this.getNodeParameter('email', index)) {
-// 			body.email = this.getNodeParameter('email', index);
-// 		}
-// 		const phonesUi = Object.assign(this.getNodeParameter('phonesUi', index, {}) as {
-// 															phones?: Array<{
-// 																title: string;
-// 																phone: string;
-// 																notify: boolean;
-// 																has_viber: boolean;
-// 																has_whatsapp: boolean;
-// 															}> });
-
-// 		if (phonesUi?.phones && phonesUi?.phones?.length > 0) {
-// 				body.phones = phonesUi.phones.map((item:IDataObject) => {
-// 					const phone = item.phone as string;
-// 					if (phoneValidation(phone)) {
-// 						return {
-// 							title: item.title,
-// 							phone: item.phone,
-// 							notify: item.notify,
-// 							has_viber: item.has_viber,
-// 							has_whatsapp: item.has_whatsapp,
-// 						}
-// 					}
-// 					else {
-// 						throw new NodeOperationError(this.getNode(), 
-// 							`The phone number "${item.phone}" is not valid. Please use international format (e.g., +12021234567).`,
-// 							{ itemIndex: index }
-// 						);
-// 					}
-// 				});
-// 		}
-// 		const customFields = this.getNodeParameter('customFields', index) as IDataObject;
-// 		if (customFields?.value) {
-// 			// Получаем информацию о типах полей и преобразуем dateTime
-// 			const fieldsInfo = await getCustomFieldsInfo.call(this, 'organization');
-// 			const valObj = customFields?.value as IDataObject;
-// 			const transformedCustomFields = transformCustomFieldsValues(valObj, fieldsInfo);
-// 			body.custom_fields = transformedCustomFields;
-// 		}
-// 		return await handlePost.call(this, index, `${BASE_URL}v2/contacts/organizations`, body);
-// 	}
-// 	return [[{json: {}}]]
-// }
 

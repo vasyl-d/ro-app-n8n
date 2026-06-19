@@ -96,7 +96,7 @@ export async function executeBookingOperation(
 	} else if (operation === 'get') {
 		return await handleGetOne.call(this, index, `${BASE_URL}v2/bookings/${this.getNodeParameter('Id', index)}`);
 	} else if (operation === 'delete') {
-		return await this.helpers.httpRequestWithAuthentication.call(this, 'roappRoappApi', {
+		return await this.helpers.httpRequestWithAuthentication.call(this, 'roappApi', {
 			method: 'DELETE',
 			url: `${BASE_URL}v2/bookings/${this.getNodeParameter('Id', index)}`
 		});

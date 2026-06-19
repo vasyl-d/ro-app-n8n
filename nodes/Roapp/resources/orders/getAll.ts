@@ -29,12 +29,12 @@ export const ordersGetAllDescription: INodeProperties[] = [
 		name: 'client_ids',
 		type: 'string',
 		typeOptions: {
-			multipleValues: true, // Це перетворює звичайний інпут на динамічний список
+			multipleValues: true, // Converts regular input into a dynamic list
 		},
 		displayOptions: {
 			show: showOnlyForOrdersGetMany,
 		},
-		default: [], // Для багатократних значень дефолт має бути масивом
+		default: [], // Default for multi-value must be an array
 		description: 'Add one or more Customer IDs',
 	},
 	{
