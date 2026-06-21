@@ -2,7 +2,7 @@
 	"node": "n8n-nodes-roapp.roapp",
 	"nodeVersion": "1.0",
 	"codexVersion": "1.0",
-	"categories": ["Development", "CRM"],
+	"categories": ["Development", "Sales", "Analytics"],
 	"resources": {
 		"credentialDocumentation": [
 			{
