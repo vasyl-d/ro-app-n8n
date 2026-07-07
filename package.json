@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-roapp",
-  "version": "1.0.13",
+  "version": "2.0.0",
   "description": "package for roapp.io/orderry.com API",
   "license": "MIT",
   "homepage": "https://github.com/vasyl-d/ro-app-n8n#readme",
@@ -9,7 +9,9 @@
     "n8n-community-node-package",
     "roapp.io",
     "orderry.com",
-    "orderry","roapp","crm"
+    "orderry",
+    "roapp",
+    "crm"
   ],
   "author": {
     "name": "vasyl-d",
