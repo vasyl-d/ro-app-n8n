@@ -5,11 +5,11 @@ import type {
 	INodeProperties, Icon
 } from 'n8n-workflow';
 
-export class RoappApi implements ICredentialType {
-	name = 'roappApi';
-	icon: Icon = 'file:../nodes/Roapp/ro_app_white.svg';
+export class OrderryApi implements ICredentialType {
+	name = 'orderryApi';
+	icon: Icon = 'file:../nodes/Orderry/or_app_white.svg';
 
-	displayName = 'RoappApi API';
+	displayName = 'OrderryApi API';
 	
 	// Link to your community node's README
 	documentationUrl = 'https://github.com/vasyl-d/ro-app-n8n#credentials';
@@ -28,7 +28,7 @@ export class RoappApi implements ICredentialType {
 			displayName: 'Base URL',
 			name: 'baseUrl',
 			type: 'hidden',
-			default: 'https://api.roapp.io/', // Exact URL for Orderry
+			default: 'https://api.orderry.com/', // Exact URL for Orderry
 		},
 	];
 	
@@ -44,7 +44,7 @@ export class RoappApi implements ICredentialType {
 
 	test: ICredentialTestRequest = {
 		request: {
-			baseURL: 'https://api.roapp.io/',
+			baseURL: 'https://api.orderry.com/',
 			url: 'v2/company/locations',
 		},
 	};

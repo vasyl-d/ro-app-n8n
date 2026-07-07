@@ -20,7 +20,6 @@ import { assetDescription, executeAssetOperation } from './resources/assets';
 import { warehouseDescription, executeWarehouseOperation } from './resources/warehouse';
 import { leadDescription, executeLeadOperation } from './resources/lead';
 import { estimatesDescription, executeEstimateOperation } from './resources/estimates';
-// import { deduplicationDescription, executeDeduplicationOperation } from './resources/deduplication';
 import { catalogDescription, executeCatalogOperation } from './resources/catalog';
 import { bookingsDescription, executeBookingOperation } from './resources/bookings';
 import {
@@ -33,22 +32,22 @@ import {
 			getResourceTypes
 		} from './shared/methods';
 		
-export class Roapp implements INodeType {
+export class Orderry implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Roapp',
-		name: 'roapp',
-		icon: { light: 'file:./ro_app_white.svg', dark: 'file:./ro_app_black.svg' },
+		displayName: 'Orderry',
+		name: 'orderry',
+		icon: { light: 'file:./or_app_white.svg', dark: 'file:./or_app_black.svg' },
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Interact with the Roapp.io API',
+		description: 'Interact with the Orderry.com API',
 		defaults: {
-			name: 'Roapp',
+			name: 'Orderry',
 		},
 		usableAsTool: true,
 		inputs: [NodeConnectionTypes.Main],
 		outputs: [NodeConnectionTypes.Main],
-		credentials: [{ name: 'roappApi', required: true }],
+		credentials: [{ name: 'orderryApi', required: true }],
 		properties: [
 			{
 				displayName: 'Resource',
@@ -123,7 +122,6 @@ export class Roapp implements INodeType {
 			...bookingsDescription,
 			...estimatesDescription,
 			...warehouseDescription,
-			// ...deduplicationDescription,
 			...catalogDescription,
 			...globalFields,
 		],

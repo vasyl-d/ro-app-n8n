@@ -1,0 +1,18 @@
+{
+	"node": "n8n-nodes-roapp.orderry",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Development", "Sales", "Analytics"],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://github.com/vasyl-d/ro-app-n8n#credentials"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://github.com/vasyl-d/ro-app-n8n#readme"
+			}
+		]
+	}
+}
