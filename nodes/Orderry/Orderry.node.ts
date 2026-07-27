@@ -13,9 +13,11 @@ import { personDescription, executePersonOperation } from './resources/person';
 import { organizationDescription, executeOrganizationOperation } from './resources/organization';
 import { ordersDescription, executeOrderOperation } from './resources/orders';
 import { saleDescription, executeSaleOperation } from './resources/sale';
+import { taskDescription, executeTaskOperation } from './resources/task';
 import { invoiceDescription, executeInvoiceOperation } from './resources/invoices';
 import { companyDescription, executeCompanyOperations } from './resources/company';
 import { marketingDescription, executeGetMarketing } from './resources/marketing';
+import { telephonyDescription, executeTelephonyOperation } from './resources/telephony';
 import { assetDescription, executeAssetOperation } from './resources/assets';
 import { warehouseDescription, executeWarehouseOperation } from './resources/warehouse';
 import { leadDescription, executeLeadOperation } from './resources/lead';
@@ -99,14 +101,22 @@ export class Orderry implements INodeType {
 					name: 'Person',
 					value: 'person',
 				},
-				{
-					name: 'Sale',
-					value: 'sale',
-				},
-				{
-					name: 'Warehouse',
-					value: 'warehouse',
-				},
+			{
+				name: 'Sale',
+				value: 'sale',
+			},
+			{
+				name: 'Task',
+				value: 'task',
+			},
+			{
+				name: 'Telephony',
+				value: 'telephony',
+			},
+			{
+				name: 'Warehouse',
+				value: 'warehouse',
+			},
 			],
 			default: 'catalog',
 			},
@@ -117,12 +127,14 @@ export class Orderry implements INodeType {
 			...leadDescription,
 			...organizationDescription,
 			...saleDescription,
+			...taskDescription,
 			...invoiceDescription,
 			...assetDescription,
 			...bookingsDescription,
 			...estimatesDescription,
 			...warehouseDescription,
 			...catalogDescription,
+			...telephonyDescription,
 			...globalFields,
 		],
 	};
@@ -191,9 +203,12 @@ export class Orderry implements INodeType {
 					case 'organization':
 						response = await executeOrganizationOperation.call(this, operation, i);
 						break;
-					case 'sale':
-						response = await executeSaleOperation.call(this, operation, i);
-						break;
+				case 'sale':
+					response = await executeSaleOperation.call(this, operation, i);
+					break;
+				case 'task':
+					response = await executeTaskOperation.call(this, operation, i);
+					break;
 					case 'company':
 						response = await executeCompanyOperations.call(this, operation, i);
 						break;
@@ -215,9 +230,12 @@ export class Orderry implements INodeType {
 				case 'estimate':
 					response = await executeEstimateOperation.call(this, operation, i);
 					break;
-				case 'lead':
-						response = await executeLeadOperation.call(this, operation, i);
-						break;
+			case 'lead':
+				response = await executeLeadOperation.call(this, operation, i);
+				break;
+			case 'telephony':
+				response = await executeTelephonyOperation.call(this, operation, i);
+				break;
 					// case 'deduplication':
 					// 	response = await executeDeduplicationOperation.call(this, operation, i);
 					// 	break;

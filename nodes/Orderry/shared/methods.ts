@@ -4,13 +4,14 @@ import {INodePropertyOptions,
 	ILoadOptionsFunctions, 
 	IExecuteFunctions,
 	IHttpRequestMethods,
+	IHttpRequestOptions,
 	NodeOperationError,
 	NodeApiError, 
 	IDataObject,
 	INodeExecutionData,
 	ResourceMapperField,
 	JsonObject,
- } from 'n8n-workflow';
+	} from 'n8n-workflow';
 
 import { DateTime } from 'luxon';
 
@@ -48,6 +49,8 @@ const resources_types_urls: { [key: string]: string } = {
   "lead": `${BASE_URL}lead/types/`,
   "asset": `${BASE_URL}v2/assets/types`
 };
+
+const oldApiRresources = ['asset', 'lead', 'task', 'warehouse'] as string[];
 
 // Custom fields data cache
 const cache: { [key: string]: { fields: ResourceMapperField[], fieldsInfo: { [key: string]: string } }} = {};
@@ -310,7 +313,6 @@ function makeQs(
 	const parameters = this.getNode().parameters;
 	const qs: IDataObject = {};
 	const ignoredParameters = ['resource', 'operation', 'returnAll', 'limit', ...ignored];
-	const oldApiRresources = ['asset', 'lead', 'warehouse'] as string[];
 	const resourceName = this.getNodeParameter('resource', index) as string;
 	const operationName = this.getNodeParameter('operation', index) as string;
 
@@ -335,29 +337,39 @@ function makeQs(
 				// If this is a "filters" or "additionalFields" collection
 				else if (typeof value === 'object' && value !== null && value != undefined) {
 					const processedFilters:{[key:string]:unknown} = { ...value };
-					if (parameterName == "created_at" || parameterName == "modified_at" || parameterName == "closed_at" || parameterName == "scheduled_for" || parameterName == "due_date" || parameterName == "issue_date") {
+					if (parameterName == "created_at" || parameterName == "modified_at" || parameterName == "closed_at" || parameterName == "scheduled_for" || parameterName == "due_date" || parameterName == "issue_date" || parameterName == "deadline_at") {
 						const from_name = `${parameterName}_from`;
 						const to_name = `${parameterName}_to`;
 						let from:string = '';
 						let to:string = '';
-						if (parameterName != "issue_date") {
+						if (parameterName == "issue_date") {
+							from = processedFilters[from_name]
+								? `${String(DateTime.fromISO(String(processedFilters[from_name])).toISO({includeOffset: false, precision: 'day' }))}` // or .toISOString()
+								: '';
+							to = processedFilters[to_name]
+								? `,${String(DateTime.fromISO(String(processedFilters[to_name])).toISO({includeOffset: false, precision: 'day' }))}`
+								: '';
+						} else if (parameterName == "deadline_at") {
+							from = processedFilters[from_name]
+							? `${String(1000 * DateTime.fromISO(String(processedFilters[from_name])).toSeconds())}` : "";
+							to = processedFilters[to_name]
+							? `${String(1000 * DateTime.fromISO(String(processedFilters[to_name])).toSeconds())}` : "";
+						} else {
 							from = processedFilters[from_name]
 								? `${String(DateTime.fromISO(String(processedFilters[from_name])).toISO()).split(".")[0]}Z` // or .toISOString()
 								: '';
 							to = processedFilters[to_name]
 								? `,${String(DateTime.fromISO(String(processedFilters[to_name])).toISO()).split(".")[0]}Z`
 								: '';
+						}
+
+						if (from || to) {
+							if (parameterName == "deadline_at") {
+								qs[`${parameterName}[]`] = [parseInt(from),parseInt(to)];
 							} else {
-								from = processedFilters[from_name]
-								? `${String(DateTime.fromISO(String(processedFilters[from_name])).toISO({includeOffset: false, precision: 'day' }))}` // or .toISOString()
-								: '';
-								to = processedFilters[to_name]
-								? `,${String(DateTime.fromISO(String(processedFilters[to_name])).toISO({includeOffset: false, precision: 'day' }))}`
-								: '';
-							}
-							if (from || to) {
 								qs[`${parameterName}`] = `${from}${to}`;
 							}
+						}
 					} else {
 						Object.assign(qs, value);
 					}
@@ -389,7 +401,6 @@ export async function handleGetAll(
 	const returnAll = this.getNodeParameter('returnAll', index, true) as boolean;
 	const limit = this.getNodeParameter('limit', index, 50) as number;
 	const resourceName = this.getNodeParameter('resource', index) as string;
-	const oldApiRresources = ['asset', 'lead'] as string[];
 	const qs = makeQs.call(this, index);
 	
 	const rawItems: IDataObject[] = [];
@@ -414,13 +425,15 @@ export async function handleGetAll(
 		};
 	
 		try {
-			responseData = await this.helpers.httpRequestWithAuthentication.call(this, 'orderryApi', {
+			const requestConfig = {
 				method: 'GET',
 				url: url,
 				json: true,
 				qs: qs,
 				...options
-			});
+			} as IHttpRequestOptions;
+
+			responseData = await this.helpers.httpRequestWithAuthentication.call(this, 'orderryApi', requestConfig);
 		} catch (error) {
 			errorHelper.call(this, error);
 		}
@@ -571,6 +584,9 @@ export async function handleCreateUpdate(
 					} 
 					else if (paramName === "scheduled_for" || paramName === "scheduled_to" || paramName === "due_date") {
 						body[paramName] = `${DateTime.fromISO(String(value)).toUTC().toFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")}`;
+					} 
+					else if (paramName === "deadline" ) {
+						body[paramName] = `${1000 * DateTime.fromISO(String(value)).toSeconds()}`;
 					} 
 					else if (paramName === "issue_date_invoice" || paramName === "due_date_invoice") {
 						body[paramName.slice(0, -8)] = `${DateTime.fromISO(String(value)).toUTC().toFormat("yyyy-MM-dd")}`;

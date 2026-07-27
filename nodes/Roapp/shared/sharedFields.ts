@@ -614,8 +614,8 @@ export const globalFields: INodeProperties[] = [
 		type: 'boolean',
 		displayOptions: {
 			show: {
-				operation: ['getAll', 'getEmployees', 'getReviews', 'getStock', 'getServices', 'getProducts', 'getAdCampaigns'],
-				resource: ['sale', 'person', 'organization', 'order', 'invoice', 'company', 'asset', 'lead', 'catalog', 'booking', 'marketing', 'warehouse']
+				operation: ['getAll', 'getEmployees', 'getReviews', 'getStock', 'getServices', 'getProducts', 'getAdCampaigns', 'getManyCalls'],
+				resource: ['sale', 'person', 'organization', 'order', 'invoice', 'company', 'asset', 'lead', 'catalog', 'booking', 'marketing', 'warehouse', 'telephony', 'task']
 			},
 		},
 		default: false,
@@ -627,7 +627,7 @@ export const globalFields: INodeProperties[] = [
 		type: 'number',
 		displayOptions: {
 			show: {
-				operation: ['getAll', 'getEmployees', 'getReviews', 'getStock', 'getServices', 'getProducts','getAdCampaigns'],
+				operation: ['getAll', 'getEmployees', 'getReviews', 'getStock', 'getServices', 'getProducts','getAdCampaigns', 'getManyCalls'],
 				returnAll: [false],
 			},
 		},

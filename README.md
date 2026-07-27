@@ -1,8 +1,8 @@
 # n8n-nodes-roapp
 
-This is an n8n community node. It lets you use [ROapp.io API](https://roapp.readme.io/) and [Orderry API](https://orderry.readme.io/) in your n8n workflows.
+This is an n8n community node. It lets you use [ROapp.io](https://roapp.io/) and [Orderry](https://orderry.com/) APIs in your n8n workflows.
 
-ROapp.io is a comprehensive business management platform that helps companies manage their operations including orders, invoices, bookings, customers, inventory, and more.
+ROapp / Orderry are a comprehensive business management platforms that help companies manage their operations including orders, invoices, bookings, customers, inventory, and more.
 
 [n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.
 
@@ -20,7 +20,7 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Credentials
 
-To use this node, you need to create [ROapp.io API](https://roapp.readme.io/) or [Orderry.com](https://app.orderry.com) credentials:
+To use this node, you need to create [ROapp.io](https://web.roapp.io/) or [Orderry.com](https://app.orderry.com) credentials:
 
 1. Sign up for a ROapp.io or Orderry account at https://roapp.io/ or https://app.orderry.com
 2. Get an API access token from your account settings
@@ -75,13 +75,15 @@ The node automatically handles custom fields for supported resources through the
 
 ## Resources
 
-The Roapp node provides access to the following [ROapp.io API](https://roapp.readme.io/) / [Orderry.com](https://app.orderry.com) resources:
+The Roapp node provides access to the following  [ROapp.io](https://roapp.io/) / [Orderry.com](https://app.orderry.com) API resources:
 
 ### Business Operations
 - **Orders**: Manage customer orders, including items, status, payments
 - **Invoices**: Create and manage invoices, invoice items, and payment tracking
 - **Bookings**: Handle service bookings, appointments, and reservations
 - **Sales**: Track sales opportunities and pipeline management
+- **Tasks**: Manage to-do items and tasks connected with orders or customers
+- **Telephony**; Get call logs and call details / ai-transcripts
 
 ### Customer & Contact Management
 - **Persons**: Manage individual customer/contact records
@@ -110,8 +112,46 @@ Most resources support standard fields like:
 
 ### Version 1.0.0
 - Initial release
-- Support for all major [ROapp.io API](https://roapp.readme.io/) / [Orderry.com](https://app.orderry.com) resources
+- Support for all major [ROapp.io](https://roapp.io) 
 - Full CRUD operations for each resource
 - Specialized operations for line items, status updates, and comments
 - Custom field handling and resource mapping
 - Secure authentication via Access Token
+
+
+### Version 1.2.0
+- Added support for the Marketing resource
+- Improved performance for large datasets
+- Added more detailed logging options
+
+### Version 1.4.0
+- Added support for the Company resource
+- Improved error messages and troubleshooting
+
+### Version 1.5.0
+- Added support for the Warehouse resource
+- Enhanced pagination handling
+- Improved performance for bulk operations
+
+### Version 1.6.0
+- Added support for the Assets resource
+- Enhanced field validation
+- Improved documentation and examples
+
+### Version 1.7.0
+- Added support for the Catalog resource
+- Enhanced error handling
+- Improved UI/UX for configuration
+
+### Version 1.8.0
+- Added support for the Sales resource
+- Enhanced performance for complex queries
+- Improved documentation and examples
+
+### Version 2.0.0
+- Added [Orderry.com](https://app.orderry.com) resources support and new Icons
+- Enhanced field mapping capabilities
+- Improved error handling and logging
+
+### Version 2.0.1
+- Added support for the Telephony and Task resources
