@@ -256,6 +256,52 @@ export const globalFields: INodeProperties[] = [
 		]
 	},
 	{
+		displayName: "Client Names",
+		name: "client_names",
+		type: "string",
+		typeOptions: {
+			multipleValues: true, // Converts regular input into a dynamic list
+		},
+		displayOptions: {
+			show: {
+				operation: ['getAll'],
+				resource: ['order', 'estimate']
+			},
+		},
+		default: [],
+	},
+	{
+		displayName: "Client Phones",
+		name: "client_phones",
+		type: "string",
+		typeOptions: {
+			multipleValues: true, // Converts regular input into a dynamic list
+		},
+		displayOptions: {
+			show: {
+				operation: ['getAll'],
+				resource: ['order', 'estimate']
+			},
+		},
+		default: [],
+	},
+	{
+		displayName: 'Asset Serial',
+		name: "asset_uid",
+		type: "string",
+		typeOptions: {
+			multipleValues: true, // Converts regular input into a dynamic list
+		},
+		displayOptions: {
+			show: {
+				operation: ['getAll'],
+				resource: ['order', 'estimate']
+			},
+		},
+		default: [],
+		description: 'Add one or more Asset Serials',
+	},
+	{
 		displayName: 'Assignee Name or ID',
 		name: "assignee_id",
 		type: "options",
@@ -501,11 +547,12 @@ export const globalFields: INodeProperties[] = [
 			},
 		},
 		typeOptions: {
+			loadOptionsMethod: 'getLocationResources',
 			loadOptionsDependsOn: [
 				'resource',
 				'operation',
+				'branch_id'
 			],
-			loadOptionsMethod: 'getLocationResources',
 		},
 		default: '',
 	},
@@ -614,7 +661,7 @@ export const globalFields: INodeProperties[] = [
 		type: 'boolean',
 		displayOptions: {
 			show: {
-				operation: ['getAll', 'getEmployees', 'getReviews', 'getStock', 'getServices', 'getProducts', 'getAdCampaigns'],
+				operation: ['getAll', 'getEmployees', 'getReviews', 'getStock', 'getServices', 'getProducts', 'getAdCampaigns', 'getManyCalls'],
 				resource: ['sale', 'person', 'organization', 'order', 'invoice', 'company', 'asset', 'lead', 'catalog', 'booking', 'marketing', 'warehouse', 'telephony', 'task']
 			},
 		},

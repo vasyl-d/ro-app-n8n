@@ -153,5 +153,9 @@ Most resources support standard fields like:
 - Enhanced field mapping capabilities
 - Improved error handling and logging
 
-### Version 2.0.1
+### Version 2.1.0
 - Added support for the Telephony and Task resources
+
+### Version 2.1.1
+- minor bug fixes
+- added some fields to getOrders / getEstimates methods

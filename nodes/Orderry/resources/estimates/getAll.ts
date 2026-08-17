@@ -36,27 +36,4 @@ export const estimatesGetAllDescription: INodeProperties[] = [
 		default: [],
 		description: 'Add one or more Customer IDs',
 	},
-	{
-		displayName: 'Payment Method',
-		name: "payment_method",
-		type: "options",
-		displayOptions: {
-			show: showOnlyForEstimatesGetMany,
-		},
-		default: 'cash',
-		options: [
-			{
-				name: "Cash",
-				value: "cash"
-			},
-			{
-				name: "Cashless",
-				value: "cashless"
-			},
-			{
-				name: "Credit_card",
-				value: "credit_card"
-			}
-		]
-	},
 ];

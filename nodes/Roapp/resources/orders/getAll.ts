@@ -36,28 +36,5 @@ export const ordersGetAllDescription: INodeProperties[] = [
 		},
 		default: [], // Default for multi-value must be an array
 		description: 'Add one or more Customer IDs',
-	},
-	{
-		displayName: 'Payment Method',
-		name: "payment_method",
-		type: "options",
-		displayOptions: {
-			show: showOnlyForOrdersGetMany,
-		},
-		default: 'cash',
-		options: [
-			{
-				name: "Cash",
-				value: "cash"
-			},
-			{
-				name: "Cashless",
-				value: "cashless"
-			},
-			{
-				name: "Credit_card",
-				value: "credit_card"
-			}
-		]
-	},
+	}
 ];
