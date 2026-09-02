@@ -21,10 +21,10 @@ import { assetDescription, executeAssetOperation } from './resources/assets';
 import { warehouseDescription, executeWarehouseOperation } from './resources/warehouse';
 import { leadDescription, executeLeadOperation } from './resources/lead';
 import { estimatesDescription, executeEstimateOperation } from './resources/estimates';
-// import { deduplicationDescription, executeDeduplicationOperation } from './resources/deduplication';
 import { catalogDescription, executeCatalogOperation } from './resources/catalog';
 import { bookingsDescription, executeBookingOperation } from './resources/bookings';
 import { telephonyDescription, executeTelephonyOperation } from './resources/telephony';
+import { financeDescription, executeFinanceOperation } from './resources/finance';
 import {
 			fetchCustomFieldsData,
 			getAdCampaigns,
@@ -32,7 +32,8 @@ import {
 			getLocationResources,
 			getLocations,
 			getResourceStatuses,
-			getResourceTypes
+			getResourceTypes,
+			getCashflowCategories
 		} from './shared/methods';
 		
 export class Roapp implements INodeType {
@@ -74,14 +75,18 @@ export class Roapp implements INodeType {
 					name: 'Company',
 					value: 'company',
 				},
-				{
-					name: 'Estimate',
-					value: 'estimate',
-				},
-				{
-					name: 'Invoice',
-					value: 'invoice',
-				},
+			{
+				name: 'Estimate',
+				value: 'estimate',
+			},
+			{
+				name: 'Finance',
+				value: 'finance',
+			},
+			{
+				name: 'Invoice',
+				value: 'invoice',
+			},
 				{
 					name: 'Lead',
 					value: 'lead',
@@ -90,18 +95,18 @@ export class Roapp implements INodeType {
 					name: 'Marketing',
 					value: 'marketing',
 				},
-				{
-					name: 'Order',
-					value: 'order',
-				},
-				{
-					name: 'Organization',
-					value: 'organization',
-				},
-				{
-					name: 'Person',
-					value: 'person',
-				},
+			{
+				name: 'Order',
+				value: 'order',
+			},
+			{
+				name: 'Organization',
+				value: 'organization',
+			},
+			{
+				name: 'Person',
+				value: 'person',
+			},
 			{
 				name: 'Sale',
 				value: 'sale',
@@ -134,9 +139,9 @@ export class Roapp implements INodeType {
 			...bookingsDescription,
 			...estimatesDescription,
 			...warehouseDescription,
-			// ...deduplicationDescription,
 			...catalogDescription,
 			...telephonyDescription,
+			...financeDescription,
 			...globalFields,
 		],
 	};
@@ -154,18 +159,21 @@ export class Roapp implements INodeType {
 					const fields = await getResourceTypes.call(this, resource);
 					return fields;
 				},
-			async getAdCampaigns(this: ILoadOptionsFunctions) : Promise<INodePropertyOptions[]>  {
-				return await getAdCampaigns.call(this);
-			},
-			async getEmployees(this: ILoadOptionsFunctions) : Promise<INodePropertyOptions[]>  {
+		async getAdCampaigns(this: ILoadOptionsFunctions) : Promise<INodePropertyOptions[]>  {
+			return await getAdCampaigns.call(this);
+		},
+		async getCashflowCategories(this: ILoadOptionsFunctions) : Promise<INodePropertyOptions[]>  {
+			return await getCashflowCategories.call(this);
+		},
+		async getEmployees(this: ILoadOptionsFunctions) : Promise<INodePropertyOptions[]>  {
 				const fields = await getEmployees.call(this);
 				return fields;
 			},
-			async getLocations(this: ILoadOptionsFunctions) : Promise<INodePropertyOptions[]>  {
+		async getLocations(this: ILoadOptionsFunctions) : Promise<INodePropertyOptions[]>  {
 				const fields = await getLocations.call(this);
 				return fields;
 			},
-			async getLocationResources(this: ILoadOptionsFunctions) : Promise<INodePropertyOptions[]>  {
+		async getLocationResources(this: ILoadOptionsFunctions) : Promise<INodePropertyOptions[]>  {
 				const branch_id = this.getCurrentNodeParameter('branch_id') as string;
 				if (!branch_id) {
 					return [];
@@ -235,12 +243,15 @@ export class Roapp implements INodeType {
 			case 'lead':
 				response = await executeLeadOperation.call(this, operation, i);
 				break;
-			case 'telephony':
-				response = await executeTelephonyOperation.call(this, operation, i);
-				break;
-				// case 'deduplication':
-					// 	response = await executeDeduplicationOperation.call(this, operation, i);
-					// 	break;
+		case 'telephony':
+			response = await executeTelephonyOperation.call(this, operation, i);
+			break;
+		case 'finance':
+			response = await executeFinanceOperation.call(this, operation, i);
+			break;
+			// case 'deduplication':
+				// 	response = await executeDeduplicationOperation.call(this, operation, i);
+				// 	break;
 
 					default:
 						response = [[{json:{}, 

@@ -1,6 +1,6 @@
 {
 	"node": "n8n-nodes-roapp.roapp",
-	"nodeVersion": "2.0",
+	"nodeVersion": "2.2.1",
 	"codexVersion": "2.0",
 	"categories": ["Development", "Sales", "Analytics"],
 	"resources": {

@@ -161,6 +161,7 @@ Most resources support standard fields like:
 - added some fields to getOrders / getEstimates methods
 
 ### Version 2.2.1
-- Add bundles methods into Catalog resource
+- Add Bundles methods into Catalog resource
 - Add new Products/ Services methods
+- Add new Finance resource with accounts, transactions, tags
 - minor bug fixes

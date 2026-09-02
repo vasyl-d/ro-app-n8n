@@ -24,6 +24,7 @@ import { leadDescription, executeLeadOperation } from './resources/lead';
 import { estimatesDescription, executeEstimateOperation } from './resources/estimates';
 import { catalogDescription, executeCatalogOperation } from './resources/catalog';
 import { bookingsDescription, executeBookingOperation } from './resources/bookings';
+import { financeDescription, executeFinanceOperation } from './resources/finance';
 import {
 			fetchCustomFieldsData,
 			getAdCampaigns,
@@ -31,7 +32,8 @@ import {
 			getLocationResources,
 			getLocations,
 			getResourceStatuses,
-			getResourceTypes
+			getResourceTypes,
+			getCashflowCategories
 		} from './shared/methods';
 		
 export class Orderry implements INodeType {
@@ -73,14 +75,18 @@ export class Orderry implements INodeType {
 					name: 'Company',
 					value: 'company',
 				},
-				{
-					name: 'Estimate',
-					value: 'estimate',
-				},
-				{
-					name: 'Invoice',
-					value: 'invoice',
-				},
+			{
+				name: 'Estimate',
+				value: 'estimate',
+			},
+			{
+				name: 'Finance',
+				value: 'finance',
+			},
+			{
+				name: 'Invoice',
+				value: 'invoice',
+			},
 				{
 					name: 'Lead',
 					value: 'lead',
@@ -113,11 +119,11 @@ export class Orderry implements INodeType {
 				name: 'Telephony',
 				value: 'telephony',
 			},
-			{
-				name: 'Warehouse',
-				value: 'warehouse',
-			},
-			],
+		{
+			name: 'Warehouse',
+			value: 'warehouse',
+		},
+	],
 			default: 'catalog',
 			},
 			...companyDescription,
@@ -135,6 +141,7 @@ export class Orderry implements INodeType {
 			...warehouseDescription,
 			...catalogDescription,
 			...telephonyDescription,
+			...financeDescription,
 			...globalFields,
 		],
 	};
@@ -152,10 +159,13 @@ export class Orderry implements INodeType {
 					const fields = await getResourceTypes.call(this, resource);
 					return fields;
 				},
-			async getAdCampaigns(this: ILoadOptionsFunctions) : Promise<INodePropertyOptions[]>  {
-				return await getAdCampaigns.call(this);
-			},
-			async getEmployees(this: ILoadOptionsFunctions) : Promise<INodePropertyOptions[]>  {
+		async getAdCampaigns(this: ILoadOptionsFunctions) : Promise<INodePropertyOptions[]>  {
+			return await getAdCampaigns.call(this);
+		},
+		async getCashflowCategories(this: ILoadOptionsFunctions) : Promise<INodePropertyOptions[]>  {
+			return await getCashflowCategories.call(this);
+		},
+		async getEmployees(this: ILoadOptionsFunctions) : Promise<INodePropertyOptions[]>  {
 				const fields = await getEmployees.call(this);
 				return fields;
 			},
@@ -233,14 +243,17 @@ export class Orderry implements INodeType {
 			case 'lead':
 				response = await executeLeadOperation.call(this, operation, i);
 				break;
-			case 'telephony':
-				response = await executeTelephonyOperation.call(this, operation, i);
-				break;
-					// case 'deduplication':
-					// 	response = await executeDeduplicationOperation.call(this, operation, i);
-					// 	break;
+		case 'telephony':
+			response = await executeTelephonyOperation.call(this, operation, i);
+			break;
+		case 'finance':
+			response = await executeFinanceOperation.call(this, operation, i);
+			break;
+			// case 'deduplication':
+				// 	response = await executeDeduplicationOperation.call(this, operation, i);
+				// 	break;
 
-					default:
+			default:
 						response = [[{json:{}, 
 									pairedItem: {
 										item: i, // Link to current input index

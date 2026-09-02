@@ -199,6 +199,23 @@ export async function getEmployees(
 	return fields;
 }
 
+export async function getCashflowCategories(
+	this: IAllExecuteFunctions
+): Promise<INodePropertyOptions[]> {
+	const url: string = `${BASE_URL}v2/finance/cashflow-categories`;
+	let response = await this.helpers.httpRequestWithAuthentication.call(this, 'roappApi', {
+		method: 'GET',
+		url,
+		json: true,
+	});
+	response = response?.data || response;
+	const fields: INodePropertyOptions[] = response.map((row: IDataObject) => ({
+		name: row?.name || row?.title,
+		value: row.id
+	}));
+	return fields;
+}
+
 export async function getLocations(
 	this: IAllExecuteFunctions) : Promise<INodePropertyOptions[]>  {
 	const url:string =  `${BASE_URL}v2/company/locations`;
@@ -585,7 +602,7 @@ export async function handleCreateUpdate(
 						const transformedCustomFields = transformCustomFieldsValues(valueObj.value as IDataObject, fieldsInfo);
 						body.custom_fields = transformedCustomFields;
 					} 
-					else if (paramName === "scheduled_for" || paramName === "scheduled_to" || paramName === "due_date") {
+					else if (paramName === "scheduled_for" || paramName === "scheduled_to" || paramName === "due_date" || paramName === "custom_created_at") {
 						body[paramName] = `${DateTime.fromISO(String(value)).toUTC().toFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")}`;
 					} 
 					else if (paramName === "deadline" ) {

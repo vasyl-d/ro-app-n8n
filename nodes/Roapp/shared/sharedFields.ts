@@ -8,8 +8,8 @@ export const globalFields: INodeProperties[] = [
 		default: '',
 		displayOptions: {
 			show: {
-				operation: ['get', 'getLocationById', 'getLocationResources', 'delete', 'getItems', 'getServiceById', 'getProductById', 'getOrganizationPeople', 'getPersonOrganization', 'deleteProduct', 'deleteService', 'deleteBundle', 'getBundleById'],
-				resource: ['sale', 'person', 'organization', 'order', 'invoice', 'company', 'asset', 'lead', 'catalog', 'booking']
+				operation: ['get', 'getLocationById', 'getLocationResources', 'delete', 'getItems', 'getServiceById', 'getProductById', 'getOrganizationPeople', 'getPersonOrganization', 'deleteProduct', 'deleteService', 'deleteBundle', 'getBundleById', 'getAccount', 'getRefund', 'getRefundItems', 'getTag', 'updateTag', 'deleteTag'],
+				resource: ['sale', 'person', 'organization', 'order', 'invoice', 'company', 'asset', 'lead', 'catalog', 'booking', 'finance']
 			},
 		},
 		description: "The entity's ID to retrieve",
@@ -661,8 +661,8 @@ export const globalFields: INodeProperties[] = [
 		type: 'boolean',
 		displayOptions: {
 			show: {
-				operation: ['getAll', 'getEmployees', 'getReviews', 'getStock', 'getServices', 'getProducts', 'getAdCampaigns', 'getManyCalls', 'getBundles'],
-				resource: ['sale', 'person', 'organization', 'order', 'invoice', 'company', 'asset', 'lead', 'catalog', 'booking', 'marketing', 'warehouse', 'telephony', 'task']
+				operation: ['getAll', 'getEmployees', 'getReviews', 'getStock', 'getServices', 'getProducts', 'getAdCampaigns', 'getManyCalls', 'getBundles', 'getAccounts', 'getRefunds', 'getTags', 'getTransactions', 'getExchangeRates', 'getRefundItems'],
+				resource: ['sale', 'person', 'organization', 'order', 'invoice', 'company', 'asset', 'lead', 'catalog', 'booking', 'marketing', 'warehouse', 'telephony', 'task', 'finance']
 			},
 		},
 		default: false,
@@ -674,7 +674,7 @@ export const globalFields: INodeProperties[] = [
 		type: 'number',
 		displayOptions: {
 			show: {
-				operation: ['getAll', 'getEmployees', 'getReviews', 'getStock', 'getServices', 'getProducts','getAdCampaigns', 'getManyCalls','getBundles'],
+				operation: ['getAll', 'getEmployees', 'getReviews', 'getStock', 'getServices', 'getProducts','getAdCampaigns', 'getManyCalls','getBundles', 'getAccounts', 'getRefunds', 'getTags', 'getTransactions', 'getExchangeRates', 'getRefundItems'],
 				returnAll: [false],
 			},
 		},
