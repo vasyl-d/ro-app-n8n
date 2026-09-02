@@ -640,6 +640,7 @@ export async function handleCreateUpdate(
 		}
 		// console.log(`Log ${url} body before request: ${JSON.stringify(body)}`);
 		// Make the API request and explicitly tell TypeScript the response is an object (IDataObject)
+
 		const responseData = await this.helpers.httpRequestWithAuthentication.call(this, 'roappApi', {
 			method: method,
 			url: url,

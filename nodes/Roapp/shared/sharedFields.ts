@@ -8,7 +8,7 @@ export const globalFields: INodeProperties[] = [
 		default: '',
 		displayOptions: {
 			show: {
-				operation: ['get', 'getLocationById', 'getLocationResources', 'delete', 'getItems', 'getServiceById', 'getProductById', 'getOrganizationPeople', 'getPersonOrganization'],
+				operation: ['get', 'getLocationById', 'getLocationResources', 'delete', 'getItems', 'getServiceById', 'getProductById', 'getOrganizationPeople', 'getPersonOrganization', 'deleteProduct', 'deleteService', 'deleteBundle', 'getBundleById'],
 				resource: ['sale', 'person', 'organization', 'order', 'invoice', 'company', 'asset', 'lead', 'catalog', 'booking']
 			},
 		},
@@ -330,8 +330,8 @@ export const globalFields: INodeProperties[] = [
 		default: {type: "percentage", percentage: 0, amount:0, sponsor: "staff" },
 		displayOptions: {
 			show: {
-				operation: ['createItem', 'updateItem'],
-				resource: ['order', 'estimate', 'invoice', 'booking']
+				operation: ['createItem', 'updateItem', 'createBundleItem', 'updateBundleItem'],
+				resource: ['order', 'estimate', 'invoice', 'booking', 'catalog']
 			},
 		},
 		options: [
@@ -393,8 +393,8 @@ export const globalFields: INodeProperties[] = [
 		default: {period: 0, unit: "days" },
 		displayOptions: {
 			show: {
-				operation: ['createItem', 'updateItem'],
-				resource: ['order', 'estimate', 'invoice', 'booking']
+				operation: ['createItem', 'updateItem', 'createBundleItem', 'updateBundleItem', 'createProduct', 'updateProduct', 'createService', 'updateService'],
+				resource: ['order', 'estimate', 'invoice', 'booking', 'catalog']
 			},
 		},
 		options: [
@@ -661,7 +661,7 @@ export const globalFields: INodeProperties[] = [
 		type: 'boolean',
 		displayOptions: {
 			show: {
-				operation: ['getAll', 'getEmployees', 'getReviews', 'getStock', 'getServices', 'getProducts', 'getAdCampaigns', 'getManyCalls'],
+				operation: ['getAll', 'getEmployees', 'getReviews', 'getStock', 'getServices', 'getProducts', 'getAdCampaigns', 'getManyCalls', 'getBundles'],
 				resource: ['sale', 'person', 'organization', 'order', 'invoice', 'company', 'asset', 'lead', 'catalog', 'booking', 'marketing', 'warehouse', 'telephony', 'task']
 			},
 		},
@@ -674,7 +674,7 @@ export const globalFields: INodeProperties[] = [
 		type: 'number',
 		displayOptions: {
 			show: {
-				operation: ['getAll', 'getEmployees', 'getReviews', 'getStock', 'getServices', 'getProducts','getAdCampaigns', 'getManyCalls'],
+				operation: ['getAll', 'getEmployees', 'getReviews', 'getStock', 'getServices', 'getProducts','getAdCampaigns', 'getManyCalls','getBundles'],
 				returnAll: [false],
 			},
 		},

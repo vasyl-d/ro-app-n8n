@@ -159,3 +159,8 @@ Most resources support standard fields like:
 ### Version 2.1.1
 - minor bug fixes
 - added some fields to getOrders / getEstimates methods
+
+### Version 2.2.1
+- Add bundles methods into Catalog resource
+- Add new Products/ Services methods
+- minor bug fixes
