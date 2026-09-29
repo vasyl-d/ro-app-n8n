@@ -142,17 +142,17 @@ export async function executeOrderOperation(
 			url: `${BASE_URL}v2/orders/${this.getNodeParameter('Id', index)}`
 		});
 	} else if (operation === 'getItems') {
-		return await handleGetOne.call(this, index, `${BASE_URL}v2/orders/${this.getNodeParameter('Id', index)}/items`);
+		return await handleGetAll.call(this, index, `${BASE_URL}v2/orders/${this.getNodeParameter('Id', index)}/items`);
 	} else if (operation === 'create') {
 		return await handleCreateUpdate.call(this, index, `${BASE_URL}v2/orders`, 'POST');
 	} else if (operation === 'update') {
 		return await handleCreateUpdate.call(this, index, `${BASE_URL}v2/orders/${this.getNodeParameter('order_id', index)}`, 'PATCH');
 	} else if (operation === 'getStatuses') {
-		return await handleGetOne.call(this, index, `${BASE_URL}v2/orders/statuses`);
+		return await handleGetAll.call(this, index, `${BASE_URL}v2/orders/statuses`);
 	} else if (operation === 'getTypes') {
-		return await handleGetOne.call(this, index, `${BASE_URL}v2/orders/types`);
+		return await handleGetAll.call(this, index, `${BASE_URL}v2/orders/types`);
 	} else if (operation === 'getCustomFields') {
-		return await handleGetOne.call(this, index, `${BASE_URL}v2/orders/custom-fields`);
+		return await handleGetAll.call(this, index, `${BASE_URL}v2/orders/custom-fields`);
 	} else if (operation === 'createItem') {
 		return await handleCreateUpdate.call(this, index, `${BASE_URL}v2/orders/${this.getNodeParameter('order_id', index)}/items`, 'POST');
 	} else if (operation === 'updateItem') {

@@ -190,7 +190,7 @@ export async function executeCatalogOperation(
 	} else if (operation === 'getBundleById') {
 		return await handleGetOne.call(this, index, `${BASE_URL}v2/catalog/bundles/${this.getNodeParameter('Id', index)}`);
 	} else if (operation === 'getBundleItems') {
-		return await handleGetOne.call(this, index, `${BASE_URL}v2/catalog/bundles/${this.getNodeParameter('Id', index)}/items`);
+		return await handleGetAll.call(this, index, `${BASE_URL}v2/catalog/bundles/${this.getNodeParameter('Id', index)}/items`);
 	} else if (operation === 'getProductsCategories') {
 		return await handleGetAll.call(this, index, `${BASE_URL}v2/catalog/products/categories`);
 	} else if (operation === 'getProductsTypes') {
@@ -202,13 +202,13 @@ export async function executeCatalogOperation(
 	} else if (operation === 'getBundles') {
 		return await handleGetAll.call(this, index, `${BASE_URL}v2/catalog/bundles`);
 	} else if (operation === 'getProductsUOMs') {
-		return await handleGetOne.call(this, index, `${BASE_URL}v2/catalog/products/uoms`);
+		return await handleGetAll.call(this, index, `${BASE_URL}v2/catalog/products/uoms`);
 	} else if (operation === 'getServicesUOMs') {
-		return await handleGetOne.call(this, index, `${BASE_URL}v2/catalog/services/uoms`);
+		return await handleGetAll.call(this, index, `${BASE_URL}v2/catalog/services/uoms`);
 	} else if (operation === 'getProductsPrices') {
-		return await handleGetOne.call(this, index, `${BASE_URL}v2/catalog/products/prices`);
+		return await handleGetAll.call(this, index, `${BASE_URL}v2/catalog/products/prices`);
 	} else if (operation === 'getServicesPrices') {
-		return await handleGetOne.call(this, index, `${BASE_URL}v2/catalog/services/prices`);
+		return await handleGetAll.call(this, index, `${BASE_URL}v2/catalog/services/prices`);
 	} else if (operation === 'deleteProduct') {
 		return await handleCreateUpdate.call(this, index, `${BASE_URL}v2/catalog/products/${this.getNodeParameter('Id', index)}`, 'DELETE');
 	} else if (operation === 'deleteService') {

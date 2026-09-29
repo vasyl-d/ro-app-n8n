@@ -1,7 +1,7 @@
 import type { INodeProperties } from 'n8n-workflow';
 
 const showGetCatalogue = {
-				operation: ['getServices', 'getProducts'],
+				operation: ['getServices', 'getProducts', 'getBundles'],
 				resource: ['catalog'],
 			};
 
@@ -22,9 +22,35 @@ export const getAllDescription: INodeProperties[] = [
 		name: 'barcode',
 		type: 'string',
 		default: '',
-		description: 'Service barcode',
+		description: 'Catalogue item barcode',
 		displayOptions: {
 			show: showGetCatalogue
+		},
+	},
+	{
+		displayName: 'SKU',
+		name: 'sku',
+		type: 'string',
+		default: '',
+		description: 'Catalogue item SKU',
+		displayOptions: {
+			show: {
+				operation: ['getProducts'],
+				resource: ['catalog'],
+			}
+		},
+	},
+	{
+		displayName: 'Code',
+		name: 'code',
+		type: 'string',
+		default: '',
+		description: 'Catalogue item inner code',
+		displayOptions: {
+			show: {
+				operation: ['getProducts'],
+				resource: ['catalog'],
+			}
 		},
 	},
 	{
@@ -35,7 +61,7 @@ export const getAllDescription: INodeProperties[] = [
 			multipleValues: true,
 		},
 		default: '',
-		description: 'List of Service Category IDs',
+		description: 'List of Category IDs',
 		displayOptions: {
 			show: showGetCatalogue
 		},

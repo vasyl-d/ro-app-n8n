@@ -25,6 +25,32 @@ export const ordersGetAllDescription: INodeProperties[] = [
 		description: 'Filter by order status. Choose from the list, or specify an ID using an <a href="https://n8n.io">expression</a>. Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
 	},
 	{
+		displayName: 'Order Types Names or IDs',
+		name: "types",
+		displayOptions: {
+			show: showOnlyForOrdersGetMany,
+		},	
+		type: 'multiOptions',
+		typeOptions: {
+			loadOptionsMethod: 'getTypes',
+		},
+		default: [],
+		description: 'Filter by order type. Choose from the list, or specify an ID using an <a href="https://n8n.io">expression</a>. Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+	},
+	{
+		displayName: 'Location Names or IDs',
+		name: 'location_ids',
+		type: 'multiOptions',
+		displayOptions: {
+			show: showOnlyForOrdersGetMany,
+		},
+		typeOptions: {
+			loadOptionsMethod: 'getLocations'
+		},
+		default: [],
+		description: 'Filter by location. Choose from the list, or specify an ID using an <a href="https://n8n.io">expression</a>. Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
+	},
+	{
 		displayName: 'Customer IDs',
 		name: 'client_ids',
 		type: 'string',

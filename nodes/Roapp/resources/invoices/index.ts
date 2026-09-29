@@ -117,7 +117,7 @@ export async function executeInvoiceOperation(
 			url: `${BASE_URL}v2/invoices/${this.getNodeParameter('Id', index)}`
 		});
 	} else if (operation === 'getItems') {
-		return await handleGetOne.call(this, index, `${BASE_URL}v2/invoices/${this.getNodeParameter('Id', index)}/items`);
+		return await handleGetAll.call(this, index, `${BASE_URL}v2/invoices/${this.getNodeParameter('Id', index)}/items`);
 	} else if (operation === 'create') {
 		return await handleCreateUpdate.call(this, index, `${BASE_URL}v2/invoices`, 'POST');
 	} else if (operation === 'update') {

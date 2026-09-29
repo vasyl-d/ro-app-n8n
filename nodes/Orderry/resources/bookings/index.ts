@@ -101,7 +101,7 @@ export async function executeBookingOperation(
 			url: `${BASE_URL}v2/bookings/${this.getNodeParameter('Id', index)}`
 		});
 	} else if (operation === 'getItems') {
-		return await handleGetOne.call(this, index, `${BASE_URL}v2/bookings/${this.getNodeParameter('Id', index)}/items`);
+		return await handleGetAll.call(this, index, `${BASE_URL}v2/bookings/${this.getNodeParameter('Id', index)}/items`);
 	} else if (operation === 'create') {
 		return await handleCreateUpdate.call(this, index, `${BASE_URL}v2/bookings`, 'POST');
 	} else if (operation === 'update') {

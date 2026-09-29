@@ -165,3 +165,7 @@ Most resources support standard fields like:
 - Add new Products/ Services methods
 - Add new Finance resource with accounts, transactions, tags
 - minor bug fixes
+
+### Version 2.3.1
+- Add New filters for getAll methods at Orders, Estimates and  Catalog resource
+- minor bug fixes

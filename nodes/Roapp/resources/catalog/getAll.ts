@@ -28,6 +28,32 @@ export const getAllDescription: INodeProperties[] = [
 		},
 	},
 	{
+		displayName: 'SKU',
+		name: 'sku',
+		type: 'string',
+		default: '',
+		description: 'Catalogue item SKU',
+		displayOptions: {
+			show: {
+				operation: ['getProducts'],
+				resource: ['catalog'],
+			}
+		},
+	},
+	{
+		displayName: 'Code',
+		name: 'code',
+		type: 'string',
+		default: '',
+		description: 'Catalogue item inner code',
+		displayOptions: {
+			show: {
+				operation: ['getProducts'],
+				resource: ['catalog'],
+			}
+		},
+	},
+	{
 		displayName: 'Category IDs',
 		name: 'category_ids',
 		type: 'number',
